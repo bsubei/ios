@@ -1,0 +1,6 @@
+welcome, everyone!
+
+This assumes you already installed SourceTree and you already have a version of the FirstRepo.
+
+Check ReadMe for reference.
+

@@ -1,0 +1,91 @@
+TObjCTest
+v7
+r0
+t361137438.328706
+cCheck dependencies
+cProcessPCH /var/folders/67/679Wkic8Ex8YVwOUB2FMcU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/ObjCTest_Prefix-fkrinzpdggybwwfhjdpnzpljtspa/ObjCTest_Prefix.pch.gch ObjCTest_Prefix.pch normal x86_64 objective-c com.apple.compilers.gcc.4_2
+cCompileC build/ObjCTest.build/Debug/ObjCTest.build/Objects-normal/x86_64/ObjCTest.o /Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m normal x86_64 objective-c com.apple.compilers.gcc.4_2
+
+N/Developer/SDKs/MacOSX10.6.sdk
+c000000004FB1B32600000000000000EE
+t1337045798
+s238
+
+N/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h
+c000000004CC401D100000000000013E6
+t1287913937
+s5094
+
+N/System/Library/Frameworks/Foundation.framework/Foundation
+c000000004E5656FF0000000000B38E90
+t1314281215
+s11767440
+
+N/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m
+c000000004FD64D9800000000000001B4
+t1339444632
+s436
+i<Foundation/Foundation.h>
+
+N/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest_Prefix.pch
+c000000004FD64AD8000000000000009E
+t1339443928
+s158
+i<Foundation/Foundation.h>
+
+N/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/Debug/ObjCTest
+t2
+s0
+
+N/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/ObjCTest.build/Debug/ObjCTest.build/Objects-normal/x86_64/ObjCTest.LinkFileList
+c000000004FD64D980000000000000081
+t1339444632
+s129
+
+N/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/ObjCTest.build/Debug/ObjCTest.build/Objects-normal/x86_64/ObjCTest.o
+t2
+s0
+
+N/var/folders/67/679Wkic8Ex8YVwOUB2FMcU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/ObjCTest_Prefix-fkrinzpdggybwwfhjdpnzpljtspa/ObjCTest_Prefix.pch.gch
+t1339444637
+s41429776
+
+CCheck dependencies
+r0
+lSLF07#2@18"Check dependencies361137432#361137432#0(0"0(0#1#0"3343187568374212096#0"0#
+
+CCompileC build/ObjCTest.build/Debug/ObjCTest.build/Objects-normal/x86_64/ObjCTest.o /Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m normal x86_64 objective-c com.apple.compilers.gcc.4_2
+s361137438.099673
+e361137438.328513
+r0
+xCompileC
+xbuild/ObjCTest.build/Debug/ObjCTest.build/Objects-normal/x86_64/ObjCTest.o
+x/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m
+xnormal
+xx86_64
+xobjective-c
+xcom.apple.compilers.gcc.4_2
+o/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m: In function 'main':
+o/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m:7: error: expected ',' or ';' before 'NSString'
+o/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m:14: error: 'myString' undeclared (first use in this function)
+o/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m:14: error: (Each undeclared identifier is reported only once
+o/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m:14: error: for each function it appears in.)
+o/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m:6: warning: unused variable 'myDateObject'
+lSLF07#2@72"Compile /Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m361137438#361137438#0(670"/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m: In function 'main':/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m:7: error: expected ',' or ';' before 'NSString'/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m:14: error: 'myString' undeclared (first use in this function)/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m:14: error: (Each undeclared identifier is reported only once/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m:14: error: for each function it appears in.)/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m:6: warning: unused variable 'myDateObject'3(4@37"Expected ',' or ';' before 'NSString'361137438#86#113#0(6@64"/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m361137432#7#0#7#0#19"expected * before *0(4@50"'myString' undeclared (first use in this function)361137438#199#127#0(6@64"/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m361137432#14#0#14#0#43"'*' undeclared (first use in this function)0(22@30"Unused variable 'myDateObject'361137438#562#108#0(6@64"/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m361137432#6#0#6#0#19"unused variable '*'0(0#0#64"/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m8605509312#1643"    cd /Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x objective-c -arch x86_64 -fmessage-length=0 -pipe -std=gnu99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/SDKs/MacOSX10.6.sdk -mfix-and-continue -mmacosx-version-min=10.6 -gdwarf-2 -iquote /Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/ObjCTest.build/Debug/ObjCTest.build/ObjCTest-generated-files.hmap -I/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/ObjCTest.build/Debug/ObjCTest.build/ObjCTest-own-target-headers.hmap -I/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/ObjCTest.build/Debug/ObjCTest.build/ObjCTest-all-target-headers.hmap -iquote /Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/ObjCTest.build/Debug/ObjCTest.build/ObjCTest-project-headers.hmap -F/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/Debug -I/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/Debug/include -I/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/ObjCTest.build/Debug/ObjCTest.build/DerivedSources/x86_64 -I/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/ObjCTest.build/Debug/ObjCTest.build/DerivedSources -include /var/folders/67/679Wkic8Ex8YVwOUB2FMcU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/ObjCTest_Prefix-fkrinzpdggybwwfhjdpnzpljtspa/ObjCTest_Prefix.pch -c /Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest.m -o /Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/ObjCTest.build/Debug/ObjCTest.build/Objects-normal/x86_64/ObjCTest.o1#
+
+CLd /Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/Debug/ObjCTest normal x86_64
+r0
+
+CProcessPCH /var/folders/67/679Wkic8Ex8YVwOUB2FMcU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/ObjCTest_Prefix-fkrinzpdggybwwfhjdpnzpljtspa/ObjCTest_Prefix.pch.gch ObjCTest_Prefix.pch normal x86_64 objective-c com.apple.compilers.gcc.4_2
+s361137433.025322
+e361137438.099386
+r1
+xProcessPCH
+x/var/folders/67/679Wkic8Ex8YVwOUB2FMcU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/ObjCTest_Prefix-fkrinzpdggybwwfhjdpnzpljtspa/ObjCTest_Prefix.pch.gch
+xObjCTest_Prefix.pch
+xnormal
+xx86_64
+xobjective-c
+xcom.apple.compilers.gcc.4_2
+lSLF07#2@30"Precompile ObjCTest_Prefix.pch361137433#361137438#0(0"0(0#0#73"/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest_Prefix.pch5791475684791829504#1525"    cd /Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x objective-c-header -arch x86_64 -fmessage-length=0 -pipe -std=gnu99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/SDKs/MacOSX10.6.sdk -mfix-and-continue -mmacosx-version-min=10.6 -gdwarf-2 -iquote /Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/ObjCTest.build/Debug/ObjCTest.build/ObjCTest-generated-files.hmap -I/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/ObjCTest.build/Debug/ObjCTest.build/ObjCTest-own-target-headers.hmap -I/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/ObjCTest.build/Debug/ObjCTest.build/ObjCTest-all-target-headers.hmap -iquote /Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/ObjCTest.build/Debug/ObjCTest.build/ObjCTest-project-headers.hmap -F/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/Debug -I/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/Debug/include -I/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/ObjCTest.build/Debug/ObjCTest.build/DerivedSources/x86_64 -I/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/build/ObjCTest.build/Debug/ObjCTest.build/DerivedSources -c /Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/ObjCTest_Prefix.pch -o /var/folders/67/679Wkic8Ex8YVwOUB2FMcU+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/ObjCTest_Prefix-fkrinzpdggybwwfhjdpnzpljtspa/ObjCTest_Prefix.pch.gch0#
+
