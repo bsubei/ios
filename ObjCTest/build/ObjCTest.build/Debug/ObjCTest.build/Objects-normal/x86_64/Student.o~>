@@ -1,5 +1,0 @@
-In file included from /Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/Student.m:9:
-/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/Student.h:16: warning: no 'assign', 'retain', or 'copy' attribute is specified - 'assign' is assumed
-/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/Student.h:16: warning: assign attribute (default) not appropriate for non-gc object property 'firstName'
-/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/Student.h:17: warning: no 'assign', 'retain', or 'copy' attribute is specified - 'assign' is assumed
-/Users/basheersubei/Desktop/iOS/ProjectFiles/ObjCTest/Student.h:17: warning: assign attribute (default) not appropriate for non-gc object property 'lastName'
