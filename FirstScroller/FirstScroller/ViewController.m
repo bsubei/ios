@@ -28,7 +28,7 @@
 
 
 
-        [scrollView setContentSize:CGSizeMake(400,900)];
+        [scrollView setContentSize:CGSizeMake(900,900)];
     //    tempScrollView.contentSize=CGSizeMake(ImageView.frame.size.width, ImageView.frame.size.height);
     
 //    [mainView sendSubviewToBack: self.view];
