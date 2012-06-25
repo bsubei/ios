@@ -23,8 +23,24 @@
     // Release any cached data, images, etc that aren't in use.
 }
 
+// called whenever slips are created or shredded
+// TODO tweak these values same as in createNewSlip (maybe use constants for slip size and spacing)
+- (void)updateScrollViewContentSize
+{
+        [self.scrollView setContentSize:CGSizeMake(
+                                                   scrollView.frame.size.width
+                                                   , scrollView.frame.size.height* ([allSlips count] /3.0) )];
+}
 
+// button for testing (deletes last slip and updates scroll)
+- (IBAction)shredSlipButton:(id)sender {
+    [[allSlips lastObject] removeFromSuperview];
+    [allSlips removeLastObject];
+    [self updateScrollViewContentSize];
+    
+}
 
+// button for testing (adds new slip; update taken care of inside createNewSlip:)
 - (IBAction)newSlipButton:(id)sender {
     [self createNewSlip];
 }
@@ -50,10 +66,11 @@
     // add it to array
     [allSlips addObject: newSlip];
     
-    // TODO FIX scrolling the slips
-    //add new slip to scrollView (root view for now)
-    [self.view addSubview:newSlip];
+    //add new slip to scrollView 
+    [scrollView addSubview:newSlip];
     
+    //update as more slips are added
+    [self updateScrollViewContentSize];
     
 }
 
@@ -66,9 +83,10 @@
 	// Do any additional setup after loading the view, typically from a nib.
     
     // setting initial ContentSize of scrollView (diff from frame size) and making it transparent 
-    [scrollView setContentSize: CGSizeMake(scrollView.frame.size.width, scrollView.frame.size.height*2)];
+    [self updateScrollViewContentSize];
     [scrollView setBackgroundColor:[UIColor clearColor]];
-    
+    // loading the scrollView as a subview of root view
+    [self.view addSubview:scrollView];
 
 
     
