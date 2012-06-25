@@ -16,6 +16,7 @@
 @property (strong, nonatomic) IBOutlet UIImageView *backgroundImage; // not a subView of scrollView (background doesn't scroll)
 @property (strong, nonatomic) NSMutableArray *allSlips; //holds all slip objects
 
+- (IBAction)newSlipButton:(id)sender;
 - (void)initializeAllSlipsArray;
 
 @end

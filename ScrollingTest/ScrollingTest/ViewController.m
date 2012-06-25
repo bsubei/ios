@@ -23,22 +23,40 @@
     // Release any cached data, images, etc that aren't in use.
 }
 
+
+
+- (IBAction)newSlipButton:(id)sender {
+    [self createNewSlip];
+}
+
 // called in appDidFinishLaunchingWithOptions (TODO call when loading data in appDidEnterForeground???)
 - (void)initializeAllSlipsArray
 {
     allSlips = [[NSMutableArray alloc]init];
 }
 
-// returns new Slip object ***(assumes allSlips is initialized)*** and is private and so not in .h file
-// returned slip already has ready imageView and (soon) textView
-- (BSSlip *)initializeNewSlip
+// creates a new slip object, then adds it to allSlips array, then adds it as subview
+// ***(assumes allSlips is initialized)*** and is private and so not in .h file
+// slip already has ready imageView and (soon) textView
+- (void)createNewSlip
 {
-    return [[BSSlip alloc]initWithFrame:
+    //creating newslip
+    BSSlip *newSlip = [[BSSlip alloc]initWithFrame:
             CGRectMake(20
                        , 30 + (SLIP_FRAME_HEIGHT+ 20)*  [allSlips count] //TODO tweak AND store this somehow
                        , SLIP_FRAME_WIDTH
                        , SLIP_FRAME_HEIGHT)];
+    
+    // add it to array
+    [allSlips addObject: newSlip];
+    
+    // TODO FIX scrolling the slips
+    //add new slip to scrollView (root view for now)
+    [self.view addSubview:newSlip];
+    
+    
 }
+
 
 #pragma mark - View lifecycle
 - (void)viewDidLoad
@@ -51,18 +69,15 @@
     [scrollView setContentSize: CGSizeMake(scrollView.frame.size.width, scrollView.frame.size.height*2)];
     [scrollView setBackgroundColor:[UIColor clearColor]];
     
-//debug
-    [self initializeAllSlipsArray];
+
+
     
     // create the first slip at top
-    BSSlip *firstSlip = [self initializeNewSlip];
+//    [self createNewSlip];
 
-    // add to array
-    [allSlips addObject: firstSlip];
+
     
-    // TODO FIX scrolling the slips
-    //add new slip to scrollView (root view for now)
-    [self.view addSubview:firstSlip];
+
     
 //    [self.view sendSubviewToBack:backgroundImage];
 
