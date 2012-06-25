@@ -31,7 +31,15 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
         [self setFrameX:frame.origin.x];
         [self setFrameY:frame.origin.y];
        
-        // TODO init the textView
+        // init the textView            // ***frame location of TextView is relative to slip frame***
+        [self setTextView: [[UITextView alloc]initWithFrame:CGRectMake( 20 // TODO TWEAK
+                                                               , 20
+                                                               ,SLIP_FRAME_WIDTH - 200
+                                                               , SLIP_FRAME_HEIGHT - 100)]];
+        // set TextView to transparent
+        [[self textView] setBackgroundColor:[UIColor clearColor]];
+        
+        // TODO textView font and details (char limit)...
         
         
         // now set slip image using given path
@@ -49,8 +57,10 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
         // NOW ADD the imageView as a subview of slip
         [self addSubview:imageView];
         
-        // TODO NOW ADD the textView as a subview of the slip
-        
+        // NOW ADD the textView as a subview of the slip
+        [self addSubview:textView];
+    
+    
     }
     return self;
 }
