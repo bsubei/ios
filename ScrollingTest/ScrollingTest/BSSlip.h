@@ -25,8 +25,14 @@ extern NSInteger const SLIP_FRAME_HEIGHT;
 
 @property (strong, nonatomic) IBOutlet UITextView *textView; // will hold textView (like textbox)
 
+@property (strong, nonatomic) IBOutlet UIButton *moveToTopButton; //moves slip to top
+
 @property NSInteger FrameX; // Xcoordinate of slip frame
 @property NSInteger FrameY; // Ycoordinate of slip frame
+@property NSInteger slipIndex; // location in allSlips array
+
+
+- (id)initWithFrame:(CGRect)frame withIndex:(NSInteger)index withCaller:(id)caller;
 
 @end
 

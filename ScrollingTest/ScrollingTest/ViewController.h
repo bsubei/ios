@@ -19,6 +19,9 @@
 - (IBAction)shredSlipButton:(id)sender;
 
 - (IBAction)newSlipButton:(id)sender;
+
+- (void)moveSlipToTopButton:(id)sender;
+
 - (void)initializeAllSlipsArray;
 
 @end
