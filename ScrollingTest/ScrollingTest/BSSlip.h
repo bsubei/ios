@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ViewController.h"
 
 // GLOBAL constants
 
@@ -25,12 +26,17 @@ extern NSInteger const SLIP_FRAME_HEIGHT;
 
 @property (strong, nonatomic) IBOutlet UITextView *textView; // will hold textView (like textbox)
 
-@property (strong, nonatomic) IBOutlet UIButton *moveToTopButton; //moves slip to top
+@property (strong, nonatomic) UIButton *moveToTopButton; //moves slip to top
+
+@property (strong, nonatomic) ViewController *callingViewController;
 
 @property NSInteger FrameX; // Xcoordinate of slip frame
 @property NSInteger FrameY; // Ycoordinate of slip frame
 @property NSInteger slipIndex; // location in allSlips array
 
+
+
+- (void)sendButtonActionToCaller:(id)sender;
 
 - (id)initWithFrame:(CGRect)frame withIndex:(NSInteger)index withCaller:(id)caller;
 

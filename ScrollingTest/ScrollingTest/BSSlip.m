@@ -10,13 +10,25 @@
 
 @implementation BSSlip
 
-@synthesize imageView, textView, moveToTopButton ,FrameX, FrameY, slipIndex;
+@synthesize imageView, textView, moveToTopButton ,FrameX, FrameY, slipIndex, callingViewController;
 
 // Global Constants initialized
 
 //NSString const *SLIP_IMAGE_NAME = @"slip.png";
 NSInteger const SLIP_FRAME_WIDTH = 416;
 NSInteger const SLIP_FRAME_HEIGHT = 143;
+
+
+
+
+
+// method made to handle button press
+- (void)sendButtonActionToCaller:(id)sender
+{
+    [[self callingViewController] moveSlipToTop:slipIndex];
+    
+    
+}
 
 
 //initializing each slip using overriden method //TODO review about passing in index and caller
@@ -43,6 +55,10 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
         
         // TODO textView font and details (char limit)...
         
+        
+        // create reference to caller (parent viewController)
+        [self setCallingViewController: caller];
+        
         //create the moveToTop button
         
             // creating it
@@ -54,12 +70,12 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
                  forState:(UIControlState)UIControlStateNormal];
         
         //finally, add button to slip subview //TODO calling it later to see if it shows up
-//        [self addSubview:moveToTopButton];
-        
+        [self addSubview:moveToTopButton];
+               
         
             //set target (call event when touched)
-            [[self moveToTopButton] addTarget:caller //TODO check caller here
-                                       action:@selector(moveSlipToTopButton:) //TODO need to send in index of slip 
+            [[self moveToTopButton] addTarget:self //TODO check caller here
+                                       action:@selector(sendButtonActionToCaller:) //TODO need to send in index of slip 
           forControlEvents:(UIControlEvents)UIControlEventTouchUpInside];
         
         //TODO DEBUGGING TOOL
@@ -90,8 +106,10 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
         // NOW ADD the textView as a subview of the slip
         [self addSubview:textView];
         
+        [self bringSubviewToFront:moveToTopButton];
+        
         //TODO remove
-        [self addSubview:moveToTopButton];
+//        [self addSubview:moveToTopButton];
     
     }
     return self;

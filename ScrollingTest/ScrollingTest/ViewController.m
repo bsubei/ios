@@ -23,6 +23,23 @@
     // Release any cached data, images, etc that aren't in use.
 }
 
+/*
+// method that returns slipArray index based on slipIndex (WTF is this? nvm)
+- (NSInteger)slipWithSlipIndex:(NSInteger)index
+{
+    
+    for (int i =0; i< [allSlips count]; i++) {
+        if ([[allSlips objectAtIndex:i] slipIndex] == index) {
+            return i;
+        }
+    }
+    
+    // should never happen
+    return 0;
+}
+
+*/
+
 // called whenever slips are created or shredded
 // TODO tweak these values same as in createNewSlip (maybe use constants for slip size and spacing)
 - (void)updateScrollViewContentSize
@@ -49,13 +66,42 @@
 {
     // for every slip //TODO watch for increment error in i
     for (int i=0; i<[allSlips count]; i++) {
+        
+
+//TODO need to refer to slipIndex instead of slipArray index ??? nvm
+        
+//        int newIndex = [self slipWithSlipIndex:i];
+        NSLog(@"before ");
+        NSLog(@"%i", i);
+        NSLog(@"%i", [[allSlips objectAtIndex:i] FrameY]);
+
+        
+        
         //get its frame
         CGRect newFrame = [self getSlipFrame:i];
         //set that slip's frameX to be the x we got from newFrame
         [[allSlips objectAtIndex:i] setFrameX:newFrame.origin.x];
         //set that slip's frameY to be the y we got from newFrame
         [[allSlips objectAtIndex:i] setFrameY:newFrame.origin.y];
+        
+        
+                NSLog(@"after ");
+        int displayedIndex = [[allSlips objectAtIndex:i] slipIndex];
+        NSLog(@"%i", i);
+        NSLog(@"%i", [[allSlips objectAtIndex:i] FrameY]);
+
+        
+        
+        // change title of slip according to order (for debugging)
+        [[[allSlips objectAtIndex:i] moveToTopButton] setTitle: [[NSString alloc]initWithFormat:@"%i", i] forState:UIControlStateNormal];
+        [[[allSlips objectAtIndex:i] textView] setText: [[NSString alloc]initWithFormat:@"     %i", displayedIndex] ];
+
+
+        //TODO fix this, need to redraw all slips with correct order
+        [[allSlips objectAtIndex:i] setNeedsDisplay];
+        
     }
+    
 }
 
 //method that moves slip to top (becomes first)
@@ -65,12 +111,21 @@
     // and check for crazy values that cause exceptions
     if(index > 0 && index < [allSlips count]){
         // get current slip
-        BSSlip *currentSlip = [allSlips objectAtIndex:index];
+        BSSlip *currentSlip = [[self allSlips] objectAtIndex:index];
         //insert it at top
         [allSlips insertObject:currentSlip atIndex:0];
         //remove old instance of current slip
         [allSlips removeObjectAtIndex:index+1 ];
-        // re(moves) all slips
+        
+        
+        //  change slipIndex of rearranged slips
+        for (int i =0; i<[allSlips count]; i++) {
+            [[[self allSlips] objectAtIndex:i] setSlipIndex:i];    
+        }
+        
+        
+        
+        // re(draws) all slips
         [self updateSlipsInView];
     }
 }
@@ -92,14 +147,16 @@
     [self updateScrollViewContentSize];
 
     [self updateSlipsInView]; //TODO not needed?
+    
+    
 }
 
-// button for moving slip to top
-- (void)moveSlipToTopButton:(id)sender
-{
-//    [self moveSlipToTop: []; // i need to make custom button class (inside BSSlip maybe?) that has slipIndex property
+// button for moving slip to top //TODO not used now (bypassed in BSButton class)
+//- (void)moveSlipToTopButton:(id)sender
+//{
+//    [self moveSlipToTop: [sender slipIndexButton]]; // i need to make custom button class (inside BSSlip maybe?) that has slipIndex property
                             // so that button calls this action and we can acces slipIndex
-}
+//}
 
 // button for testing 
 - (IBAction)shredSlipButton:(id)sender 

@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 
 
-
 @interface ViewController : UIViewController
 
 @property (strong, nonatomic) IBOutlet UIScrollView *scrollView; //responsible for scrolling (is a parent view of all slips)
@@ -20,7 +19,7 @@
 
 - (IBAction)newSlipButton:(id)sender;
 
-- (void)moveSlipToTopButton:(id)sender;
+- (void)moveSlipToTop:(NSInteger)index;
 
 - (void)initializeAllSlipsArray;
 
