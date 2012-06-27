@@ -76,17 +76,20 @@
         NSLog(@"%i", [[allSlips objectAtIndex:i] FrameY]);
 
         
+        BSSlip *currentSlip = [allSlips objectAtIndex:i];
         
         //get its frame
         CGRect newFrame = [self getSlipFrame:i];
         //set that slip's frameX to be the x we got from newFrame
-        [[allSlips objectAtIndex:i] setFrameX:newFrame.origin.x];
+        [ currentSlip setFrameX:newFrame.origin.x];
         //set that slip's frameY to be the y we got from newFrame
-        [[allSlips objectAtIndex:i] setFrameY:newFrame.origin.y];
+        [currentSlip setFrameY:newFrame.origin.y];
         
+        // D'OH!! so stupid! how could i have missed ACTUALLY CHANGING THE FRAME of each slip?s
+        [currentSlip setFrame:CGRectMake([currentSlip FrameX], [currentSlip FrameY], SLIP_FRAME_WIDTH, SLIP_FRAME_HEIGHT)];
         
                 NSLog(@"after ");
-        int displayedIndex = [[allSlips objectAtIndex:i] slipIndex];
+//        int displayedIndex = [[allSlips objectAtIndex:i] slipIndex];
         NSLog(@"%i", i);
         NSLog(@"%i", [[allSlips objectAtIndex:i] FrameY]);
 
@@ -94,11 +97,13 @@
         
         // change title of slip according to order (for debugging)
         [[[allSlips objectAtIndex:i] moveToTopButton] setTitle: [[NSString alloc]initWithFormat:@"%i", i] forState:UIControlStateNormal];
-        [[[allSlips objectAtIndex:i] textView] setText: [[NSString alloc]initWithFormat:@"     %i", displayedIndex] ];
+        
 
 
         //TODO fix this, need to redraw all slips with correct order
-        [[allSlips objectAtIndex:i] setNeedsDisplay];
+//        [[allSlips objectAtIndex:i] setNeedsDisplay];
+//        [[allSlips objectAtIndex:i] removeFromSuperview];
+//        [self.scrollView addSubview:[allSlips objectAtIndex:i] ];
         
     }
     

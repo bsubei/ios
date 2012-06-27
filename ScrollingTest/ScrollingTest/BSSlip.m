@@ -55,6 +55,10 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
         
         // TODO textView font and details (char limit)...
         
+        // for debugging
+        [[self textView] setText: [[NSString alloc]initWithFormat:@"     %i", index]];
+        
+        
         
         // create reference to caller (parent viewController)
         [self setCallingViewController: caller];
@@ -68,7 +72,7 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
             // set title
             [[self moveToTopButton] setTitle: [[NSString alloc] initWithFormat:@"%i", index] 
                  forState:(UIControlState)UIControlStateNormal];
-        
+
         //finally, add button to slip subview //TODO calling it later to see if it shows up
         [self addSubview:moveToTopButton];
                
