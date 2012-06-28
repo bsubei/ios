@@ -85,8 +85,17 @@
         //set that slip's frameY to be the y we got from newFrame
         [currentSlip setFrameY:newFrame.origin.y];
         
-        // D'OH!! so stupid! how could i have missed ACTUALLY CHANGING THE FRAME of each slip?s
+        
+        //animation description (like opening tag)  //TODO tweak animation values
+        [UIView beginAnimations:@"MoveAndStrech" context:nil];
+        [UIView setAnimationDuration:1];
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        
+        // D'OH!! so stupid! how could i have missed ACTUALLY CHANGING THE FRAME of each slips?
         [currentSlip setFrame:CGRectMake([currentSlip FrameX], [currentSlip FrameY], SLIP_FRAME_WIDTH, SLIP_FRAME_HEIGHT)];
+        
+        // perform animations (like closing tag)
+        [UIView commitAnimations];
         
                 NSLog(@"after ");
 //        int displayedIndex = [[allSlips objectAtIndex:i] slipIndex];
