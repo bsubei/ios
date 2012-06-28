@@ -22,7 +22,9 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
 
 
 
-// method made to handle button press
+// called when moveToTopButton is pressed
+// calls moveSlipToTop in the calling viewController (the only one in this app), and sends in
+// this slip's index as parameter
 - (void)sendButtonActionToCaller:(id)sender
 {
     [[self callingViewController] moveSlipToTop:slipIndex];
@@ -31,10 +33,11 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
 }
 
 
-//initializing each slip using overriden method //TODO review about passing in index and caller
+//initializing each slip using overriden method 
+//TODO review about passing in index and caller (very kludgey?)
 - (id)initWithFrame:(CGRect)frame withIndex:(NSInteger)index withCaller:(id)caller
 {
-    // some code already here (maybe for some null-value checking)
+    // some code already here that inits UIView stuff (so we don't have to handle as we subclass it)
     self = [super initWithFrame:frame];
     if (self) {
         
@@ -56,7 +59,7 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
         // TODO textView font and details (char limit)...
         
         // for debugging
-        [[self textView] setText: [[NSString alloc]initWithFormat:@"     %i", index]];
+        [[self textView] setText: [[NSString alloc]initWithFormat:@"    original position: %i", index]];
         
         
         
@@ -73,20 +76,11 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
             [[self moveToTopButton] setTitle: [[NSString alloc] initWithFormat:@"%i", index] 
                  forState:(UIControlState)UIControlStateNormal];
 
-        //finally, add button to slip subview //TODO calling it later to see if it shows up
-        [self addSubview:moveToTopButton];
-               
+                       
         
             //set target (call event when touched)
-            [[self moveToTopButton] addTarget:self //TODO check caller here
-                                       action:@selector(sendButtonActionToCaller:) //TODO need to send in index of slip 
-          forControlEvents:(UIControlEvents)UIControlEventTouchUpInside];
-        
-        //TODO DEBUGGING TOOL
-//        NSLog(@"%@", [moveToTopButton actionsForTarget:caller forControlEvent:UIControlEventTouchUpInside]);
-        
-
-        
+            [[self moveToTopButton] addTarget:self 
+                                       action:@selector(sendButtonActionToCaller:) forControlEvents:(UIControlEvents)UIControlEventTouchUpInside];
         
         // TODO more tweaking for moveToTop button
         
@@ -110,11 +104,14 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
         // NOW ADD the textView as a subview of the slip
         [self addSubview:textView];
         
+        //finally, add button to slip subview
+        [self addSubview:moveToTopButton];
+        
+        // makes sure our button is in front
         [self bringSubviewToFront:moveToTopButton];
         
-        //TODO remove
-//        [self addSubview:moveToTopButton];
-    
+
+            
     }
     return self;
 }
