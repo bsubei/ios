@@ -222,9 +222,21 @@
 }
 
 #pragma mark - Delegate Methods
-- (void)textViewDidBeginEditing:(UITextView *)textView
+
+// called when user first starts editing a textField 
+//TODO make it pass the slipIndex so that dismissKeyboard button knows who's slip to resignFirstResponder
+- (void)textFieldDidBeginEditing:(UITextField *)textField
 {
- // still not implemented   
+    NSLog(@"began editing");
+}
+
+// called when user hits return key (returning a yes makes it act default)
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+
+    [textField resignFirstResponder];
+    
+    return YES;
 }
 
 #pragma mark - View lifecycle

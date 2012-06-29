@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 
-@interface ViewController : UIViewController <UITextViewDelegate>  
+@interface ViewController : UIViewController <UITextFieldDelegate>  
 
 @property (strong, nonatomic) IBOutlet UIButton *dismissKeyboardOutlet;
 

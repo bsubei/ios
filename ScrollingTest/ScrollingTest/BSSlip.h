@@ -24,7 +24,7 @@ extern NSInteger const SLIP_FRAME_HEIGHT;
 
 @property (strong, nonatomic) IBOutlet UIImageView *imageView; // will hold the slip image
 
-@property (strong, nonatomic) IBOutlet UITextView *textView; // will hold textView (like textbox)
+@property (strong, nonatomic) IBOutlet UITextField *textView; // will hold textView (like textbox)
 
 @property (strong, nonatomic) UIButton *moveToTopButton; //moves slip to top
 

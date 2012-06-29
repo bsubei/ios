@@ -57,7 +57,7 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
         [self setSlipIndex:index];
         
         // init the textView            // ***frame location of TextView is relative to slip frame***
-        [self setTextView: [[UITextView alloc]initWithFrame:CGRectMake( 20 // TODO TWEAK
+        [self setTextView: [[UITextField alloc]initWithFrame:CGRectMake( 20 // TODO TWEAK
                                                                , 20
                                                                ,SLIP_FRAME_WIDTH - 200
                                                                , SLIP_FRAME_HEIGHT - 100)]];
