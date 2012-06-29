@@ -12,6 +12,7 @@
 
 @implementation ViewController
 
+@synthesize dismissKeyboardOutlet;
 @synthesize scrollView;
 @synthesize backgroundImage;
 @synthesize allSlips;
@@ -46,6 +47,9 @@
     [allSlips removeObjectAtIndex:slipIndex];
     //update scrollView
     [self updateScrollViewContentSize];
+    
+    //update dismissKeyboard size
+    [self updateDismissKeyboardButtonSize];
 
     [self updateIndicesForAllSlips];
     
@@ -72,7 +76,7 @@
     
     //update as more slips are added
     [self updateScrollViewContentSize];
-    
+    [self updateDismissKeyboardButtonSize];
 }
 
 
@@ -108,6 +112,16 @@
     }
 }
 
+- (void)updateDismissKeyboardButtonSize
+{
+    
+    //resizes dismiss Keyboard button //TODO tweak this along with above
+    [[self dismissKeyboardOutlet] setFrame:CGRectMake(0,0,
+                                                      scrollView.frame.size.width
+                                                      , scrollView.frame.size.height* ([allSlips count] /3.0) )];
+    
+}
+
 // called whenever slips are created or shredded
 // TODO tweak these values same as in createNewSlip (maybe use constants for slip size and spacing)
 // TODO see if we want this animated!!!
@@ -126,7 +140,6 @@
     // perform animations (like closing tag)
     [UIView commitAnimations];
 
-    
 }
 
 // TODO tweak animations on this
@@ -182,6 +195,20 @@
 }
 
 #pragma mark - Buttons
+// button to dismiss keyboard
+- (IBAction)invisibleDismissKeyboardButton:(id)sender {
+     NSLog(@"dismissKeyboard");
+    if ([allSlips count] >0) {
+       
+        // TODO must figure out WHICH slip is being edited and tell it to resignFirstResponder
+        // TODO check if kludge solution of resigning first responders for all slips works (no bugs?)
+        for (int i=0; i<[allSlips count]; i++) {
+                [[[allSlips objectAtIndex:i] textView] resignFirstResponder];
+        }
+        
+    }
+    
+}
 // button for testing 
 - (IBAction)shredSlipButton:(id)sender 
 {
@@ -192,6 +219,12 @@
 - (IBAction)newSlipButton:(id)sender
 {
     [self createNewSlip];
+}
+
+#pragma mark - Delegate Methods
+- (void)textViewDidBeginEditing:(UITextView *)textView
+{
+ // still not implemented   
 }
 
 #pragma mark - View lifecycle
@@ -206,6 +239,11 @@
     [scrollView setBackgroundColor:[UIColor clearColor]];
     // loading the scrollView as a subview of root view
     [self.view addSubview:scrollView];
+    
+    //TODO fix this:put dismissKeyboard back
+    [scrollView sendSubviewToBack:dismissKeyboardOutlet];
+    
+
 
 }
 
@@ -215,6 +253,7 @@
 {
     [self setScrollView:nil];
     [self setBackgroundImage:nil];
+    [self setDismissKeyboardOutlet:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;

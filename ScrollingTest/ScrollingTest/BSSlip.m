@@ -64,6 +64,9 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
         // set TextView to transparent
         [[self textView] setBackgroundColor:[UIColor clearColor]];
         
+        // set TextView's delegate to be the calling viewController
+        [[self textView] setDelegate:caller];
+        
         // TODO textView font and details (char limit)...
         
         // for debugging
