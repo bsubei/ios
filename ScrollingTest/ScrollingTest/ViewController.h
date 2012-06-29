@@ -21,6 +21,8 @@
 
 - (void)moveSlipToTop:(NSInteger)index;
 
+- (void)shredSlip:(int)slipIndex;
+
 - (void)initializeAllSlipsArray;
 
 @end

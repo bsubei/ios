@@ -27,21 +27,28 @@
 
 // method that deletes last slip and updates scroll
 // TODO transform this method to one that deletes specified slips (not just last)
-- (void)shredSlip
+- (void)shredSlip:(int)slipIndex
 {
-    // no slips to shred
-    if ([allSlips count] == 0) {
+    // no slips to shred or incorrect parameter
+    if ([allSlips count] == 0 || slipIndex >= [allSlips count] || slipIndex < 0) {
+        //TODO debugging
+        NSLog(@"WTF? %i", slipIndex);
+        
         return;
     }
+    // create a reference to the slip that's to be shredded
+    BSSlip *thisSlip = [allSlips objectAtIndex:slipIndex];
     
     //remove slip from view
-    [[allSlips lastObject] removeFromSuperview];
+    [thisSlip removeFromSuperview];
 
     // remove slip from array
-    [allSlips removeLastObject];
+    [allSlips removeObjectAtIndex:slipIndex];
     //update scrollView
     [self updateScrollViewContentSize];
 
+    [self updateIndicesForAllSlips];
+    
     //update all slips (if not last one deleted)
     [self updateSlipsInView];
     
@@ -71,6 +78,15 @@
 
 #pragma mark - Updating Methods
 
+//  update slipIndex of rearranged slips // TODO need to do this in its own thread
+- (void)updateIndicesForAllSlips
+{
+        for (int i =0; i<[allSlips count]; i++) {
+        [[[self allSlips] objectAtIndex:i] setSlipIndex:i];    
+    }
+}
+
+
 //method that moves slip to top (becomes first)
 - (void)moveSlipToTop:(NSInteger)index
 {
@@ -84,10 +100,8 @@
         //remove old instance of current slip
         [allSlips removeObjectAtIndex:index+1 ];
         
-        //  change slipIndex of rearranged slips
-        for (int i =0; i<[allSlips count]; i++) {
-            [[[self allSlips] objectAtIndex:i] setSlipIndex:i];    
-        }
+
+        [self updateIndicesForAllSlips];
         
         // re(draws) all slips
         [self updateSlipsInView];
@@ -96,14 +110,26 @@
 
 // called whenever slips are created or shredded
 // TODO tweak these values same as in createNewSlip (maybe use constants for slip size and spacing)
+// TODO see if we want this animated!!!
 - (void)updateScrollViewContentSize
 {
+    
+    //animation description (like opening tag)  //TODO tweak animation values
+    [UIView beginAnimations:@"MoveAndStrech" context:nil];
+    [UIView setAnimationDuration:1];
+    [UIView setAnimationBeginsFromCurrentState:YES];
+    
     [self.scrollView setContentSize:CGSizeMake(
                                                scrollView.frame.size.width
                                                , scrollView.frame.size.height* ([allSlips count] /3.0) )];
+    
+    // perform animations (like closing tag)
+    [UIView commitAnimations];
+
+    
 }
 
-// TODO add animations to this
+// TODO tweak animations on this
 // method that updates slip locations and re(moves) in view
 - (void)updateSlipsInView
 {
@@ -159,7 +185,7 @@
 // button for testing 
 - (IBAction)shredSlipButton:(id)sender 
 {
-    [self shredSlip];
+    [self shredSlip:0];
 }
 
 // button for testing (adds new slip; update taken care of inside createNewSlip:)

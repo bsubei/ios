@@ -10,7 +10,7 @@
 
 @implementation BSSlip
 
-@synthesize imageView, textView, moveToTopButton ,FrameX, FrameY, slipIndex, callingViewController;
+@synthesize imageView, textView, shredMeButton, moveToTopButton ,FrameX, FrameY, slipIndex, callingViewController;
 
 // Global Constants initialized
 
@@ -25,9 +25,17 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
 // called when moveToTopButton is pressed
 // calls moveSlipToTop in the calling viewController (the only one in this app), and sends in
 // this slip's index as parameter
-- (void)sendButtonActionToCaller:(id)sender
+- (void)moveToTopAction:(id)sender
 {
     [[self callingViewController] moveSlipToTop:slipIndex];
+    
+    
+}
+
+
+- (void)shredMeAction:(id)sender
+{
+    [[self callingViewController] shredSlip:slipIndex];
     
     
 }
@@ -72,18 +80,32 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
             [self setMoveToTopButton: [UIButton buttonWithType:UIButtonTypeDetailDisclosure]];
             // setting button frame //TODO TWEAK HERE
             [[self moveToTopButton] setFrame: CGRectMake(10, 20, 50, 30)];
-            // set title
-            [[self moveToTopButton] setTitle: [[NSString alloc] initWithFormat:@"%i", index] 
-                 forState:(UIControlState)UIControlStateNormal];
+            
+        // set title
+//            [[self moveToTopButton] setTitle: [[NSString alloc] initWithFormat:@"%i", index] 
+//                 forState:(UIControlState)UIControlStateNormal];
 
                        
         
             //set target (call event when touched)
             [[self moveToTopButton] addTarget:self 
-                                       action:@selector(sendButtonActionToCaller:) forControlEvents:(UIControlEvents)UIControlEventTouchUpInside];
+                                       action:@selector(moveToTopAction:) forControlEvents:(UIControlEvents)UIControlEventTouchUpInside];
         
         // TODO more tweaking for moveToTop button
         
+        
+        
+        // create the shredMeButton
+        
+        // creating it
+        [self setShredMeButton: [UIButton buttonWithType:UIButtonTypeInfoDark]];
+        // setting button frame //TODO TWEAK HERE
+        [[self shredMeButton] setFrame: CGRectMake(100, 20, 50, 30)];
+        //set target (call event when touched)
+        [[self shredMeButton] addTarget:self 
+                                   action:@selector(shredMeAction:) forControlEvents:(UIControlEvents)UIControlEventTouchUpInside];
+        
+
         
         
         // now set slip image using given path
@@ -104,11 +126,14 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
         // NOW ADD the textView as a subview of the slip
         [self addSubview:textView];
         
+        // add shred button
+        [self addSubview:shredMeButton];
+        
         //finally, add button to slip subview
         [self addSubview:moveToTopButton];
         
         // makes sure our button is in front
-        [self bringSubviewToFront:moveToTopButton];
+//        [self bringSubviewToFront:moveToTopButton];
         
 
             
