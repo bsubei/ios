@@ -16,6 +16,7 @@
 @property (strong, nonatomic) IBOutlet UIScrollView *scrollView; //responsible for scrolling (is a parent view of all slips)
 @property (strong, nonatomic) IBOutlet UIImageView *backgroundImage; // not a subView of scrollView (background doesn't scroll)
 @property (strong, nonatomic) NSMutableArray *allSlips; //holds all slip objects
+
 - (IBAction)invisibleDismissKeyboardButton:(id)sender;
 
 - (IBAction)shredSlipButton:(id)sender;

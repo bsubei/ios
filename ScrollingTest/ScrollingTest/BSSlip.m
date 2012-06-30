@@ -10,7 +10,7 @@
 
 @implementation BSSlip
 
-@synthesize imageView, textView, shredMeButton, moveToTopButton ,FrameX, FrameY, slipIndex, callingViewController;
+@synthesize imageView, textField, shredMeButton, moveToTopButton ,FrameX, FrameY, slipIndex, callingViewController;
 
 // Global Constants initialized
 
@@ -56,21 +56,21 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
         //set slip index
         [self setSlipIndex:index];
         
-        // init the textView            // ***frame location of TextView is relative to slip frame***
-        [self setTextView: [[UITextField alloc]initWithFrame:CGRectMake( 20 // TODO TWEAK
+        // init the textField            // ***frame location of textField is relative to slip frame***
+        [self setTextField: [[UITextField alloc]initWithFrame:CGRectMake( 20 // TODO TWEAK
                                                                , 20
                                                                ,SLIP_FRAME_WIDTH - 200
                                                                , SLIP_FRAME_HEIGHT - 100)]];
-        // set TextView to transparent
-        [[self textView] setBackgroundColor:[UIColor clearColor]];
+        // set textField to transparent
+        [[self textField] setBackgroundColor:[UIColor clearColor]];
         
-        // set TextView's delegate to be the calling viewController
-        [[self textView] setDelegate:caller];
+        // set textField's delegate to be the calling viewController
+        [[self textField] setDelegate:caller];
         
-        // TODO textView font and details (char limit)...
+        // TODO textField font and details (char limit)...
         
         // for debugging
-        [[self textView] setText: [[NSString alloc]initWithFormat:@"    original position: %i", index]];
+        [[self textField] setText: [[NSString alloc]initWithFormat:@"    original position: %i", index]];
         
         
         
@@ -126,8 +126,8 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
         // NOW ADD the imageView as a subview of slip
         [self addSubview:imageView];
         
-        // NOW ADD the textView as a subview of the slip
-        [self addSubview:textView];
+        // NOW ADD the textField as a subview of the slip
+        [self addSubview:textField];
         
         // add shred button
         [self addSubview:shredMeButton];

@@ -17,6 +17,8 @@
 @synthesize backgroundImage;
 @synthesize allSlips;
 
+int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
+
 // TODO read more about memory warning (app must be lite on memory)
 - (void)didReceiveMemoryWarning
 {
@@ -30,11 +32,12 @@
 // TODO transform this method to one that deletes specified slips (not just last)
 - (void)shredSlip:(int)slipIndex
 {
-    // no slips to shred or incorrect parameter
+    //check if a slip is currently being edited and dismiss its keyboard
+    [self dismissCurrentSlipKeyboard];
+    // check no slips to shred or incorrect parameter
     if ([allSlips count] == 0 || slipIndex >= [allSlips count] || slipIndex < 0) {
         //TODO debugging
         NSLog(@"WTF? %i", slipIndex);
-        
         return;
     }
     // create a reference to the slip that's to be shredded
@@ -60,7 +63,7 @@
 
 // creates a new slip object, then adds it to allSlips array, then adds it as subview
 // ***(assumes allSlips is initialized)*** and is private and so not in .h file
-// slip already has ready imageView and (soon) textView
+// slip already has ready imageView and (soon) textField
 - (void)createNewSlip
 {
     
@@ -94,6 +97,9 @@
 //method that moves slip to top (becomes first)
 - (void)moveSlipToTop:(NSInteger)index
 {
+    //check if a slip is currently being edited and dismiss its keyboard
+    [self dismissCurrentSlipKeyboard];
+    
     //do nothing if slip is already top
     // and check for crazy values that cause exceptions
     if(index > 0 && index < [allSlips count]){
@@ -183,7 +189,30 @@
 {
     allSlips = [[NSMutableArray alloc]init];
 }
+/*
+//enables all slip buttons (not used anymore)
+- (void)enableAllButtons
+{
+    for (int i=0; i<[allSlips count]; i++) {
+        //enables moveToTopButtons
+        [[[allSlips objectAtIndex:i] moveToTopButton] setEnabled:YES];
+        //enables shred buttons
+        [[[allSlips objectAtIndex:i] shredMeButton] setEnabled:YES];
+    }
+}
 
+//disables all slip buttons (not used anymore)
+- (void)disableAllButtons
+{
+    for (int i=0; i<[allSlips count]; i++) {
+        //enables moveToTopButtons
+        [[[allSlips objectAtIndex:i] moveToTopButton] setEnabled:NO];
+        //enables shred buttons
+        [[[allSlips objectAtIndex:i] shredMeButton] setEnabled:NO];
+    }
+}
+*/
+ 
 // returns frame of slip depending on its order in allSlips array
 // created because it will be reused in updateSlipsInView & in createNewSlip
 - (CGRect)getSlipFrame:(NSInteger)index
@@ -194,20 +223,22 @@
                       , SLIP_FRAME_HEIGHT);
 }
 
+//dismiss a slip's keyboard
+- (void)dismissCurrentSlipKeyboard
+{
+    //check for valid slip
+    if (slipBeingEdited >= 0) {
+        // dismiss that slip's keyboard
+        [[[allSlips objectAtIndex:slipBeingEdited] textField] resignFirstResponder];
+    }
+
+}
+
 #pragma mark - Buttons
 // button to dismiss keyboard
 - (IBAction)invisibleDismissKeyboardButton:(id)sender {
-     NSLog(@"dismissKeyboard");
-    if ([allSlips count] >0) {
-       
-        // TODO must figure out WHICH slip is being edited and tell it to resignFirstResponder
-        // TODO check if kludge solution of resigning first responders for all slips works (no bugs?)
-        for (int i=0; i<[allSlips count]; i++) {
-                [[[allSlips objectAtIndex:i] textView] resignFirstResponder];
-        }
-        
-    }
     
+    [self dismissCurrentSlipKeyboard];
 }
 // button for testing 
 - (IBAction)shredSlipButton:(id)sender 
@@ -227,15 +258,51 @@
 //TODO make it pass the slipIndex so that dismissKeyboard button knows who's slip to resignFirstResponder
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
-    NSLog(@"began editing");
+    
+    
+    //check that we're dealing with slip textFields
+    if ([textField.superview isKindOfClass:([BSSlip class])] ) {
+        
+        //enable the dismissKeyboard big invisible button
+            [[self dismissKeyboardOutlet] setEnabled:YES];
+    
+        //extract slipIndex of this slip (the toughest line of code in this app)
+        int index = [(BSSlip *)textField.superview slipIndex];
+        
+        // set the index of the slip being edited
+        slipBeingEdited = index;
+        
+        
+        //TODO fix prob where user can start editing (we get correct index), then
+        // user deletes prev slip, but index is not updated
+        //didBeginEditing (disable buttons)
+        //didEndEditing (re-enable buttons)
+//        [self disableAllButtons];
+        
+        //TODO, watch for the case when user is editing a slip, then hits the empty 'create-a-new-slip' slip.
+        // in this case, i must reset the slipBeingEdited upon creation of new slip
+        
+        //TODO alternative to disabling buttons and gestures:  (DONE)
+        // when button is pressed (or gesture), if slipBeingEdited is not -1 (i.e. the slip is being edited),
+        // then resign first responder using slipBeingEdited and then continue on with action.
+        
+    }
+    
+   
+}
+
+// called after the keyboard is dismissed
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    slipBeingEdited = -1; // set so that there is no slip being edited
+    //disable the big invisible button
+    [[self dismissKeyboardOutlet] setEnabled:NO];
 }
 
 // called when user hits return key (returning a yes makes it act default)
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-
     [textField resignFirstResponder];
-    
     return YES;
 }
 
@@ -254,6 +321,9 @@
     
     //TODO fix this:put dismissKeyboard back
     [scrollView sendSubviewToBack:dismissKeyboardOutlet];
+    
+    //start off thiw the dismiss button being disabled (enabled when a slip is being edited)
+    [[self dismissKeyboardOutlet] setEnabled:NO];
     
 
 
