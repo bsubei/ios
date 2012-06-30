@@ -39,5 +39,7 @@ extern NSInteger const SLIP_FRAME_HEIGHT;
 
 - (id)initWithFrame:(CGRect)frame withIndex:(NSInteger)index withCaller:(id)caller;
 
+- (void)createButtonsForSlip;
+
 @end
 

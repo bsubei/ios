@@ -32,8 +32,8 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
 // TODO transform this method to one that deletes specified slips (not just last)
 - (void)shredSlip:(int)slipIndex
 {
-    //check if a slip is currently being edited and dismiss its keyboard
-    [self dismissCurrentSlipKeyboard];
+
+    
     // check no slips to shred or incorrect parameter
     if ([allSlips count] == 0 || slipIndex >= [allSlips count] || slipIndex < 0) {
         //TODO debugging
@@ -56,6 +56,9 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
 
     [self updateIndicesForAllSlips];
     
+    //check if a slip is currently being edited and dismiss its keyboard
+    [self dismissCurrentSlipKeyboard];
+    
     //update all slips (if not last one deleted)
     [self updateSlipsInView];
     
@@ -64,15 +67,17 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
 // creates a new slip object, then adds it to allSlips array, then adds it as subview
 // ***(assumes allSlips is initialized)*** and is private and so not in .h file
 // slip already has ready imageView and (soon) textField
-- (void)createNewSlip
+- (void)createNewSlipAtIndex: (int)index
 {
-    
+
     //creating newslip (uses getSlipFrame to return frame based on position in allSlips array)
-    // passes in what index this slip is in and passes in the caller (self)
-    BSSlip *newSlip = [ [BSSlip alloc]initWithFrame: [self getSlipFrame:[allSlips count] ] withIndex:[allSlips count] withCaller: self ];
+    // passes in what index this slip is in and passes in the caller (self) 
+    BSSlip *newSlip = [ [BSSlip alloc]initWithFrame: [self getSlipFrame: index] withIndex:index withCaller: self];
     
     // add it to array
-    [allSlips addObject: newSlip];
+    [allSlips insertObject:newSlip atIndex: index];
+    [self updateIndicesForAllSlips];
+    [self updateSlipsInView]; 
     
     //add new slip to scrollView 
     [scrollView addSubview:newSlip];
@@ -80,6 +85,7 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
     //update as more slips are added
     [self updateScrollViewContentSize];
     [self updateDismissKeyboardButtonSize];
+
 }
 
 
@@ -102,11 +108,11 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
     
     //do nothing if slip is already top
     // and check for crazy values that cause exceptions
-    if(index > 0 && index < [allSlips count]){
+    if(index > 1 && index < [allSlips count]){
         // get current slip
         BSSlip *currentSlip = [[self allSlips] objectAtIndex:index];
         //insert it at top
-        [allSlips insertObject:currentSlip atIndex:0];
+        [allSlips insertObject:currentSlip atIndex:1];
         //remove old instance of current slip
         [allSlips removeObjectAtIndex:index+1 ];
         
@@ -189,6 +195,8 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
 {
     allSlips = [[NSMutableArray alloc]init];
 }
+
+
 /*
 //enables all slip buttons (not used anymore)
 - (void)enableAllButtons
@@ -213,6 +221,8 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
 }
 */
  
+
+
 // returns frame of slip depending on its order in allSlips array
 // created because it will be reused in updateSlipsInView & in createNewSlip
 - (CGRect)getSlipFrame:(NSInteger)index
@@ -249,7 +259,9 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
 // button for testing (adds new slip; update taken care of inside createNewSlip:)
 - (IBAction)newSlipButton:(id)sender
 {
-    [self createNewSlip];
+    NSLog(@"creating with index: %i", [allSlips count]);
+    [self createNewSlipAtIndex:[allSlips count]];
+    
 }
 
 #pragma mark - Delegate Methods
@@ -263,6 +275,9 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
     //check that we're dealing with slip textFields
     if ([textField.superview isKindOfClass:([BSSlip class])] ) {
         
+
+        
+        
         //enable the dismissKeyboard big invisible button
             [[self dismissKeyboardOutlet] setEnabled:YES];
     
@@ -272,6 +287,7 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
         // set the index of the slip being edited
         slipBeingEdited = index;
         
+
         
         //TODO fix prob where user can start editing (we get correct index), then
         // user deletes prev slip, but index is not updated
@@ -294,9 +310,37 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
 // called after the keyboard is dismissed
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
-    slipBeingEdited = -1; // set so that there is no slip being edited
-    //disable the big invisible button
-    [[self dismissKeyboardOutlet] setEnabled:NO];
+    
+    //check that we're dealing with slip textFields
+    if ([textField.superview isKindOfClass:([BSSlip class])] ) {
+        
+        //TODO handle first blank top slip
+        
+        //extract slipIndex of this slip (the toughest line of code in this app)
+        int index = [(BSSlip *)textField.superview slipIndex];
+        
+        //if we're editing the first slip
+        if(index==0)
+        {
+        //then create a new slip at top to replace it IF it's not blank   
+            if([[textField text] length] > 0)
+            {
+                [self createNewSlipAtIndex:0];
+                //place it above it (for sliding animation)
+                [scrollView bringSubviewToFront:textField.superview];
+                //create buttons for our 'promoted' slip
+                [(BSSlip *)textField.superview createButtonsForSlip];
+            }
+        
+        
+        }
+        slipBeingEdited = -1; // set so that there is no slip being edited
+        //disable the big invisible button
+        [[self dismissKeyboardOutlet] setEnabled:NO];
+        
+    }
+    
+
 }
 
 // called when user hits return key (returning a yes makes it act default)
@@ -313,6 +357,10 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
     
 	// Do any additional setup after loading the view, typically from a nib.
     
+    //init the array for all slips
+    [self initializeAllSlipsArray];
+
+    
     // setting initial ContentSize of scrollView (diff from frame size) and making it transparent 
     [self updateScrollViewContentSize];
     [scrollView setBackgroundColor:[UIColor clearColor]];
@@ -325,6 +373,9 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
     //start off thiw the dismiss button being disabled (enabled when a slip is being edited)
     [[self dismissKeyboardOutlet] setEnabled:NO];
     
+    //creates first blank slip at top
+    [self createNewSlipAtIndex:0];
+
 
 
 }

@@ -25,7 +25,9 @@
     [self.window makeKeyAndVisible];
     
     // initialize allSlips before returning
-    [_viewController initializeAllSlipsArray];
+//    [_viewController initializeAllSlipsArray]; //turns out this should be called in viewDidLoad
+                                            // this is called AFTER viewDidLoad
+
     
     return YES;
 }
