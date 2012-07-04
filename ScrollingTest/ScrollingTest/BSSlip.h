@@ -41,5 +41,6 @@ extern NSInteger const SLIP_FRAME_HEIGHT;
 
 - (void)createButtonsForSlip;
 
+
 @end
 

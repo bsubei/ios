@@ -15,10 +15,8 @@
 // Global Constants initialized
 
 //NSString const *SLIP_IMAGE_NAME = @"slip.png";
-NSInteger const SLIP_FRAME_WIDTH = 416;
-NSInteger const SLIP_FRAME_HEIGHT = 143;
-
-
+NSInteger const SLIP_FRAME_WIDTH = 208;
+NSInteger const SLIP_FRAME_HEIGHT = 75;
 
 
 
@@ -104,18 +102,23 @@ NSInteger const SLIP_FRAME_HEIGHT = 143;
         //set slip index
         [self setSlipIndex:index];
         //TODO Debug index bug
-        NSLog(@"within Slip Init: %i", index);
+//        NSLog(@"within Slip Init: %i", index);
         
         // init the textField            // ***frame location of textField is relative to slip frame***
         [self setTextField: [[UITextField alloc]initWithFrame:CGRectMake( 20 // TODO TWEAK
                                                                , 20
-                                                               ,SLIP_FRAME_WIDTH - 200
-                                                               , SLIP_FRAME_HEIGHT - 100)]];
+                                                               ,SLIP_FRAME_WIDTH - 20
+                                                               , SLIP_FRAME_HEIGHT - 10)]];
         // set textField to transparent
         [[self textField] setBackgroundColor:[UIColor clearColor]];
         
         // set textField's delegate to be the calling viewController
         [[self textField] setDelegate:caller];
+        
+        //IMPORTANT BUG FIX, need to set initial text string to empty (trying to access a nil text string [top
+        // blank] gives exceptions)
+        //from now on, all slips start off with "" empty text string
+        [[self textField] setText:@""];
         
         // TODO textField font and details (char limit)...
         

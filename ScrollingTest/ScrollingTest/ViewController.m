@@ -18,12 +18,76 @@
 @synthesize allSlips;
 
 int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
+CALayer *theLayer;
+
 
 // TODO read more about memory warning (app must be lite on memory)
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Release any cached data, images, etc that aren't in use.
+}
+
+#pragma mark - Saving and loading data
+
+- (NSString *) saveFilePath
+{
+    NSArray *pathArray = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    return [[pathArray objectAtIndex:0] stringByAppendingPathComponent:@"savedData.plist"];
+    
+}
+- (void) saveData
+{
+    // new array
+    NSMutableArray *dataToSave = [[NSMutableArray alloc] init];
+
+    //save every text string in allSlips to new array
+    // IMPORTANT skip first top blank slip (explains i=1)
+    for (int i=1; i<[allSlips count]; i++) {
+        // checks the textData
+        NSString *textData = [[[allSlips objectAtIndex:i] textField] text];
+        if (textData == nil) {
+            NSLog(@"can't save nil!");
+            return;
+        }
+        // adds the text into the new array
+        [dataToSave addObject: textData];
+    }
+    //writes text data to file
+    [dataToSave writeToFile:[self saveFilePath] atomically:YES];
+    
+    //TODO life cycle debugging
+    NSLog(@"end of saveData");
+
+}
+- (void) loadData
+{
+
+        
+    //TODO need to check for invalid file path to avoid exceptions
+    //if file doesn't exist, return
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[self saveFilePath]]) {
+        return;
+    }
+     
+    //read in data
+    NSArray *dataToLoad = [[NSArray alloc] initWithContentsOfFile:[self saveFilePath]];
+    
+    
+    //TODO ? check that [dataToLoad count] + 1 == [allSlips count]
+    
+    //go through each text string in data, and make a slip for it
+        // IMPORTANT skip first top blank slip (explains i+1)
+    for (int i=0; i<[dataToLoad count]; i++) {
+        //create a new slip
+        [self createNewSlipAtIndex:[allSlips count]];
+        //change the text on that new slip
+        [[[allSlips lastObject] textField] setText:[dataToLoad objectAtIndex:i]];
+    }
+    
+
+    //TODO life cycle debugging
+    NSLog(@"end of loadData");
 }
 
 #pragma mark - Creating and Destroying Slips
@@ -40,6 +104,11 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
         NSLog(@"WTF? %i", slipIndex);
         return;
     }
+    
+    
+    //TODO debugging text acquisition
+    NSLog([[[allSlips objectAtIndex:slipIndex] textField] text], nil);
+    
     // create a reference to the slip that's to be shredded
     BSSlip *thisSlip = [allSlips objectAtIndex:slipIndex];
     
@@ -61,6 +130,7 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
     
     //update all slips (if not last one deleted)
     [self updateSlipsInView];
+
     
 }
 
@@ -85,6 +155,8 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
     //update as more slips are added
     [self updateScrollViewContentSize];
     [self updateDismissKeyboardButtonSize];
+    
+
 
 }
 
@@ -147,7 +219,7 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
     
     [self.scrollView setContentSize:CGSizeMake(
                                                scrollView.frame.size.width
-                                               , scrollView.frame.size.height* ([allSlips count] /3.0) )];
+                                               , scrollView.frame.size.height* ([allSlips count] /5.0) )];
     
     // perform animations (like closing tag)
     [UIView commitAnimations];
@@ -247,6 +319,12 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
 #pragma mark - Buttons
 // button to dismiss keyboard
 - (IBAction)invisibleDismissKeyboardButton:(id)sender {
+    /*
+    //change pos
+    theLayer.position=CGPointMake(100.0f,300.0f);
+    theLayer.bounds=CGRectMake(100.0f,300.0f,100.0f,100.0f);
+    */
+    [self saveData];
     
     [self dismissCurrentSlipKeyboard];
 }
@@ -259,7 +337,7 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
 // button for testing (adds new slip; update taken care of inside createNewSlip:)
 - (IBAction)newSlipButton:(id)sender
 {
-    NSLog(@"creating with index: %i", [allSlips count]);
+//    NSLog(@"creating with index: %i", [allSlips count]);
     [self createNewSlipAtIndex:[allSlips count]];
     
 }
@@ -310,6 +388,8 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
 // called after the keyboard is dismissed
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
+    
+
     
     //check that we're dealing with slip textFields
     if ([textField.superview isKindOfClass:([BSSlip class])] ) {
@@ -375,13 +455,36 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
     
     //creates first blank slip at top
     [self createNewSlipAtIndex:0];
+    
+    //load data if file exists
+    [self loadData];
+    
+    //TODO life cycle debugging
+    NSLog(@"end of viewDidLoad");
 
+/*
+    //TODO testing Core Animation
 
-
+    
+    // create the layer
+    theLayer=[CALayer layer];
+    
+    // set the contents property to a CGImageRef
+    // specified by theImage (loaded elsewhere)
+    theLayer.contents= (id)[[[UIImage alloc]initWithContentsOfFile: [[NSBundle mainBundle] pathForResource:@"slip" ofType:@"png"]] CGImage];
+    
+    //set the bounds and position
+    theLayer.position=CGPointMake(50.0f,50.0f);
+    theLayer.bounds=CGRectMake(50.0f,50.0f,100.0f,100.0f);
+    
+    //add to view
+//    [[[allSlips objectAtIndex:0] layer] addSublayer:theLayer];
+*/
 }
 
 
 // TODO watch this (maybe unload everything in allSlips? or do that after enter background or quit)
+// when is this called? when is viewDidLoad called?
 - (void)viewDidUnload
 {
     [self setScrollView:nil];
@@ -390,6 +493,9 @@ int slipBeingEdited = -1; // -1 signifies slip is NOT being edited currently
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
+    
+    //TODO life cycle debugging
+    NSLog(@"end of viewDidUnload");
 }
 
 - (void)viewWillAppear:(BOOL)animated

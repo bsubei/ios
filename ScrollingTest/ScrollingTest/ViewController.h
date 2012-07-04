@@ -29,4 +29,9 @@
 
 - (void)initializeAllSlipsArray;
 
+    // for saving and loading data
+- (NSString *) saveFilePath;
+- (void) saveData;
+- (void) loadData;
+
 @end
