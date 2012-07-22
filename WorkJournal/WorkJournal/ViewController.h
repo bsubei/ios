@@ -13,6 +13,7 @@
 @property (strong, nonatomic) IBOutlet UITextView *todayTextView;
 
 - (IBAction)dismissKeyboardButton:(id)sender;
+- (IBAction)optionsButton:(id)sender;
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView;
 @end
