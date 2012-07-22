@@ -22,7 +22,7 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     
-    [scrollView setContentSize:CGSizeMake(640, 640)];
+    [scrollView setContentSize:CGSizeMake(640, 460)];
 }
 
 - (void)viewDidUnload
@@ -41,4 +41,11 @@
 - (IBAction)dismissKeyboardButton:(id)sender {
     [todayTextView resignFirstResponder];
 }
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    NSLog(@"didScroll");
+    [todayTextView resignFirstResponder];
+}
+
 @end

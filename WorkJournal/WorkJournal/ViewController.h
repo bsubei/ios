@@ -8,10 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+@interface ViewController : UIViewController <UIScrollViewDelegate>
 @property (strong, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (strong, nonatomic) IBOutlet UITextView *todayTextView;
 
 - (IBAction)dismissKeyboardButton:(id)sender;
 
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView;
 @end
