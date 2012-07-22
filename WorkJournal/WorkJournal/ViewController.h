@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController <UIScrollViewDelegate>
+@interface ViewController : UIViewController <UIScrollViewDelegate, UIActionSheetDelegate>
 @property (strong, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (strong, nonatomic) IBOutlet UITextView *todayTextView;
 
@@ -16,4 +16,6 @@
 - (IBAction)optionsButton:(id)sender;
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView;
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex;
+
 @end

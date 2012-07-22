@@ -49,9 +49,44 @@
 }
 
 // brings up option menu
+// TODO tweak string names and options
 - (IBAction)optionsButton:(id)sender {
+    
+    // create action sheet
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Options"
+                                                             delegate:self
+                                                    cancelButtonTitle:@"Cancel"
+                                               destructiveButtonTitle:nil
+                                                    otherButtonTitles:@"Email", @"Punch Hazem", nil];
+    // show action sheet
+    [actionSheet showInView:self.view];
+    
 }
 
+
+// when actionSheet buttons are pressed
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+ 
+    //TODO do stuff here...
+    switch (buttonIndex) {
+        
+        // if email button
+        case 0:
+            
+            break;
+            
+        // if punch button
+        case 1:
+            
+            break;
+            
+        //case 2 is cancel (already handled; do nothing)
+        default:
+            break;
+    }
+    
+}
 
 // detects when view is dragged and dismisses keyboard
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
