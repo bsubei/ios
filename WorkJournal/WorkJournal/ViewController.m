@@ -78,6 +78,10 @@
         
         [[self overviewTextView] setText:newOverviewText];
         [self saveDataInFileName: @"overview"];
+        
+        // empties the todayFile and then sets todayTextView to sthg default
+        [todayTextView setText:@""];
+        [self saveDataInFileName:@"today"];
         [todayTextView setText:@"enter your work done today..."];
         
         
