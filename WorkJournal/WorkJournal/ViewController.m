@@ -17,109 +17,7 @@
 @synthesize todayTextView;
 @synthesize overviewTextView;
 
-
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
-
-
-    //NOTE: all views and subviews are created in the nib. None are created within the code.
-    
-    // size of scrollView is set
-    [scrollView setContentSize:CGSizeMake(640, 460)];
-    
-    //read in today text
-    
-    //create dateFormatter
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    // set date format
-    [dateFormatter setDateFormat:@"dd-MM-yyyy"];
-    
-    
-    //TODO exception here (invalidArgumentException)
-    //read in the date from todayFile
-    NSArray *todayArray = [[NSArray alloc] initWithContentsOfFile: [self saveFilePath:@"today"]];
-    NSDate *todayFileDate = [dateFormatter dateFromString: [todayArray objectAtIndex:0]];
-    NSLog(@"today's date %@", todayFileDate);
-    
-    
-
-    
-    NSCalendar *cal = [NSCalendar currentCalendar];
-    NSDateComponents *components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate:[NSDate date]];
-    NSDate *currentDay = [cal dateFromComponents:components];
-    components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate: todayFileDate];
-    NSDate *todayFileDay = [cal dateFromComponents:components];
-
-    
-    // TODO NOTE: if day is over while app is on, it will not be updated until app is relaunched
-    
-    //TODO checks if todayFileDay is NOT (real) today NOT WORKING CURRENTLY
-    //if today is over, append today file into overview file (top of it)
-    if(![currentDay isEqualToDate: todayFileDay])
-    {
-    
-        
-        NSString *todayFileString = [self readDataFromFileName:@"today"] ;
-        
-        
-        NSLog(@"compared days from todayFile, they are diff days!");
-        NSLog(@"today Day: %@  and current Day: %@",todayFileDay, currentDay);
-        
-        
-        //TODO fix adding a return line
-        //TODO append formatted date (currentDate) as first line then todayFileString
-        NSString *oldOverviewText = [self readDataFromFileName:@"overview"];
-        NSString *newOverviewText = [[NSString alloc]initWithFormat:@"%@%@",oldOverviewText, todayFileString] ;
-        
-        NSLog(@"new overview text: %@", newOverviewText);
-        
-        [[self overviewTextView] setText:newOverviewText];
-        [self saveDataInFileName: @"overview"];
-        
-        // empties the todayFile and then sets todayTextView to sthg default
-        [todayTextView setText:@""];
-        [self saveDataInFileName:@"today"];
-        [todayTextView setText:@"enter your work done today..."];
-        
-        
-    // else, move today file string into today textView
-    } else
-    {
-        NSLog(@"compared days from todayFile, they are SAME days!");
-        [todayTextView setText:[self readDataFromFileName:@"today"] ];
-        [overviewTextView setText:[self readDataFromFileName:@"overview"]];
-    }
-    
-    
-    
-    // read in overview file and put into overview textView
-    
-    
-}
-
-- (void)viewDidUnload
-{
-    [self setScrollView:nil];
-    [self setTodayTextView:nil];
-    [self setOverviewTextView:nil];
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
-}
-
-
-
-// dismisses keyboard
-- (IBAction)dismissKeyboardButton:(id)sender {
-    [todayTextView resignFirstResponder];
-}
+#pragma mark - Button and Event Methods
 
 // brings up option menu
 // TODO tweak string names and options
@@ -136,37 +34,9 @@
     
 }
 
-
-// when actionSheet buttons are pressed
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-{
- 
-    //TODO do stuff here...
-    switch (buttonIndex) {
-        
-        // if email button
-        case 0:
-            
-            break;
-            
-        // if punch button
-        case 1:
-            
-            break;
-            
-        //case 2 is cancel (already handled; do nothing)
-        default:
-            break;
-    }
-    
-}
-
-// called when user done editing
-- (void)textViewDidEndEditing:(UITextView *)textView
-{
-    // save today text into today file
-    [self saveDataInFileName:@"today"];
-//    NSLog(@"%@", todayTextView.text);
+// dismisses keyboard
+- (IBAction)dismissKeyboardButton:(id)sender {
+    [todayTextView resignFirstResponder];
 }
 
 // detects when view is dragged and dismisses keyboard
@@ -174,6 +44,43 @@
 {
     [self dismissKeyboardButton:nil];
 }
+
+
+// when actionSheet buttons are pressed
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    
+    //TODO do stuff here...
+    switch (buttonIndex) {
+            
+            // if email button
+        case 0:
+            
+            break;
+            
+            // if punch button
+        case 1:
+            
+            break;
+            
+            //case 2 is cancel (already handled; do nothing)
+        default:
+            break;
+    }
+    
+}
+
+
+// called when user done editing
+- (void)textViewDidEndEditing:(UITextView *)textView
+{
+    // save today text into today file
+    [self saveDataInFileName:@"today"];
+}
+
+
+#pragma mark - Helper Methods
+
 
 // helper method to get filePath
 - (NSString *) saveFilePath: (NSString *) fileName
@@ -195,7 +102,7 @@
     
     // if today
     if ([name isEqualToString:@"today"]) {
-            
+        
         //TODO add meta data (date) in first line (using dateFormatter)
         //create dateFormatter
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -209,13 +116,13 @@
         // adds the today text into the new array
         [dataToSave addObject: [[NSString alloc]initWithFormat:@"%@",todayTextView.text]];
         
-    // if overview
+        // if overview
     } else if([name isEqualToString:@"overview"]) {
         
         // adds the overview text into the new array
         [dataToSave addObject: overviewTextView.text];
         
-    // else, there is a problem, don't proceed.
+        // else, there is a problem, don't proceed.
     } else {
         NSLog(@"invalid file name. Cannot save.");
         return;
@@ -224,11 +131,6 @@
     //writes text data to file
     [dataToSave writeToFile:[self saveFilePath: name] atomically:YES];
     
-
-    
-    
-    //TODO life cycle debugging
-//    NSLog(@"end of saveData");
     
 }
 
@@ -242,19 +144,13 @@
     if (![[NSFileManager defaultManager] fileExistsAtPath:[self saveFilePath: name]]) {
         return nil;
     }
-
+    
     // new array
     NSMutableArray *dataToLoad;
     
     
     // read in file
     dataToLoad = [[NSMutableArray alloc] initWithContentsOfFile: [self saveFilePath:name] ];
-    
-    
-    //TODO debugging
-//    NSLog(@"%@", [dataToLoad objectAtIndex:0]);
-//    NSLog(@"%@", [dataToLoad objectAtIndex:1]);
-//    NSLog(@"%@", [[dataToLoad objectAtIndex:0] class]);
     
     // if today
     if ([name isEqualToString:@"today"]) {
@@ -263,10 +159,10 @@
         return [dataToLoad objectAtIndex:1];
         // if overview
     } else if([name isEqualToString:@"overview"]) {
-
+        
         // return overview text
         return [dataToLoad objectAtIndex:0];
-
+        
         // else, there is a problem, don't proceed.
     } else {
         NSLog(@"invalid file name. Cannot load.");
@@ -274,6 +170,93 @@
     }
     
 }
+
+#pragma mark - View methods & misc.
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+	// Do any additional setup after loading the view, typically from a nib.
+
+
+    //NOTE: all views and subviews are created in the nib. None are created within the code.
+    
+    // size of scrollView is set
+    [scrollView setContentSize:CGSizeMake(640, 460)];
+    
+    
+    //create dateFormatter
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    // set date format
+    [dateFormatter setDateFormat:@"dd-MM-yyyy"];
+    
+    
+    //read in the date from todayFile
+    NSArray *todayArray = [[NSArray alloc] initWithContentsOfFile: [self saveFilePath:@"today"]];
+    NSDate *todayFileDate = [dateFormatter dateFromString: [todayArray objectAtIndex:0]];    
+
+    
+    // set up calendars and components (to compare currentDay and todayFileDay)
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDateComponents *components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate:[NSDate date]];
+    NSDate *currentDay = [cal dateFromComponents:components];
+    components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate: todayFileDate];
+    NSDate *todayFileDay = [cal dateFromComponents:components];
+
+    
+    //if today is over, append today file into overview file (top of it)
+    if(![currentDay isEqualToDate: todayFileDay])
+    {
+        // data from todayFile
+        NSString *todayFileString = [self readDataFromFileName:@"today"] ;
+     
+        //TODO fix adding a return line
+        // appending new text to old text
+        NSString *oldOverviewText = [self readDataFromFileName:@"overview"];
+        NSString *newOverviewText = [[NSString alloc]initWithFormat:@"%@%@",oldOverviewText, todayFileString] ;
+        
+        // setting overviewText to new value and saving it in file
+        [[self overviewTextView] setText:newOverviewText];
+        [self saveDataInFileName: @"overview"];
+        
+        // empties the todayFile and then sets todayTextView to sthg default
+        [todayTextView setText:@""];
+        [self saveDataInFileName:@"today"];
+        [todayTextView setText:@"enter your work done today..."];
+        
+        
+    // else if it's still today, update today and overview from files
+    } else
+    {
+        [todayTextView setText:[self readDataFromFileName:@"today"] ];
+        [overviewTextView setText:[self readDataFromFileName:@"overview"]];
+    }
+    
+    
+} // end viewDidLoad
+
+
+- (void)viewDidUnload
+{
+    [self setScrollView:nil];
+    [self setTodayTextView:nil];
+    [self setOverviewTextView:nil];
+    [super viewDidUnload];
+    // Release any retained subviews of the main view.
+}
+
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
+}
+
+
+
+
+
+
+
+
 
 
 @end
