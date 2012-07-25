@@ -3,7 +3,7 @@
 //  WorkJournal
 //
 //  Created by Basheer Subei on 7/22/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Copyright (c) 2012 Lock 'n' Code. All rights reserved.
 //
 
 #import "AppDelegate.h"
@@ -39,6 +39,8 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
+    //TODO see if we need to put this also somewhere else
+    [self.viewController viewDidLoad];
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
 }
 
