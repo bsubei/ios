@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController <UIScrollViewDelegate, UIActionSheetDelegate, UITextViewDelegate>
+@interface ViewController : UIViewController <UIScrollViewDelegate, UIActionSheetDelegate, UITextViewDelegate, UITableViewDataSource>
 @property (strong, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (strong, nonatomic) IBOutlet UITextView *todayTextView;
 @property (strong, nonatomic) IBOutlet UITextView *overviewTextView;
@@ -17,6 +17,11 @@
 - (IBAction)dismissKeyboardButton:(id)sender;
 - (IBAction)optionsButton:(id)sender;
 - (IBAction)deleteSavedData:(id)sender;
+
+// UITableViewDataSource protocol methods
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
+
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView;
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex;

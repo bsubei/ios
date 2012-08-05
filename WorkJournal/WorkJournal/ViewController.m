@@ -18,6 +18,21 @@
 @synthesize overviewTextView;
 @synthesize dismissKeyBoardButton;
 
+#pragma mark - UITableViewDataSource protocol methods
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return nil;
+}
+
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 0;
+}
+
+
 #pragma mark - Button and Event Methods
 
 // brings up option menu
@@ -127,7 +142,7 @@
     //read in the date from todayFile
     NSArray *todayArray = [[NSArray alloc] initWithContentsOfFile: [self saveFilePath:@"today"]];
     NSDate *todayFileDate = [dateFormatter dateFromString: [todayArray objectAtIndex:0]];    
-    
+    NSString *todayFileDateAsString= [todayArray objectAtIndex:0];
     
     // set up calendars and components (to compare currentDay and todayFileDay)
     NSCalendar *cal = [NSCalendar currentCalendar];
@@ -151,7 +166,7 @@
         //TODO fix adding a return line
         // appending new text to old text
         NSString *oldOverviewText = [self readDataFromFileName:@"overview"];
-        NSString *newOverviewText = [[NSString alloc]initWithFormat:@"%@%@",oldOverviewText, todayFileString] ;
+        NSString *newOverviewText = [[NSString alloc]initWithFormat:@"%@\n%@\n%@",oldOverviewText,todayFileDateAsString, todayFileString] ;
         
         // setting overviewText to new value and saving it in file
         [[self overviewTextView] setText:newOverviewText];
@@ -206,7 +221,7 @@
         // add formatted date as first index
         [dataToSave addObject: [dateFormatter stringFromDate:[NSDate date]] ];
         
-        NSLog(@"%@", [dateFormatter stringFromDate:[NSDate date]] );
+//        NSLog(@"%@", [dateFormatter stringFromDate:[NSDate date]] );
         
         // adds the today text into the new array
         [dataToSave addObject: [[NSString alloc]initWithFormat:@"%@",todayTextView.text]];
