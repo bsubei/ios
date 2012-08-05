@@ -18,21 +18,40 @@
 @synthesize overviewTextView;
 @synthesize dismissKeyBoardButton;
 @synthesize overviewArray;
+@synthesize overviewTableView;
 
-#pragma mark - UITableViewDataSource protocol methods
 
 
+#pragma mark - UITableView protocol methods
+
+//UITableViewDataSource protocol method
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return nil;
+    UITableViewCell *cell = [[UITableViewCell alloc]initWithFrame:CGRectMake(10, 50 * [indexPath row], 100, 50)];
+    [cell setBackgroundColor:[UIColor redColor]];
+    [[cell textLabel] setText:(NSString *) [overviewArray objectAtIndex:[indexPath row]]];
+    
+    NSLog(@"making cell number: %i", [indexPath row]);
+    
+    return cell;
 }
 
-
+//UITableViewDataSource protocol method
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 0;
+    NSLog(@"section: %i", section);
+    NSLog(@"overviewArray count: %i", [overviewArray count]);
+    
+    
+    
+    return [overviewArray count];
 }
 
+//UITableViewDelegate protocol method
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 50;
+}
 
 #pragma mark - Button and Event Methods
 
@@ -140,6 +159,8 @@
     
     //TODO (new line of code here) populate the overviewArray from file data
     [self setOverviewArray:[self readDataFromFileName:@"overview"]];
+    // TODO fix this here, being called but not reloading...
+    [overviewTableView reloadData];
 
     
     //first, dismiss keyboard properly
@@ -342,6 +363,8 @@
     [self setTodayTextView:nil];
     [self setOverviewTextView:nil];
     [self setDismissKeyBoardButton:nil];
+    [self setOverviewTableView:nil];
+    [self setOverviewTableView:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
 }
