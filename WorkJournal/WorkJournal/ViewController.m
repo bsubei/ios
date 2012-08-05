@@ -22,14 +22,57 @@
 
 
 
+
+#define NAME_TAG 1
+#define TIME_TAG 2
+#define IMAGE_TAG 3
+
+#define LEFT_COLUMN_OFFSET 10.0
+#define LEFT_COLUMN_WIDTH 160.0
+
+#define MIDDLE_COLUMN_OFFSET 170.0
+#define MIDDLE_COLUMN_WIDTH 90.0
+
+#define RIGHT_COLUMN_OFFSET 280.0
+
+#define MAIN_FONT_SIZE 18.0
+#define LABEL_HEIGHT 26.0
+
+
 #pragma mark - UITableView protocol methods
 
 //UITableViewDataSource protocol method
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [[UITableViewCell alloc]initWithFrame:CGRectMake(10, 50 * [indexPath row], 100, 50)];
-    [cell setBackgroundColor:[UIColor redColor]];
-    [[cell textLabel] setText:(NSString *) [overviewArray objectAtIndex:[indexPath row]]];
+//    [[cell detailTextLabel] setText:@"test"];
+//    [[cell textLabel] setText:(NSString *) [overviewArray objectAtIndex:[indexPath row]]];
+    
+    UILabel *leftLabel;
+	CGRect rect;
+    
+    CGFloat rowHeight = [self tableView:tableView heightForRowAtIndexPath:indexPath];
+    
+    // Create a left label for the cell (has dayname and date)
+	rect = CGRectMake(LEFT_COLUMN_OFFSET, (rowHeight - LABEL_HEIGHT) / 2.0, LEFT_COLUMN_WIDTH, LABEL_HEIGHT);
+	leftLabel = [[UILabel alloc] initWithFrame:rect];
+	leftLabel.tag = NAME_TAG;
+	leftLabel.font = [UIFont boldSystemFontOfSize:MAIN_FONT_SIZE];
+    
+    // the cell's entry string
+    NSString *entryString = [overviewArray objectAtIndex:[indexPath row]];
+    
+    // the range needed for the date (first line)
+    NSRange rangeOfDate = [entryString lineRangeForRange:NSMakeRange(0,1) ];
+    
+    // extracted date
+    NSString *date = [entryString substringWithRange: rangeOfDate];
+
+    //TODO set the text to the first three letters of the DAYNAME
+    leftLabel.text =  date;
+	
+    [cell.contentView addSubview:leftLabel];
+//	leftLabel.highlightedTextColor = [UIColor whiteColor];
     
     NSLog(@"making cell number: %i", [indexPath row]);
     
@@ -51,6 +94,10 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return 50;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return 1;
 }
 
 #pragma mark - Button and Event Methods
@@ -143,6 +190,7 @@
 
 #pragma mark - Helper Methods
 
+// returns the string representation of overviewArray
 - (NSString *) stringFromOverviewArray
 {
     NSString *overviewText=@"";
@@ -152,6 +200,8 @@
     
     return overviewText;
 }
+
+// performs all data updating necessary (reads from files and writes to files)
 - (void) performUpdate
 {
     //TODO worry about calling this BOTH when quitting (home button) AND when resuming (if u resume on a diff day, does it bug when 
@@ -159,9 +209,7 @@
     
     //TODO (new line of code here) populate the overviewArray from file data
     [self setOverviewArray:[self readDataFromFileName:@"overview"]];
-    // TODO fix this here, being called but not reloading...
-    [overviewTableView reloadData];
-
+    
     
     //first, dismiss keyboard properly
     [[self dismissKeyBoardButton] setEnabled:NO];
@@ -247,6 +295,12 @@
         NSLog(@"index%i: %@",i,[overviewArray objectAtIndex:i]);
     }
 
+    // TODO fix this here, being called but not reloading...
+    NSLog(@"woopDeDoo!!");
+    [overviewTableView reloadData];
+    [overviewTableView setContentSize:CGSizeMake(320,1000)];
+    [overviewTableView setDelaysContentTouches:NO];
+    
     
 }// end performUpdate
 
@@ -307,7 +361,7 @@
     
 }
 
-// returns NSString of file
+// returns NSMutableArray of file contents
 // TODO check for nil returns when calling this method
 - (NSMutableArray *) readDataFromFileName: (NSString *) name
 {
