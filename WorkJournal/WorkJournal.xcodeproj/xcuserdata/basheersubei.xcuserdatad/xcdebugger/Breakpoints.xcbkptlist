@@ -8,12 +8,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "WorkJournal/ViewController.m"
-         timestampString = "366992886.202317"
+         timestampString = "367740997.154581"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "112"
-         endingLineNumber = "112"
-         landmarkName = "-tableView:heightForRowAtIndexPath:"
+         startingLineNumber = "113"
+         endingLineNumber = "113"
+         landmarkName = "-optionsButton:"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>

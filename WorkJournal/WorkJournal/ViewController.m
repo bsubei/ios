@@ -46,8 +46,7 @@
 //UITableViewDataSource protocol method
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // get the rowHeight dynamically
-    CGFloat rowHeight = [self tableView:tableView heightForRowAtIndexPath:indexPath];
+    
 
     // the cell's entry string
     NSString *entryString = [overviewArray objectAtIndex:[indexPath row]];
@@ -60,33 +59,16 @@
 
     
     
-    
     // the entry's cell is initialized
-    UITableViewCell *cell = [[UITableViewCell alloc]initWithFrame:CGRectMake(10, rowHeight * [indexPath row], 100, rowHeight)];
-//    [[cell detailTextLabel] setText:@"test"];
-//    [[cell textLabel] setText:(NSString *) [overviewArray objectAtIndex:[indexPath row]]];
-    
-    
-    
-    
-    
-    // the DAYNAME label is created and configured    
-    // Create a dayname label for the cell and add to cell's contentView as a subview
-    UILabel *daynameLabel;
-	CGRect rect;
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
+    if(cell == nil)
+        cell = [self getCellContentViewWithCellIdentifier:@"cell" AtIndexPath:indexPath];
+        
+        
+        // label view is retrieved and its text is changed
+        UILabel *daynameLabel = (UILabel *)[cell viewWithTag:DAYNAME_TAG];
 
-	rect = CGRectMake(DAYNAME_OFFSET, (rowHeight - LABEL_HEIGHT) / 2.0, DAYNAME_WIDTH, LABEL_HEIGHT);
-	daynameLabel = [[UILabel alloc] initWithFrame:rect];
-	daynameLabel.tag = DAYNAME_TAG;
-	daynameLabel.font = [UIFont boldSystemFontOfSize:MAIN_FONT_SIZE];
-    daynameLabel.backgroundColor = [UIColor clearColor];
-
-    //TODO set the text to the first three letters of the DAYNAME
-    // TODO make another label for the date under the dayname
-    daynameLabel.text =  date;
-	// add the dayname label as a subview to the cell
-    [cell.contentView addSubview:daynameLabel];
-
+        daynameLabel.text =  date;
 
     // now, make a date label and add to cell's contentView as a subview
     
@@ -217,6 +199,42 @@
 
 #pragma mark - Helper Methods
 
+
+// gets UITableViewCell contentView
+- (UITableViewCell *) getCellContentViewWithCellIdentifier: (NSString *) cellIdentifier AtIndexPath: (NSIndexPath *) indexPath
+{
+
+    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle: UITableViewCellStyleDefault reuseIdentifier:@"cell" ];
+    
+    //    [[cell detailTextLabel] setText:@"test"];
+    //    [[cell textLabel] setText:(NSString *) [overviewArray objectAtIndex:[indexPath row]]];
+    
+    //    CGRectMake(10, rowHeight * [indexPath row], 100, rowHeight)
+    
+    // get the rowHeight dynamically
+    // TODO fix this here... can't get rowHeight dynamically AND reuseIdentifiers at same time
+    CGFloat rowHeight = [self tableView:[self overviewTableView] heightForRowAtIndexPath:indexPath];
+//    CGFloat rowHeight = 50.0;
+    
+    // the DAYNAME label is created and configured    
+    // Create a dayname label for the cell and add to cell's contentView as a subview
+    UILabel *daynameLabel;
+	CGRect rect;
+    
+	rect = CGRectMake(DAYNAME_OFFSET, (rowHeight - LABEL_HEIGHT) / 2.0, DAYNAME_WIDTH, LABEL_HEIGHT);
+	daynameLabel = [[UILabel alloc] initWithFrame:rect];
+	daynameLabel.tag = DAYNAME_TAG;
+	daynameLabel.font = [UIFont boldSystemFontOfSize:MAIN_FONT_SIZE];
+    daynameLabel.backgroundColor = [UIColor clearColor];
+    
+    //TODO set the text to the first three letters of the DAYNAME
+    // TODO make another label for the date under the dayname
+	// add the dayname label as a subview to the cell
+    [cell.contentView addSubview:daynameLabel];
+    
+    return cell;
+
+}
 // returns the string representation of overviewArray
 - (NSString *) stringFromOverviewArray
 {
