@@ -12,11 +12,14 @@
 @property (strong, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (strong, nonatomic) IBOutlet UITextView *todayTextView;
 @property (strong, nonatomic) IBOutlet UITextView *overviewTextView;
+@property (strong, nonatomic) IBOutlet UIButton *dismissKeyBoardButton;
 
 - (IBAction)dismissKeyboardButton:(id)sender;
 - (IBAction)optionsButton:(id)sender;
+- (IBAction)deleteSavedData:(id)sender;
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView;
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex;
+- (void) performUpdateWithReadOnly: (BOOL) isReadOnly;
 
 @end
