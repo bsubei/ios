@@ -65,9 +65,9 @@
     // the entry's cell is initialized (gets reusable cell if possible)
     UITableViewCell *cell;
 
-    //TODO dequeing is currently turned OFF! uncomment two lines below to turn it ON!
-    //    cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
-    //    if(cell == nil)
+    //TODO dequeueing is currently turned OFF! uncomment two lines below to turn it ON!
+    cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
+    if(cell == nil)
         cell = [self getCellContentViewWithCellIdentifier:@"cell" AtIndexPath:indexPath];
     
     
@@ -75,6 +75,12 @@
     UILabel *daynameLabel = (UILabel *)[cell viewWithTag:DAYNAME_TAG];
     UILabel *dateLabel = (UILabel *)[cell viewWithTag:DATE_TAG];
     UILabel *textLabel = (UILabel *)[cell viewWithTag:TEXT_TAG];
+    
+    
+    //TODO (new bug-fix code here) we set the frame (in case we are dequeueing cell)
+    CGFloat rowHeight = [self tableView:[self overviewTableView] heightForRowAtIndexPath:indexPath];
+    CGRect rect = CGRectMake(TEXT_OFFSET, 0, TEXT_WIDTH, rowHeight);
+    [textLabel setFrame:rect];
     
     //TODO for debugging (to check frame borders)
     [[textLabel layer] setBorderWidth:2.0f];
