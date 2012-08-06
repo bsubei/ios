@@ -8,6 +8,8 @@
 
 #import "ViewController.h"
 
+#import "QuartzCore/QuartzCore.h"
+
 @interface ViewController()
 
 @end
@@ -17,6 +19,11 @@
 
 
 #pragma mark - constants for label frames and sizes usw.
+
+#define CELL_WIDTH 320.0
+#define MAX_CELL_HEIGHT 2000.0
+#define MIN_CELL_HEIGHT 44.0
+
 #define DAYNAME_TAG 1
 #define DATE_TAG 2
 #define TEXT_TAG 3
@@ -28,9 +35,12 @@
 #define DATE_WIDTH 90.0
 
 #define TEXT_OFFSET 160.0
-#define TEXT_WIDTH 200.0
+#define TEXT_WIDTH 100.0
+#define TEXT_MARGIN 20.0
 
-#define MAIN_FONT_SIZE 18.0
+#define DAYNAME_FONT_SIZE 18.0
+#define TEXT_FONT_SIZE 18.0
+#define DATE_FONT_SIZE 18.0
 #define LABEL_HEIGHT 26.0
 
 
@@ -53,10 +63,11 @@
     NSString *textString = [entryString substringFromIndex:rangeOfDate.length];    
     
     // the entry's cell is initialized (gets reusable cell if possible)
-    // TODO bug might creep up here when doing dynamic row height
-    // because cells might be reused when they shouldn't be
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
-    if(cell == nil)
+    UITableViewCell *cell;
+
+    //TODO dequeing is currently turned OFF! uncomment two lines below to turn it ON!
+    //    cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
+    //    if(cell == nil)
         cell = [self getCellContentViewWithCellIdentifier:@"cell" AtIndexPath:indexPath];
     
     
@@ -65,6 +76,8 @@
     UILabel *dateLabel = (UILabel *)[cell viewWithTag:DATE_TAG];
     UILabel *textLabel = (UILabel *)[cell viewWithTag:TEXT_TAG];
     
+    //TODO for debugging (to check frame borders)
+    [[textLabel layer] setBorderWidth:2.0f];
     
     // get the dayOfTheWeek and set daynameLabel text to it
     
@@ -119,7 +132,23 @@
 // TODO dynamic row height here
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 50;
+    // get the text for the cell's entry
+    NSString *text = [overviewArray objectAtIndex:[indexPath row]];
+
+    // set up a constraint
+//    CGSize constraint = CGSizeMake(CELL_WIDTH - (TEXT_MARGIN*2), MAX_CELL_HEIGHT);
+    CGSize constraint = CGSizeMake(TEXT_WIDTH, MAX_CELL_HEIGHT);
+    //    rect = CGRectMake(TEXT_OFFSET, (rowHeight - LABEL_HEIGHT) / 2.0, TEXT_WIDTH, rowHeight);
+
+    //TODO don't forget to use same font here as used in cell
+    // calculated size of the text label
+    CGSize size = [text sizeWithFont:[UIFont systemFontOfSize:TEXT_FONT_SIZE] constrainedToSize:constraint lineBreakMode:UILineBreakModeWordWrap];
+    
+    // gets the rowHeight (either this or the minimum)
+    CGFloat rowHeight = MAX(size.height, MIN_CELL_HEIGHT);
+    
+    // returns it (also adds margins on top and bottom)
+    return rowHeight + (TEXT_MARGIN*2);
 }
 
 // informs (all) tableviews that they should have one section only...
@@ -261,6 +290,7 @@
     
     // set the whole cell to opaque (for performance issues when scrolling)
     [cell setOpaque:YES];
+    
     //TODO consider setting each UILabel below as opaque also...
     
     // disable selection of table cells
@@ -270,6 +300,7 @@
     // TODO fix this here... can't get rowHeight dynamically AND reuseIdentifiers at same time
     // or can I?
     CGFloat rowHeight = [self tableView:[self overviewTableView] heightForRowAtIndexPath:indexPath];
+    NSLog(@"we're inside getCellContentView. this cell is not being reused (made from scratch) the rowHeight is %f", rowHeight);
     
     // TODO label tweaking below
     
@@ -281,7 +312,7 @@
 	rect = CGRectMake(DAYNAME_OFFSET, (rowHeight - LABEL_HEIGHT) / 2.0, DAYNAME_WIDTH, LABEL_HEIGHT);
 	daynameLabel = [[UILabel alloc] initWithFrame:rect];
 	daynameLabel.tag = DAYNAME_TAG;
-	daynameLabel.font = [UIFont boldSystemFontOfSize:MAIN_FONT_SIZE];
+	daynameLabel.font = [UIFont boldSystemFontOfSize:DAYNAME_FONT_SIZE];
     daynameLabel.backgroundColor = [UIColor clearColor];
     
 	// add the dayname label as a subview to the cell
@@ -295,7 +326,7 @@
 	rect = CGRectMake(DATE_OFFSET, (rowHeight - LABEL_HEIGHT) / 2.0 + 15, DATE_WIDTH, LABEL_HEIGHT);
 	dateLabel = [[UILabel alloc] initWithFrame:rect];
 	dateLabel.tag = DATE_TAG;
-	dateLabel.font = [UIFont boldSystemFontOfSize:MAIN_FONT_SIZE];
+	dateLabel.font = [UIFont boldSystemFontOfSize:DATE_FONT_SIZE];
     dateLabel.backgroundColor = [UIColor clearColor];
 
     // add the date label as a subview to the cell
@@ -307,16 +338,21 @@
     
     UILabel *textLabel;
     
-	rect = CGRectMake(TEXT_OFFSET, (rowHeight - LABEL_HEIGHT) / 2.0, TEXT_WIDTH, LABEL_HEIGHT);
+	rect = CGRectMake(TEXT_OFFSET, 0, TEXT_WIDTH, rowHeight);
 	textLabel = [[UILabel alloc] initWithFrame:rect];
+//    textLabel.textAlignment = UITextAlignmentCenter;
 	textLabel.tag = TEXT_TAG;
-	textLabel.font = [UIFont boldSystemFontOfSize:MAIN_FONT_SIZE];
+	textLabel.font = [UIFont boldSystemFontOfSize:TEXT_FONT_SIZE];
     textLabel.backgroundColor = [UIColor clearColor];
+    
+    // makes sure it's multiline
+    textLabel.lineBreakMode = UILineBreakModeWordWrap;
+    textLabel.numberOfLines = 0;
+
     
     // add the text label as a subview to the cell
     [cell.contentView addSubview:textLabel];
-    
-    
+        
     // now that the cell has the 3 subviews (UILabels), return it
     return cell;
 
