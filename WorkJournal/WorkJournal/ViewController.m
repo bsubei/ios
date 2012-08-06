@@ -206,6 +206,8 @@
 
     UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle: UITableViewCellStyleDefault reuseIdentifier:@"cell" ];
     
+    [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+    
     //    [[cell detailTextLabel] setText:@"test"];
     //    [[cell textLabel] setText:(NSString *) [overviewArray objectAtIndex:[indexPath row]]];
     
@@ -231,6 +233,8 @@
     // TODO make another label for the date under the dayname
 	// add the dayname label as a subview to the cell
     [cell.contentView addSubview:daynameLabel];
+    
+    
     
     return cell;
 
@@ -348,9 +352,7 @@
     // TODO fix this here, being called but not reloading...
     NSLog(@"woopDeDoo!!");
     [overviewTableView reloadData];
-    [overviewTableView setContentSize:CGSizeMake(320,1000)];
-    [overviewTableView setDelaysContentTouches:NO];
-    
+
     
 }// end performUpdate
 
@@ -453,9 +455,12 @@
     
     // size of scrollView is set
     [scrollView setContentSize:CGSizeMake(640, 460)];
-    [overviewTableView setContentSize:CGSizeMake(320, 460)];
+
+    [overviewTableView setContentSize:CGSizeMake(320, 1000)];
     [overviewTableView setBounces:YES];
     [overviewTableView setAlwaysBounceVertical:YES];
+    [overviewTableView setDelaysContentTouches:YES];
+    [overviewTableView setScrollEnabled:YES];
     
     // performs all needed saving and loading action upon launch and close
     [self performUpdate];
