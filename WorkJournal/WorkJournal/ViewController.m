@@ -55,7 +55,7 @@
     NSRange rangeOfDate = [entryString lineRangeForRange:NSMakeRange(0,1) ];
     
     // extracted date
-    NSString *date = [entryString substringWithRange: rangeOfDate];
+    NSString *dateAsString = [entryString substringWithRange: rangeOfDate];
 
     
     
@@ -68,8 +68,30 @@
         // label view is retrieved and its text is changed
         UILabel *daynameLabel = (UILabel *)[cell viewWithTag:DAYNAME_TAG];
 
-        daynameLabel.text =  date;
+    
+    // get the dayOfTheWeek and set daynameLabel text to it
+    
+    //takes off last character in string (the return carriage)
+    dateAsString = [dateAsString substringToIndex:[dateAsString length] -1];
 
+    //create dateFormatter
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    // set date format
+    [dateFormatter setDateFormat:@"dd-MM-yyyy"];
+    // obtain date from string
+    NSDate *date = [dateFormatter dateFromString:dateAsString];
+
+
+    // set calendar and components to get weekday
+    NSCalendar *cal = [[NSCalendar alloc]initWithCalendarIdentifier:NSGregorianCalendar];
+    NSDateComponents *comp = [cal components:NSWeekdayCalendarUnit fromDate: date];
+    
+    // gets the weekday as an int
+    NSInteger *dayOfWeekAsInt = (NSInteger *)[comp weekday];
+    // gets the weekday string from helper method
+    daynameLabel.text =  [self dayOfWeekUsingInt:dayOfWeekAsInt];
+
+    
     // now, make a date label and add to cell's contentView as a subview
     
     // finally, make a text label and add to cell's contentView as a subview
@@ -199,7 +221,37 @@
 
 #pragma mark - Helper Methods
 
-
+// returns a string of day of week using given int
+- (NSString *)dayOfWeekUsingInt: (NSInteger *)number
+{
+    switch ((int)number) {
+        case 1:
+            return @"SUN";
+            break;
+        case 2:
+            return @"MON";
+            break;
+        case 3:
+            return @"TUE";
+            break;
+        case 4:
+            return @"WED";
+            break;
+        case 5:
+            return @"THU";
+            break;
+        case 6:
+            return @"FRI";
+            break;
+        case 7:
+            return @"SAT";
+            break;
+        default:
+            break;
+    }
+    
+    return @"dafuq?";
+}
 // gets UITableViewCell contentView
 - (UITableViewCell *) getCellContentViewWithCellIdentifier: (NSString *) cellIdentifier AtIndexPath: (NSIndexPath *) indexPath
 {
@@ -289,6 +341,7 @@
     components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate: todayFileDate];
     NSDate *todayFileDay = [cal dateFromComponents:components];
     
+
     
     //if today is over, append today file into overview file (top of it)
     if(![currentDay isEqualToDate: todayFileDay])
