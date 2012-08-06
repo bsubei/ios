@@ -51,13 +51,15 @@
     // the cell's entry string
     NSString *entryString = [overviewArray objectAtIndex:[indexPath row]];
     
+
     // the range needed for the date (first line)
     NSRange rangeOfDate = [entryString lineRangeForRange:NSMakeRange(0,1) ];
     
     // extracted date
     NSString *dateAsString = [entryString substringWithRange: rangeOfDate];
 
-    
+    // gets the text from entry (by taking substring of entryString from point where dateAsString finished and onwards)
+    NSString *textString = [entryString substringFromIndex:rangeOfDate.length];    
     
     // the entry's cell is initialized
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
@@ -65,9 +67,12 @@
         cell = [self getCellContentViewWithCellIdentifier:@"cell" AtIndexPath:indexPath];
         
         
-        // label view is retrieved and its text is changed
+        // all label views are retrieved and their text will be changed
         UILabel *daynameLabel = (UILabel *)[cell viewWithTag:DAYNAME_TAG];
+        UILabel *dateLabel = (UILabel *)[cell viewWithTag:DATE_TAG];
+        UILabel *textLabel = (UILabel *)[cell viewWithTag:TEXT_TAG];
 
+    
     
     // get the dayOfTheWeek and set daynameLabel text to it
     
@@ -92,9 +97,12 @@
     daynameLabel.text =  [self dayOfWeekUsingInt:dayOfWeekAsInt];
 
     
-    // now, make a date label and add to cell's contentView as a subview
+    // now, change dateLabel text
+    NSString *dateWithoutYearAsString = [dateAsString substringToIndex:[dateAsString length] - 5];
+    dateLabel.text = dateWithoutYearAsString;
     
-    // finally, make a text label and add to cell's contentView as a subview
+    // finally, change textLabel text
+    textLabel.text = textString;
     
     NSLog(@"making cell number: %i", [indexPath row]);
     
@@ -270,6 +278,8 @@
     CGFloat rowHeight = [self tableView:[self overviewTableView] heightForRowAtIndexPath:indexPath];
 //    CGFloat rowHeight = 50.0;
     
+    // TODO label tweaking below
+    
     // the DAYNAME label is created and configured    
     // Create a dayname label for the cell and add to cell's contentView as a subview
     UILabel *daynameLabel;
@@ -281,10 +291,36 @@
 	daynameLabel.font = [UIFont boldSystemFontOfSize:MAIN_FONT_SIZE];
     daynameLabel.backgroundColor = [UIColor clearColor];
     
-    //TODO set the text to the first three letters of the DAYNAME
-    // TODO make another label for the date under the dayname
 	// add the dayname label as a subview to the cell
     [cell.contentView addSubview:daynameLabel];
+    
+    // the DATE label is created and configured
+    
+    UILabel *dateLabel;
+    
+	rect = CGRectMake(DATE_OFFSET, (rowHeight - LABEL_HEIGHT) / 2.0 + 15, DATE_WIDTH, LABEL_HEIGHT);
+	dateLabel = [[UILabel alloc] initWithFrame:rect];
+	dateLabel.tag = DATE_TAG;
+	dateLabel.font = [UIFont boldSystemFontOfSize:MAIN_FONT_SIZE];
+    dateLabel.backgroundColor = [UIColor clearColor];
+
+    // add the date label as a subview to the cell
+    [cell.contentView addSubview:dateLabel];
+    
+    
+    
+    //the TEXT label is created and configured
+    
+    UILabel *textLabel;
+    
+	rect = CGRectMake(TEXT_OFFSET, (rowHeight - LABEL_HEIGHT) / 2.0, TEXT_WIDTH, LABEL_HEIGHT);
+	textLabel = [[UILabel alloc] initWithFrame:rect];
+	textLabel.tag = TEXT_TAG;
+	textLabel.font = [UIFont boldSystemFontOfSize:MAIN_FONT_SIZE];
+    textLabel.backgroundColor = [UIColor clearColor];
+    
+    // add the text label as a subview to the cell
+    [cell.contentView addSubview:textLabel];
     
     
     
