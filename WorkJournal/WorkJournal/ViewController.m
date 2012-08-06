@@ -162,7 +162,7 @@
 //    [dataToSave writeToFile:[self saveFilePath: @"today"] atomically:YES];
 
     [[self todayTextView] setText:@"Nichts"];
-    [[self overviewTextView] setText:@""];
+//    [[self overviewTextView] setText:@""];
     
     // delete everything in overviewArray 
     overviewArray = [[NSMutableArray alloc] init];
@@ -407,7 +407,7 @@
         NSString *newOverviewText = [[NSString alloc]initWithFormat:@"%@\n%@",oldOverviewText, textToAdd] ;
         
         // setting overviewText to new value and saving it in file
-        [[self overviewTextView] setText:newOverviewText];
+//        [[self overviewTextView] setText:newOverviewText];
         [self saveDataInFileName: @"overview"];
         
         // empties the todayFile and then sets todayTextView to sthg default
@@ -426,7 +426,7 @@
         [todayTextView setText:[[self readDataFromFileName:@"today"] objectAtIndex:1] ];
 //        [overviewTextView setText:[self readDataFromFileName:@"overview"]];
         //TODO (new line of code here) set overviewText to OverviewArray
-        [overviewTextView setText:[self stringFromOverviewArray]];
+//        [overviewTextView setText:[self stringFromOverviewArray]];
         
     }
     
@@ -545,7 +545,7 @@
     // size of scrollView is set
     [scrollView setContentSize:CGSizeMake(640, 460)];
 
-    [overviewTableView setContentSize:CGSizeMake(320, 1000)];
+//    [overviewTableView setContentSize:CGSizeMake(320, 1000)];
     [overviewTableView setBounces:YES];
     [overviewTableView setAlwaysBounceVertical:YES];
     [overviewTableView setDelaysContentTouches:YES];

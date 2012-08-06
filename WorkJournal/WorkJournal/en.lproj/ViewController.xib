@@ -64,7 +64,7 @@
 									</object>
 									<object class="IBUITextView" id="665667692">
 										<reference key="NSNextResponder" ref="538986276"/>
-										<int key="NSvFlags">-2147483356</int>
+										<int key="NSvFlags">292</int>
 										<string key="NSFrame">{{320, 0}, {320, 460}}</string>
 										<reference key="NSSuperview" ref="538986276"/>
 										<reference key="NSWindow"/>
@@ -85,7 +85,7 @@
 										<bool key="IBUICanCancelContentTouches">NO</bool>
 										<bool key="IBUIBouncesZoom">NO</bool>
 										<bool key="IBUIEditable">NO</bool>
-										<string key="IBUIText">The overview goes here.</string>
+										<string key="IBUIText"/>
 										<object class="IBUITextInputTraits" key="IBUITextInputTraits">
 											<int key="IBUIAutocapitalizationType">2</int>
 											<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -239,7 +239,6 @@
 								<string key="NSFrame">{{500, 400}, {18, 19}}</string>
 								<reference key="NSSuperview" ref="630224066"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIContentHorizontalAlignment">0</int>
@@ -269,7 +268,6 @@
 						<reference key="NSNextKeyView" ref="538986276"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIClipsSubviews">YES</bool>
-						<bool key="IBUIMultipleTouchEnabled">YES</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<bool key="IBUIBounces">NO</bool>
 						<bool key="IBUIPagingEnabled">YES</bool>
