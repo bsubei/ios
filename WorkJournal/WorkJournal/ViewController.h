@@ -15,10 +15,12 @@
 @property (strong, nonatomic) IBOutlet UIButton *dismissKeyBoardButton;
 @property (strong, nonatomic) NSMutableArray *overviewArray;
 @property (strong, nonatomic) IBOutlet UITableView *overviewTableView;
+@property (strong, nonatomic) IBOutlet UIPageControl *pageControl;
 
 - (IBAction)dismissKeyboardButton:(id)sender;
 - (IBAction)optionsButton:(id)sender;
 - (IBAction)deleteSavedData:(id)sender;
+- (IBAction)pageControlClicked:(id)sender;
 
 // UITableViewDataSource protocol methods
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;

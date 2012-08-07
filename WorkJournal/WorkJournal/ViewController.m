@@ -15,8 +15,10 @@
 @end
 
 @implementation ViewController
+@synthesize pageControl;
 @synthesize scrollView, todayTextView, overviewTextView, overviewArray, overviewTableView, dismissKeyBoardButton;
 
+bool pageControlIsFlipping=NO;
 
 #pragma mark - constants for label frames and sizes usw.
 
@@ -162,7 +164,68 @@
     return 1;
 }
 
-#pragma mark - Button and Event Methods
+
+#pragma mark - UITextView delegate methods
+
+// when user done editing
+// saves the todaytext and disables the dismissKeyboardButton
+- (void)textViewDidEndEditing:(UITextView *)textView
+{
+    // save today text into today file
+    [self saveDataInFileName:@"today"];
+    
+    // disable the button (to allow swiping scrolling)
+    [[self dismissKeyBoardButton] setEnabled:NO];
+}
+
+//enables the dismissKeyboardButton only while editing
+- (void)textViewDidBeginEditing:(UITextView *)textView
+{
+    [[self dismissKeyBoardButton] setEnabled:YES];
+}
+
+#pragma mark - UIScrollView delegate methods
+
+// detects when view is dragged and dismisses keyboard (also notifies pageControlIsFlipping that the scroll is initiated by scrollView)
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    [self dismissKeyboardButton:nil];
+    pageControlIsFlipping = NO;
+}
+
+// when pageControl is done scrolling page, set it back to false
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    pageControlIsFlipping = NO;
+}
+
+//code in this method from Apple example called pageControl
+// detects when scrollView has scrolled and checks if page has flipped (to update the pageControl)
+- (void)scrollViewDidScroll:(UIScrollView *)scrollview
+{    
+    
+    
+    
+    // We don't want a "feedback loop" between the UIPageControl and the scroll delegate in
+    // which a scroll event generated from the user hitting the page control triggers updates from
+    // the delegate method. We use a boolean to disable the delegate logic when the page control is used.
+    
+    // do nothing - the scroll was initiated from the page control, not the user dragging
+    if (pageControlIsFlipping) {
+        return;
+    }
+    
+    // Switch the indicator when more than 50% of the previous/next page is visible
+    CGFloat pageWidth = scrollview.frame.size.width;
+    int page = floor((scrollview.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
+    pageControl.currentPage = page;
+
+}
+
+
+
+
+#pragma mark - Button and misc. event methods
 
 // brings up option menu
 // TODO tweak string names and options
@@ -198,15 +261,26 @@
 
 }// end deleteSavedData
 
+// code in this method from Apple example called PageControl
+// when pageControl is clicked, flip page
+- (IBAction)pageControlClicked:(id)sender {
+    
+    int page = pageControl.currentPage;
+    
+    // update the scroll view to the appropriate page
+    CGRect frame = scrollView.frame;
+    frame.origin.x = frame.size.width * page;
+    frame.origin.y = 0;
+    [scrollView scrollRectToVisible:frame animated:YES];
+    
+    
+    // Set the boolean used when scrolls originate from the UIPageControl. See scrollViewDidScroll: 
+    pageControlIsFlipping = YES;
+}
+
 // actually dismisses keyboard (called within many other methods like below one)
 - (IBAction)dismissKeyboardButton:(id)sender {
     [todayTextView resignFirstResponder];
-}
-
-// detects when view is dragged and dismisses keyboard
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
-{
-    [self dismissKeyboardButton:nil];
 }
 
 // when actionSheet buttons are pressed
@@ -232,25 +306,6 @@
     }
     
 }// end actionSheet:clickedButtonAtIndex:
-
-
-// when user done editing
-// saves the todaytext and disables the dismissKeyboardButton
-- (void)textViewDidEndEditing:(UITextView *)textView
-{
-    // save today text into today file
-    [self saveDataInFileName:@"today"];
-    
-    // disable the button (to allow swiping scrolling)
-    [[self dismissKeyBoardButton] setEnabled:NO];
-}
-
-//enables the dismissKeyboardButton only while editing
-- (void)textViewDidBeginEditing:(UITextView *)textView
-{
-    [[self dismissKeyBoardButton] setEnabled:YES];
-}
-
 
 #pragma mark - Helper Methods
 
@@ -376,6 +431,8 @@
     return overviewText;
     
 } //end stringFromOverviewArray
+
+#pragma mark - Saving & loading methods
 
 // performs all data updating necessary (reads from files and writes to files)
 - (void) performUpdate
@@ -541,7 +598,7 @@
 {
     [super viewDidLoad];
     
-    //NOTE: all views and subviews are created in the nib. None are created within the code.
+    //NOTE: all views and subviews are created in the nib. None are created within the code. Only the tableViewCells are created in code.
     
     // size of scrollView is set
     [scrollView setContentSize:CGSizeMake(640, 460)];
@@ -567,6 +624,7 @@
     [self setDismissKeyBoardButton:nil];
     [self setOverviewTableView:nil];
     [self setOverviewTableView:nil];
+    [self setPageControl:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
 }
