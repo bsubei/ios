@@ -106,6 +106,10 @@
     
     // disable the button (to allow swiping scrolling)
     [[self dismissKeyBoardButton] setEnabled:NO];
+    
+    
+
+
 }
 
 - (void)textViewDidBeginEditing:(UITextView *)textView
@@ -116,23 +120,19 @@
 
 #pragma mark - Helper Methods
 
-- (void) performUpdateWithReadOnly: (BOOL) isReadOnly
+- (void) performUpdate
 {
     //TODO worry about calling this BOTH when quitting (home button) AND when resuming (if u resume on a diff day, does it bug when 
     // saving?)
     
-    
+
     
     //first, dismiss keyboard properly
     [[self dismissKeyBoardButton] setEnabled:NO];
     // dismiss keyboard in case it was up
     [self dismissKeyboardButton:nil];
     
-    // if not readOnly, save current todayText
-    if(!isReadOnly)
-        [self textViewDidEndEditing:todayTextView];
     
-        
     //create dateFormatter
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     // set date format
@@ -157,7 +157,7 @@
     {
         
         //TODO debugging
-        NSLog(@"it's not the same day");
+        NSLog(@"it's not the same day, idiot!");
         
         
         // data from todayFile
@@ -176,7 +176,7 @@
         [todayTextView setText:@""];
         [self saveDataInFileName:@"today"];
         [todayTextView setText:@"enter your work done today..."];
-
+        
         
         
         // else if it's still today, update today and overview from files
@@ -189,7 +189,19 @@
         [overviewTextView setText:[self readDataFromFileName:@"overview"]];
     }
     
-}
+    //TODO debugging and checking overview file 
+    // read in file
+    
+    NSArray *dataToLoad = [[NSArray alloc] initWithContentsOfFile: [self saveFilePath:@"overview"] ];
+    NSLog(@"dataToLoad count = %i", [dataToLoad count]);
+    
+    for (int i=0; i<[dataToLoad count]; i++) {
+        NSLog(@"%i%@",i,[dataToLoad objectAtIndex:i]);
+    }
+
+    
+}// end performUpdateReadOnly:
+
 
 
 // helper method to get filePath
@@ -299,7 +311,7 @@
     [scrollView setContentSize:CGSizeMake(640, 460)];
     
     // performs all needed saving and loading action upon launch and close
-    [self performUpdateWithReadOnly:YES];
+    [self performUpdate];
     
     NSLog(@"in ViewDidLoad");
 

@@ -25,6 +25,6 @@
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView;
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex;
-- (void) performUpdateWithReadOnly: (BOOL) isReadOnly;
+- (void) performUpdate;
 
 @end
