@@ -15,10 +15,10 @@
 @end
 
 @implementation ViewController
-@synthesize pageControl;
+
 @synthesize scrollView, todayTextView, overviewTextView, overviewArray, overviewTableView, dismissKeyBoardButton;
 
-bool pageControlIsFlipping=NO;
+
 
 #pragma mark - constants for label frames and sizes usw.
 
@@ -29,6 +29,7 @@ bool pageControlIsFlipping=NO;
 #define DAYNAME_TAG 1
 #define DATE_TAG 2
 #define TEXT_TAG 3
+#define BUTTON_TAG 4
 
 #define DAYNAME_OFFSET 10.0
 #define DAYNAME_WIDTH 100.0
@@ -73,14 +74,22 @@ bool pageControlIsFlipping=NO;
         cell = [self getCellContentViewWithCellIdentifier:@"cell" AtIndexPath:indexPath];
     
     
+    [cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
+    
     // all label views are retrieved so their text can be changed
     UILabel *daynameLabel = (UILabel *)[cell viewWithTag:DAYNAME_TAG];
     UILabel *dateLabel = (UILabel *)[cell viewWithTag:DATE_TAG];
-    UILabel *textLabel = (UILabel *)[cell viewWithTag:TEXT_TAG];
-    
+    UITextView *textLabel = (UITextView *)[cell viewWithTag:TEXT_TAG];
+//    UIButton *doneButton= (UIButton *)[cell viewWithTag:BUTTON_TAG];
     
     //TODO (new bug-fix code here) we set the frame (in case we are dequeueing cell)
     CGFloat rowHeight = [self tableView:[self overviewTableView] heightForRowAtIndexPath:indexPath];
+    
+    
+    
+    
+//    CGFloat rowHeight = 50.0;
+    NSLog(@"in cellForRowAtIndexPath height is: %f", rowHeight);
     CGRect rect = CGRectMake(TEXT_OFFSET, 0, TEXT_WIDTH, rowHeight);
     [textLabel setFrame:rect];
     
@@ -114,6 +123,7 @@ bool pageControlIsFlipping=NO;
     
     //first, get the date without the year (excludes last 5 chars)
     NSString *dateWithoutYearAsString = [dateAsString substringToIndex:[dateAsString length] - 5];
+//    NSString *dateWithoutYearAsString = dateAsString;
     //sets the dateLabel text
     dateLabel.text = dateWithoutYearAsString;
     
@@ -121,8 +131,10 @@ bool pageControlIsFlipping=NO;
     // finally, change textLabel text
     textLabel.text = textString;
     
+    
     // TODO for debugging (tells when each cell is recreated or re-initialized)
     NSLog(@"making cell number: %i", [indexPath row]);
+
     
     // return that cell
     return cell;
@@ -156,7 +168,8 @@ bool pageControlIsFlipping=NO;
     CGFloat rowHeight = MAX(size.height, MIN_CELL_HEIGHT);
     
     // returns it (also adds margins on top and bottom)
-    return rowHeight + (TEXT_MARGIN*2);
+    return rowHeight + (TEXT_MARGIN*2);    
+//    return 50.0;
 }
 
 // informs (all) tableviews that they should have one section only...
@@ -164,7 +177,17 @@ bool pageControlIsFlipping=NO;
     return 1;
 }
 
-
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([indexPath row] != 0) {
+        [self dismissKeyboardButton:nil];
+        return nil;
+    }
+    
+    [[[tableView cellForRowAtIndexPath:indexPath] viewWithTag:TEXT_TAG] becomeFirstResponder];
+    
+    return nil;
+}
 #pragma mark - UITextView delegate methods
 
 // when user done editing
@@ -172,16 +195,58 @@ bool pageControlIsFlipping=NO;
 - (void)textViewDidEndEditing:(UITextView *)textView
 {
     // save today text into today file
-    [self saveDataInFileName:@"today"];
+//    [self saveDataInFileName:@"today"];
+//    textViewBeingEdited = NO;
+    
+    
     
     // disable the button (to allow swiping scrolling)
     [[self dismissKeyBoardButton] setEnabled:NO];
+    
+    
+    UITableViewCell *cell = [overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] ];
+    UITextView *tv = (UITextView *)[cell viewWithTag:TEXT_TAG];
+    
+
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    // set date format
+    [dateFormatter setDateFormat:@"dd-MM-yyyy"];
+
+    
+    NSString *text = [tv text];
+    NSString *date = [dateFormatter stringFromDate:[NSDate date]];    
+    NSString *newEntry = [[NSString alloc]initWithFormat:@"%@\r%@",date,text];
+    
+    [ overviewArray replaceObjectAtIndex:0 withObject:newEntry] ;
+    
+    [self saveData];
+    
+    
+
+    
+    
+//    self.textViewBeingEditedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
 }
 
 //enables the dismissKeyboardButton only while editing
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
+    
+    
+//    textViewBeingEdited = YES;
+    
+//    [[self overviewTableView] reloadData];
+
     [[self dismissKeyBoardButton] setEnabled:YES];
+
+    
+    
+    
+    
+//    [self.view bringSubviewToFront:dismissKeyBoardButton];
+//    [[self view] bringSubviewToFront:textView];
+    
 }
 
 #pragma mark - UIScrollView delegate methods
@@ -190,35 +255,19 @@ bool pageControlIsFlipping=NO;
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
     [self dismissKeyboardButton:nil];
-    pageControlIsFlipping = NO;
+
 }
 
 // when pageControl is done scrolling page, set it back to false
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-    pageControlIsFlipping = NO;
+
 }
 
 //code in this method from Apple example called pageControl
 // detects when scrollView has scrolled and checks if page has flipped (to update the pageControl)
 - (void)scrollViewDidScroll:(UIScrollView *)scrollview
 {    
-    
-    
-    
-    // We don't want a "feedback loop" between the UIPageControl and the scroll delegate in
-    // which a scroll event generated from the user hitting the page control triggers updates from
-    // the delegate method. We use a boolean to disable the delegate logic when the page control is used.
-    
-    // do nothing - the scroll was initiated from the page control, not the user dragging
-    if (pageControlIsFlipping) {
-        return;
-    }
-    
-    // Switch the indicator when more than 50% of the previous/next page is visible
-    CGFloat pageWidth = scrollview.frame.size.width;
-    int page = floor((scrollview.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
-    pageControl.currentPage = page;
 
 }
 
@@ -261,6 +310,7 @@ bool pageControlIsFlipping=NO;
 
 }// end deleteSavedData
 
+/*
 // code in this method from Apple example called PageControl
 // when pageControl is clicked, flip page
 - (IBAction)pageControlClicked:(id)sender {
@@ -277,12 +327,19 @@ bool pageControlIsFlipping=NO;
     // Set the boolean used when scrolls originate from the UIPageControl. See scrollViewDidScroll: 
     pageControlIsFlipping = YES;
 }
-
+*/
+ 
 // actually dismisses keyboard (called within many other methods like below one)
 - (IBAction)dismissKeyboardButton:(id)sender {
-    [todayTextView resignFirstResponder];
+    NSLog(@"dismiss keyboard!");
+    
+    [(UITextView *)[[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] viewWithTag:TEXT_TAG] resignFirstResponder];
+
+
+
 }
 
+/*
 // when actionSheet buttons are pressed
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
@@ -306,8 +363,29 @@ bool pageControlIsFlipping=NO;
     }
     
 }// end actionSheet:clickedButtonAtIndex:
-
+*/
+ 
 #pragma mark - Helper Methods
+
+// adds a new entry in overviewArray with today's date
+- (void)addNewEntryForToday
+{
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    // set date format
+    [dateFormatter setDateFormat:@"dd-MM-yyyy"];
+    
+    //TODO make a new entry in overviewArray (check new carriage line is correct)
+    // TODO expect bugs if carriage line doesnt work (trying to read date in first line)
+    NSString *currentDayAsString = [dateFormatter stringFromDate:[NSDate date]];
+    NSString *newEntry = [[NSString alloc] initWithFormat:@"%@\r",currentDayAsString];
+    NSLog(@"LOOK HERE: %@",newEntry);
+    NSInteger indexToInsert = [overviewArray count]-1;
+    if (indexToInsert<0) {
+        indexToInsert = 0;
+    }
+    [[self overviewArray] insertObject:newEntry atIndex:indexToInsert];
+}
+
 
 // returns a string of dayOfWeek using given int
 - (NSString *)dayOfWeekUsingInt: (NSInteger *)number
@@ -356,21 +434,27 @@ bool pageControlIsFlipping=NO;
     
     // disable selection of table cells
     [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-        
+     
+    
+
     // get the rowHeight dynamically
     // TODO fix this here... can't get rowHeight dynamically AND reuseIdentifiers at same time
     // or can I?
     CGFloat rowHeight = [self tableView:[self overviewTableView] heightForRowAtIndexPath:indexPath];
+    CGRect rect;
+//    CGFloat rowHeight = 50.0;
+    
     NSLog(@"we're inside getCellContentView. this cell is not being reused (made from scratch) the rowHeight is %f", rowHeight);
     
+
     // TODO label tweaking below
     
     // the DAYNAME label is created and configured    
     // Create a dayname label for the cell and add to cell's contentView as a subview
     UILabel *daynameLabel;
-	CGRect rect;
+
     
-	rect = CGRectMake(DAYNAME_OFFSET, (rowHeight - LABEL_HEIGHT) / 2.0, DAYNAME_WIDTH, LABEL_HEIGHT);
+	rect = CGRectMake(DAYNAME_OFFSET, 40, DAYNAME_WIDTH, LABEL_HEIGHT);
 	daynameLabel = [[UILabel alloc] initWithFrame:rect];
 	daynameLabel.tag = DAYNAME_TAG;
 	daynameLabel.font = [UIFont boldSystemFontOfSize:DAYNAME_FONT_SIZE];
@@ -384,7 +468,7 @@ bool pageControlIsFlipping=NO;
     
     UILabel *dateLabel;
     
-	rect = CGRectMake(DATE_OFFSET, (rowHeight - LABEL_HEIGHT) / 2.0 + 15, DATE_WIDTH, LABEL_HEIGHT);
+	rect = CGRectMake(DATE_OFFSET, 10, DATE_WIDTH, LABEL_HEIGHT);
 	dateLabel = [[UILabel alloc] initWithFrame:rect];
 	dateLabel.tag = DATE_TAG;
 	dateLabel.font = [UIFont boldSystemFontOfSize:DATE_FONT_SIZE];
@@ -395,25 +479,47 @@ bool pageControlIsFlipping=NO;
     
     
     
-    // finally, the TEXT label is created and configured
+        
     
-    UILabel *textLabel;
+//    //create the "done" button
+//    UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeInfoDark];
+//    [doneButton setFrame:CGRectMake(0.0, 0.0, 20.0, 20.0)];
+////    [doneButton setImage:<#(UIImage *)#> forState:<#(UIControlState)#>]
+//    [doneButton setBackgroundColor:[UIColor colorWithRed:0.1 green:0.0 blue:0.0 alpha:1.0]];
+//    
+//    
+//    
+//    doneButton.tag = BUTTON_TAG;
+//    
+//
+//    
+//    [doneButton setBackgroundColor: [[UIColor alloc]initWithRed:1.0 green:0.0 blue:0.0 alpha:1.0]];
+//    
+//    [cell.contentView addSubview:doneButton];
+//    [cell.contentView bringSubviewToFront:doneButton];
+//    
+    // the TEXT label is created and configured
     
+    UITextView *textView;
+
 	rect = CGRectMake(TEXT_OFFSET, 0, TEXT_WIDTH, rowHeight);
-	textLabel = [[UILabel alloc] initWithFrame:rect];
-//    textLabel.textAlignment = UITextAlignmentCenter;
-	textLabel.tag = TEXT_TAG;
-	textLabel.font = [UIFont boldSystemFontOfSize:TEXT_FONT_SIZE];
-    textLabel.backgroundColor = [UIColor clearColor];
+	textView = [[UITextView alloc] initWithFrame:rect];
+    //    textLabel.textAlignment = UITextAlignmentCenter;
+	textView.tag = TEXT_TAG;
+	textView.font = [UIFont boldSystemFontOfSize:TEXT_FONT_SIZE];
+    textView.backgroundColor = [UIColor clearColor];
+    textView.delegate = self;
+    [textView setUserInteractionEnabled:NO];
     
     // makes sure it's multiline
-    textLabel.lineBreakMode = UILineBreakModeWordWrap;
-    textLabel.numberOfLines = 0;
-
+    //    [textView ] = UILineBreakModeWordWrap;
+    //    textLabel.numberOfLines = 0;
+    
     
     // add the text label as a subview to the cell
-    [cell.contentView addSubview:textLabel];
-        
+    [cell.contentView addSubview:textView];
+    
+    
     // now that the cell has the 3 subviews (UILabels), return it
     return cell;
 
@@ -434,19 +540,35 @@ bool pageControlIsFlipping=NO;
 
 #pragma mark - Saving & loading methods
 
-// performs all data updating necessary (reads from files and writes to files)
-- (void) performUpdate
+
+// TODO modify this to fit single-view concept
+// performs all data updating necessary when loading (reads from files and writes to files)
+- (void) performUpdateOnLoad
 {
     //TODO worry about calling this BOTH when quitting (home button) AND when resuming (if u resume on a diff day, does it bug when 
     // saving?)
     
+    /*
     // check if no edits were made
     if ([todayTextView.text length] <1 || [todayTextView.text isEqualToString:@"Nichts"]) {
         return;
     }
+    */
     
     //TODO (new line of code here) populate the overviewArray from file data
-    [self setOverviewArray:[self readDataFromFileName:@"overview"]];
+    
+    // if readData returns sthg (if file is there)
+    if ([self readData] != nil) {
+            [self setOverviewArray:[self readData]];
+    
+    //else if file is missing
+    }else {
+        [self addNewEntryForToday];
+        [self saveData];
+        [overviewTableView reloadData];
+        return;
+    }
+
     
     
     //first, dismiss keyboard properly
@@ -457,56 +579,58 @@ bool pageControlIsFlipping=NO;
     
     
     //create dateFormatter
+    
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     // set date format
     [dateFormatter setDateFormat:@"dd-MM-yyyy"];
     
-    //read in the date from todayFile
-    NSArray *todayArray = [self readDataFromFileName:@"today"];
-    NSDate *todayFileDate = [dateFormatter dateFromString: [todayArray objectAtIndex:0]];    
-    NSString *todayFileDateAsString= [todayArray objectAtIndex:0];
+    //read in date from last entry
     
-    // set up calendars and components (to compare currentDay and todayFileDay)
+    NSString *lastEntryString = [[self overviewArray] objectAtIndex:0];
+    // the range needed for the date (first line)
+    NSRange rangeOfDate = [lastEntryString lineRangeForRange:NSMakeRange(0,1) ];
+    NSString *lastEntryDateAsString = [lastEntryString substringWithRange: rangeOfDate];
+    
+    // REMOVE RETURN CARRIAGE FROM DATE!!!
+    lastEntryDateAsString = [lastEntryDateAsString substringToIndex:lastEntryDateAsString.length -1];
+    
+    NSDate *lastEntryDate = [dateFormatter dateFromString:lastEntryDateAsString];
+    
+    // set up calendars and components (to compare currentDay and lastEntryDay)
     NSCalendar *cal = [NSCalendar currentCalendar];
     NSDateComponents *components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate:[NSDate date]];
     NSDate *currentDay = [cal dateFromComponents:components];
-    components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate: todayFileDate];
-    NSDate *todayFileDay = [cal dateFromComponents:components];
+    components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate: lastEntryDate];
+    NSDate *lastEntryDay = [cal dateFromComponents:components];
     
 
     
-    //if today is over, append today file into overview file (top of it)
-    if(![currentDay isEqualToDate: todayFileDay])
-    {
+    //if last entry was not done today, make a new entry for today
+    if(![currentDay isEqualToDate: lastEntryDay])
+    {   
+        NSLog(@"lastEntryDateAsString %@", lastEntryDateAsString);
+        NSLog(@"currentDay %@", currentDay);
+        NSLog(@"lastEntryDate %@", lastEntryDate);
+        NSLog(@"lastEntryDay %@", lastEntryDay);
         //TODO debugging
         NSLog(@"it's not the same day!");
         
-        // data from todayFile
-        NSString *todayFileString = [[self readDataFromFileName:@"today"] objectAtIndex:1] ;
         
-        // this is today's text added to overview
-        NSString *textToAdd = [[NSString alloc]initWithFormat:@"%@\n%@",todayFileDateAsString, todayFileString] ;
-
-        //TODO (new line of code) add new todayText to overviewArray
-        [overviewArray addObject:textToAdd];
         
-        // save into overview file
-        [self saveDataInFileName: @"overview"];
+        [self addNewEntryForToday];
         
-        // empties the todayFile and then sets todayTextView to sthg default
-        [todayTextView setText:@""];
-        [self saveDataInFileName:@"today"];
-        [todayTextView setText:@"Nichts"];
         
-        // else if it's still today, update today from file (overview already read in by tableView)
+        // save to file
+        [self saveData];
+        
+        // else if it's still today, do nothing
     } else
     {
         //TODO debugging
         NSLog(@"it's still the same day");
-        [todayTextView setText:[[self readDataFromFileName:@"today"] objectAtIndex:1] ];
     }
     
-    //TODO debugging and checking overview file 
+    //TODO debugging and checking overview array 
     // read in file
     NSLog(@"overviewArray count = %i", [[self overviewArray] count]);
     for (int i=0; i<[overviewArray count]; i++) {
@@ -516,7 +640,7 @@ bool pageControlIsFlipping=NO;
     // finally, reload the tableView (reloads cells and their subviews usw.)
     [overviewTableView reloadData];
     
-}// end performUpdate
+}// end performUpdateOnLoad
 
 // helper method to get filePath
 - (NSString *) saveFilePath: (NSString *) fileName
@@ -530,49 +654,28 @@ bool pageControlIsFlipping=NO;
 } // end saveFilePath
 
 // saves data from text field into file with given name
-- (void) saveDataInFileName:(NSString *) name
+- (void) saveData
 {
     // new array
     NSMutableArray *dataToSave = [[NSMutableArray alloc] init];
     
-    // if today
-    if ([name isEqualToString:@"today"]) {
-        
-        //create dateFormatter
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        // set date format
-        [dateFormatter setDateFormat:@"dd-MM-yyyy"];
-        
-        // add formatted date as first index (first line)
-        [dataToSave addObject: [dateFormatter stringFromDate:[NSDate date]] ];
-        
-        // adds the today text into the new array (as second line)
-        [dataToSave addObject: [[NSString alloc]initWithFormat:@"%@",todayTextView.text]];
-        
-        // if overview
-    } else if([name isEqualToString:@"overview"]) {
-                
         //TODO (new line of code here) save the overviewArray to overviewFile
         dataToSave = [self overviewArray];
         
         // else, there is a problem, don't proceed.
-    } else {
-        NSLog(@"invalid file name. Cannot save.");
-        return;
-    }
     
     //writes text data to file
-    [dataToSave writeToFile:[self saveFilePath: name] atomically:YES];
+    [dataToSave writeToFile:[self saveFilePath: @"overview"] atomically:YES];
     
-}// end saveDataInFileName:
+}// end saveData
 
 // returns NSMutableArray of file contents
 // TODO check for nil returns when calling this method
-- (NSMutableArray *) readDataFromFileName: (NSString *) name
+- (NSMutableArray *) readData
 {
     
     //if file doesn't exist, return
-    if (![[NSFileManager defaultManager] fileExistsAtPath:[self saveFilePath: name]]) {
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[self saveFilePath: @"overview"]]) {
         NSLog(@"file not found. Cannot load.");
         return nil;
     }
@@ -580,14 +683,14 @@ bool pageControlIsFlipping=NO;
     // new array
     NSMutableArray *dataToLoad;
     // read in file
-    dataToLoad = [[NSMutableArray alloc] initWithContentsOfFile: [self saveFilePath:name] ];
+    dataToLoad = [[NSMutableArray alloc] initWithContentsOfFile: [self saveFilePath:@"overview"] ];
     
     // check if file is not empty
     if([dataToLoad count] < 1)
     {
         NSLog(@"empty file. Cannot load.");
         // return empty array (to avoid exceptions with returning nil)
-        return [[NSMutableArray alloc]init];
+        return nil;
     }
     
     return dataToLoad;
@@ -597,6 +700,13 @@ bool pageControlIsFlipping=NO;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    overviewArray = [[NSMutableArray alloc]init];
+
+    
+    // UNCOMMENT to DELETE ALL DATA
+//    [self saveData];
+    
     
     //NOTE: all views and subviews are created in the nib. None are created within the code. Only the tableViewCells are created in code.
     
@@ -609,8 +719,12 @@ bool pageControlIsFlipping=NO;
     [overviewTableView setDelaysContentTouches:YES];
     [overviewTableView setScrollEnabled:YES];
     
+    //TODO try out if selecting can work with textView editing
+    overviewTableView.allowsSelection=YES;
+    
+    
     // performs all needed saving and loading action upon launch and close
-    [self performUpdate];
+    [self performUpdateOnLoad];
     
     NSLog(@"in ViewDidLoad");
 } // end viewDidLoad
@@ -624,7 +738,6 @@ bool pageControlIsFlipping=NO;
     [self setDismissKeyBoardButton:nil];
     [self setOverviewTableView:nil];
     [self setOverviewTableView:nil];
-    [self setPageControl:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
 }
