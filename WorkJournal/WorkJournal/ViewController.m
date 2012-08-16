@@ -23,17 +23,19 @@
 
 
 
-#define NAME_TAG 1
-#define TIME_TAG 2
-#define IMAGE_TAG 3
 
-#define LEFT_COLUMN_OFFSET 10.0
-#define LEFT_COLUMN_WIDTH 160.0
+#define DAYNAME_TAG 1
+#define DATE_TAG 2
+#define TEXT_TAG 3
 
-#define MIDDLE_COLUMN_OFFSET 170.0
-#define MIDDLE_COLUMN_WIDTH 90.0
+#define DAYNAME_OFFSET 10.0
+#define DAYNAME_WIDTH 100.0
 
-#define RIGHT_COLUMN_OFFSET 280.0
+#define DATE_OFFSET 10.0
+#define DATE_WIDTH 90.0
+
+#define TEXT_OFFSET 160.0
+#define TEXT_WIDTH 200.0
 
 #define MAIN_FONT_SIZE 18.0
 #define LABEL_HEIGHT 26.0
@@ -44,21 +46,9 @@
 //UITableViewDataSource protocol method
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [[UITableViewCell alloc]initWithFrame:CGRectMake(10, 50 * [indexPath row], 100, 50)];
-//    [[cell detailTextLabel] setText:@"test"];
-//    [[cell textLabel] setText:(NSString *) [overviewArray objectAtIndex:[indexPath row]]];
-    
-    UILabel *leftLabel;
-	CGRect rect;
-    
+    // get the rowHeight dynamically
     CGFloat rowHeight = [self tableView:tableView heightForRowAtIndexPath:indexPath];
-    
-    // Create a left label for the cell (has dayname and date)
-	rect = CGRectMake(LEFT_COLUMN_OFFSET, (rowHeight - LABEL_HEIGHT) / 2.0, LEFT_COLUMN_WIDTH, LABEL_HEIGHT);
-	leftLabel = [[UILabel alloc] initWithFrame:rect];
-	leftLabel.tag = NAME_TAG;
-	leftLabel.font = [UIFont boldSystemFontOfSize:MAIN_FONT_SIZE];
-    
+
     // the cell's entry string
     NSString *entryString = [overviewArray objectAtIndex:[indexPath row]];
     
@@ -68,11 +58,39 @@
     // extracted date
     NSString *date = [entryString substringWithRange: rangeOfDate];
 
+    
+    
+    
+    // the entry's cell is initialized
+    UITableViewCell *cell = [[UITableViewCell alloc]initWithFrame:CGRectMake(10, rowHeight * [indexPath row], 100, rowHeight)];
+//    [[cell detailTextLabel] setText:@"test"];
+//    [[cell textLabel] setText:(NSString *) [overviewArray objectAtIndex:[indexPath row]]];
+    
+    
+    
+    
+    
+    // the DAYNAME label is created and configured    
+    // Create a dayname label for the cell and add to cell's contentView as a subview
+    UILabel *daynameLabel;
+	CGRect rect;
+
+	rect = CGRectMake(DAYNAME_OFFSET, (rowHeight - LABEL_HEIGHT) / 2.0, DAYNAME_WIDTH, LABEL_HEIGHT);
+	daynameLabel = [[UILabel alloc] initWithFrame:rect];
+	daynameLabel.tag = DAYNAME_TAG;
+	daynameLabel.font = [UIFont boldSystemFontOfSize:MAIN_FONT_SIZE];
+    daynameLabel.backgroundColor = [UIColor clearColor];
+
     //TODO set the text to the first three letters of the DAYNAME
-    leftLabel.text =  date;
-	
-    [cell.contentView addSubview:leftLabel];
-//	leftLabel.highlightedTextColor = [UIColor whiteColor];
+    // TODO make another label for the date under the dayname
+    daynameLabel.text =  date;
+	// add the dayname label as a subview to the cell
+    [cell.contentView addSubview:daynameLabel];
+
+
+    // now, make a date label and add to cell's contentView as a subview
+    
+    // finally, make a text label and add to cell's contentView as a subview
     
     NSLog(@"making cell number: %i", [indexPath row]);
     
@@ -122,13 +140,22 @@
 - (IBAction)deleteSavedData:(id)sender {
     NSMutableArray *dataToSave = [[NSMutableArray alloc] init];
 
-    [dataToSave addObject:@"eins"];
+    
+//    [dataToSave addObject:@"Nichts"];
+
     [dataToSave writeToFile:[self saveFilePath: @"overview"] atomically:YES];
 
-    [[self todayTextView] setText:@"Default text..."];
-
-
+//    [dataToSave addObject:@"Nichts"];
+    
 //    [dataToSave writeToFile:[self saveFilePath: @"today"] atomically:YES];
+
+    [[self todayTextView] setText:@"Nichts"];
+    [[self overviewTextView] setText:@""];
+    
+    // delete everything in overviewArray 
+    overviewArray = [[NSMutableArray alloc] init];
+
+
 }
 
 // dismisses keyboard
@@ -207,6 +234,11 @@
     //TODO worry about calling this BOTH when quitting (home button) AND when resuming (if u resume on a diff day, does it bug when 
     // saving?)
     
+    // check if no edits were made
+    if ([todayTextView.text length] <1 || [todayTextView.text isEqualToString:@"Nichts"]) {
+        return;
+    }
+    
     //TODO (new line of code here) populate the overviewArray from file data
     [self setOverviewArray:[self readDataFromFileName:@"overview"]];
     
@@ -270,7 +302,7 @@
         // empties the todayFile and then sets todayTextView to sthg default
         [todayTextView setText:@""];
         [self saveDataInFileName:@"today"];
-        [todayTextView setText:@"enter your work done today..."];
+        [todayTextView setText:@"Nichts"];
         
         
         
@@ -326,6 +358,8 @@
     
     // if today
     if ([name isEqualToString:@"today"]) {
+        
+
         
         //TODO add meta data (date) in first line (using dateFormatter)
         //create dateFormatter
@@ -383,7 +417,7 @@
     if([dataToLoad count] < 1)
     {
         NSLog(@"empty file. Cannot load.");
-        return nil;
+        return [[NSMutableArray alloc]init];
     }
 
     
@@ -401,6 +435,9 @@
     
     // size of scrollView is set
     [scrollView setContentSize:CGSizeMake(640, 460)];
+    [overviewTableView setContentSize:CGSizeMake(320, 460)];
+    [overviewTableView setBounces:YES];
+    [overviewTableView setAlwaysBounceVertical:YES];
     
     // performs all needed saving and loading action upon launch and close
     [self performUpdate];
