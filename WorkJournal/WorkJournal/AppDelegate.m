@@ -28,7 +28,7 @@
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {
-    // updates files and textViews without saving current state (already saved in textViewDidEndEditing)
+
     [self.viewController dismissKeyboardButton:nil];
 
 
