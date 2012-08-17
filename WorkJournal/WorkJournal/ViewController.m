@@ -17,6 +17,7 @@
 @synthesize todayTextView;
 @synthesize overviewTextView;
 @synthesize dismissKeyBoardButton;
+@synthesize overviewArray;
 
 #pragma mark - UITableViewDataSource protocol methods
 
@@ -54,9 +55,12 @@
 // FOR TESTING ONLY (overwrites overview and today files to empty [actually, it keeps one line in there])
 - (IBAction)deleteSavedData:(id)sender {
     NSMutableArray *dataToSave = [[NSMutableArray alloc] init];
+
     [dataToSave addObject:@"eins"];
-    [dataToSave writeToFile:[self saveFilePath: @"today"] atomically:YES];
     [dataToSave writeToFile:[self saveFilePath: @"overview"] atomically:YES];
+
+    [[self todayTextView] setText:@"Default text..."];
+
 
 //    [dataToSave writeToFile:[self saveFilePath: @"today"] atomically:YES];
 }
@@ -120,11 +124,22 @@
 
 #pragma mark - Helper Methods
 
+- (NSString *) stringFromOverviewArray
+{
+    NSString *overviewText=@"";
+    for (NSString *entry in overviewArray) {
+        overviewText = [NSString stringWithFormat:@"%@%@",overviewText,entry];
+    }
+    
+    return overviewText;
+}
 - (void) performUpdate
 {
     //TODO worry about calling this BOTH when quitting (home button) AND when resuming (if u resume on a diff day, does it bug when 
     // saving?)
     
+    //TODO (new line of code here) populate the overviewArray from file data
+    [self setOverviewArray:[self readDataFromFileName:@"overview"]];
 
     
     //first, dismiss keyboard properly
@@ -140,7 +155,7 @@
     
     
     //read in the date from todayFile
-    NSArray *todayArray = [[NSArray alloc] initWithContentsOfFile: [self saveFilePath:@"today"]];
+    NSArray *todayArray = [self readDataFromFileName:@"today"];
     NSDate *todayFileDate = [dateFormatter dateFromString: [todayArray objectAtIndex:0]];    
     NSString *todayFileDateAsString= [todayArray objectAtIndex:0];
     
@@ -157,16 +172,27 @@
     {
         
         //TODO debugging
-        NSLog(@"it's not the same day, idiot!");
+        NSLog(@"it's not the same day!");
         
         
         // data from todayFile
-        NSString *todayFileString = [self readDataFromFileName:@"today"] ;
+        NSString *todayFileString = [[self readDataFromFileName:@"today"] objectAtIndex:1] ;
         
         //TODO fix adding a return line
         // appending new text to old text
-        NSString *oldOverviewText = [self readDataFromFileName:@"overview"];
-        NSString *newOverviewText = [[NSString alloc]initWithFormat:@"%@\n%@\n%@",oldOverviewText,todayFileDateAsString, todayFileString] ;
+//        NSString *oldOverviewText = [self readDataFromFileName:@"overview"];
+        
+        //TODO (new line of code here) read in overviewArray and concatenate to one string
+        NSString *oldOverviewText= [self stringFromOverviewArray];
+        
+        // this is today's text added to overview
+        NSString *textToAdd = [[NSString alloc]initWithFormat:@"%@\n%@",todayFileDateAsString, todayFileString] ;
+
+        //TODO (new line of code) add new todayText to overviewArray
+        [overviewArray addObject:textToAdd];
+        
+        // resulting overview text
+        NSString *newOverviewText = [[NSString alloc]initWithFormat:@"%@\n%@",oldOverviewText, textToAdd] ;
         
         // setting overviewText to new value and saving it in file
         [[self overviewTextView] setText:newOverviewText];
@@ -185,22 +211,23 @@
         //TODO debugging
         NSLog(@"it's still the same day");
         
-        [todayTextView setText:[self readDataFromFileName:@"today"] ];
-        [overviewTextView setText:[self readDataFromFileName:@"overview"]];
+        [todayTextView setText:[[self readDataFromFileName:@"today"] objectAtIndex:1] ];
+//        [overviewTextView setText:[self readDataFromFileName:@"overview"]];
+        //TODO (new line of code here) set overviewText to OverviewArray
+        [overviewTextView setText:[self stringFromOverviewArray]];
+        
     }
     
     //TODO debugging and checking overview file 
     // read in file
     
-    NSArray *dataToLoad = [[NSArray alloc] initWithContentsOfFile: [self saveFilePath:@"overview"] ];
-    NSLog(@"dataToLoad count = %i", [dataToLoad count]);
-    
-    for (int i=0; i<[dataToLoad count]; i++) {
-        NSLog(@"%i%@",i,[dataToLoad objectAtIndex:i]);
+    NSLog(@"overviewArray count = %i", [[self overviewArray] count]);
+    for (int i=0; i<[overviewArray count]; i++) {
+        NSLog(@"index%i: %@",i,[overviewArray objectAtIndex:i]);
     }
 
     
-}// end performUpdateReadOnly:
+}// end performUpdate
 
 
 
@@ -242,7 +269,10 @@
     } else if([name isEqualToString:@"overview"]) {
         
         // adds the overview text into the new array
-        [dataToSave addObject: overviewTextView.text];
+        //[dataToSave addObject: overviewTextView.text];
+        
+        //TODO (new line of code here) save the overviewArray to overviewFile
+        dataToSave = [self overviewArray];
         
         // else, there is a problem, don't proceed.
     } else {
@@ -258,18 +288,18 @@
 
 // returns NSString of file
 // TODO check for nil returns when calling this method
-- (NSString *) readDataFromFileName: (NSString *) name
+- (NSMutableArray *) readDataFromFileName: (NSString *) name
 {
     
     //TODO need to check for invalid file path to avoid exceptions
     //if file doesn't exist, return
     if (![[NSFileManager defaultManager] fileExistsAtPath:[self saveFilePath: name]]) {
+        NSLog(@"file not found. Cannot load.");
         return nil;
     }
     
     // new array
     NSMutableArray *dataToLoad;
-    
     
     // read in file
     dataToLoad = [[NSMutableArray alloc] initWithContentsOfFile: [self saveFilePath:name] ];
@@ -280,25 +310,12 @@
         NSLog(@"empty file. Cannot load.");
         return nil;
     }
+
     
-    // if today
-    if ([name isEqualToString:@"today"]) {
-        
-        // return 2nd index (1st is meta data)
-        return [dataToLoad objectAtIndex:1];
-        // if overview
-    } else if([name isEqualToString:@"overview"]) {
-        
-        // return overview text
-        return [dataToLoad objectAtIndex:0];
-        
-        // else, there is a problem, don't proceed.
-    } else {
-        NSLog(@"invalid file name. Cannot load.");
-        return nil;
-    }
+    return dataToLoad;
     
-}
+    
+}// end readDataFromFileName
 
 #pragma mark - View methods & misc.
 - (void)viewDidLoad

@@ -13,6 +13,7 @@
 @property (strong, nonatomic) IBOutlet UITextView *todayTextView;
 @property (strong, nonatomic) IBOutlet UITextView *overviewTextView;
 @property (strong, nonatomic) IBOutlet UIButton *dismissKeyBoardButton;
+@property (strong, nonatomic) NSMutableArray *overviewArray;
 
 - (IBAction)dismissKeyboardButton:(id)sender;
 - (IBAction)optionsButton:(id)sender;
