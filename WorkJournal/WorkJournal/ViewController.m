@@ -252,6 +252,47 @@
 
 #pragma mark - UITextView delegate methods
 
+// called right when a textView is tapped
+// decides whether user is allowed to edit the textView (only allows top entry to be edited)
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView
+{        
+    // get indexPath of tapped textView cell
+    NSIndexPath *indexPath = [overviewTableView indexPathForCell: (UITableViewCell *)[[textView superview] superview] ];
+	
+    // if tapped textView is top entry, then allow it to be edited
+    if ([indexPath row] == 0) {
+		
+        // also set the cursor position to last known one
+        // TODO bouncing bug fix here???
+        [textView setSelectedRange:NSMakeRange(lastCursorLocation, lastCursorLength)];
+        return YES;
+    }
+    
+    // in case it wasn't the top entry that was tapped, dismiss the keyboard
+    [self dismissKeyboardButton:nil];
+    // and don't allow textView to be edited
+    return NO;
+}
+
+// called when textView begins editing
+//enables the dismissKeyboardButton and adds inset to table view (so that keyboard
+// doesn't cover the cursor)
+- (void)textViewDidBeginEditing:(UITextView *)textView
+{
+    [[self dismissKeyBoardButton] setEnabled:YES];
+    
+    // adds a margin on bottom of tableView so that keyboard does not cover the cursor...
+    [self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 200, 0)];
+}
+
+// called right before keyboard is dismissed (to save current cursor location)
+- (BOOL)textViewShouldEndEditing:(UITextView *)textView
+{
+    self.lastCursorLocation = textView.selectedRange.location;
+    self.lastCursorLength = textView.selectedRange.length;
+    return YES;
+}
+
 // when user done editing (after dismissKeyboardButton:)
 // saves the top entry to the overviewArray and disables the dismissKeyboardButton
 - (void)textViewDidEndEditing:(UITextView *)textView
@@ -290,51 +331,7 @@
     // update the table view entries
     [overviewTableView reloadData];
 	
-	
-    
 }
-
-// called right when a textView is tapped
-// decides whether user is allowed to edit the textView (only allows top entry to be edited)
-- (BOOL)textViewShouldBeginEditing:(UITextView *)textView
-{        
-    // get indexPath of tapped textView cell
-    NSIndexPath *indexPath = [overviewTableView indexPathForCell: (UITableViewCell *)[[textView superview] superview] ];
-	
-    // if tapped textView is top entry, then allow it to be edited
-    if ([indexPath row] == 0) {
-		
-        // also set the cursor position to last known one
-        // TODO bouncing bug fix here???
-        [textView setSelectedRange:NSMakeRange(lastCursorLocation, lastCursorLength)];
-        return YES;
-    }
-    
-    // in case it wasn't the top entry that was tapped, dismiss the keyboard
-    [self dismissKeyboardButton:nil];
-    // and don't allow textView to be edited
-    return NO;
-}
-
-// called right before keyboard is dismissed (to save current cursor location)
-- (BOOL)textViewShouldEndEditing:(UITextView *)textView
-{
-    self.lastCursorLocation = textView.selectedRange.location;
-    self.lastCursorLength = textView.selectedRange.length;
-    return YES;
-}
-
-// called when textView begins editing
-//enables the dismissKeyboardButton and adds inset to table view (so that keyboard
-// doesn't cover the cursor)
-- (void)textViewDidBeginEditing:(UITextView *)textView
-{
-    [[self dismissKeyBoardButton] setEnabled:YES];
-    
-    // adds a margin on bottom of tableView so that keyboard does not cover the cursor...
-    [self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 200, 0)];
-}
-
 
 // whenever text is added or removed to textView (for live resizing)
 - (void)textViewDidChange:(UITextView *)textView
@@ -394,7 +391,6 @@
 }
 
 #pragma mark - Buttons and misc. event methods
-
 
 // actually dismisses keyboard (called within many other methods); causes textViewDidEndEditing to be called
 - (IBAction)dismissKeyboardButton:(id)sender {
