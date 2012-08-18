@@ -26,6 +26,8 @@
 
 #pragma mark - constants for label frames and sizes usw.
 
+#define RESET 0
+
 #define CELL_WIDTH 320.0
 #define MAX_CELL_HEIGHT 2000.0
 #define MIN_CELL_HEIGHT 44.0
@@ -620,6 +622,12 @@
 	
     // set the insets back to normal (huge bottom inset was there when keyboard was up)
     [self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 10, 0)];
+
+	// FOR TESTING (resets all values)
+	if (RESET) {
+		overviewArray = [[NSMutableArray alloc]init];
+		[self saveData];
+	}
 	
     // finally, reload the tableView (reloads cells and their subviews usw.)    
     [overviewTableView reloadData];
