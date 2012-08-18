@@ -21,7 +21,7 @@
 @synthesize lastCursorLength;
 @synthesize lastCursorLocation;
 @synthesize infoView;
-@synthesize PDFView;
+
 
 
 #pragma mark - constants for label frames and sizes usw.
@@ -186,6 +186,8 @@
     // saves the top tableView cell into the array
     [overviewArray replaceObjectAtIndex:0 withObject:newEntry] ;
     
+//	    overviewArray = [[NSMutableArray alloc]init];
+	
     // saves the array to file
     [self saveData];
     
@@ -194,6 +196,8 @@
 
     // update the table view entries
     [overviewTableView reloadData];
+	
+
     
 }
 
@@ -299,7 +303,7 @@
 
 #pragma mark - UIScrollView delegate methods
 
-// detects when view is dragged and dismisses keyboard
+// detects when view (tableView in this case) is dragged and dismisses keyboard
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
     [self dismissKeyboardButton:nil];
@@ -327,6 +331,7 @@
 - (IBAction)dismissKeyboardButton:(id)sender {
     
     [(UITextView *)[[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] viewWithTag:TEXT_TAG] resignFirstResponder];
+
 }
 
 // when actionSheet buttons are pressed
@@ -336,21 +341,20 @@
             
             // if email button
         case 0:
-            //TODO test this and see if we should add .pdf to filename
             
-            // if mail is set-up, then create mailViewController and fill in details to send the PDF
+            // if mail is set-up, then create mailViewController and fill in details to send email
             if([MFMailComposeViewController canSendMail])
             {
                 MFMailComposeViewController *mailman = [[MFMailComposeViewController alloc]init];
                 mailman.mailComposeDelegate = self;
                 [mailman setSubject:@"Your work journal"];
-                NSString *messageString = [NSString stringWithFormat:@"Below is a copy of your journal.\n %@",[self stringFromOverviewArray]];
+                NSString *messageString = [NSString stringWithFormat:@"Below is a copy of your journal.\n%@",[self stringFromOverviewArray]];
                 [mailman setMessageBody: messageString isHTML:NO];
                 [self presentModalViewController:mailman animated:YES];
                 
             // if mail is not set up on device, display an alert
             }else {
-                UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Error" message:@"Device is not configured for sending emails. Please configure your email options in the Mail app." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+                UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Error" message:@"Device is not configured for sending emails. Please configure your email options in the Mail app." delegate:nil cancelButtonTitle:@"OK, my bad" otherButtonTitles: nil];
                 [alert show];
                 
             }
@@ -541,14 +545,70 @@
 // performs all data updating necessary when loading (reads from files and writes to files)
 - (void) performUpdateOnLoad
 {
-
+	
     // populate the overviewArray from file data
     
     // if readData returns sthg (if file is there)
     if ([self readData] != nil) {
-            [self setOverviewArray:[self readData]];
-    
-    //else if file is missing
+		[self setOverviewArray:[self readData]];
+		
+		
+		
+		
+		//first, dismiss keyboard properly (in case it was already up)
+		
+		[[self dismissKeyBoardButton] setEnabled:NO];
+		// dismiss keyboard in case it was up
+		[self dismissKeyboardButton:nil];
+		
+		//create dateFormatter
+		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+		// set date format
+		[dateFormatter setDateFormat:@"dd-MM-yyyy"];
+		
+		//read in date from last entry
+		
+		NSString *lastEntryString = [[self overviewArray] objectAtIndex:0];
+		// the range needed for the date (first line)
+		NSRange rangeOfDate = [lastEntryString lineRangeForRange:NSMakeRange(0,1) ];
+		NSString *lastEntryDateAsString = [lastEntryString substringWithRange: rangeOfDate];
+		
+		// REMOVE RETURN CARRIAGE FROM DATE!!!
+		lastEntryDateAsString = [lastEntryDateAsString substringToIndex:lastEntryDateAsString.length -1];
+		
+		NSDate *lastEntryDate = [dateFormatter dateFromString:lastEntryDateAsString];
+		
+		// set up calendars and components (to compare currentDay and lastEntryDay)
+		NSCalendar *cal = [NSCalendar currentCalendar];
+		NSDateComponents *components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate:[NSDate date]];
+		NSDate *currentDay = [cal dateFromComponents:components];
+		components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate: lastEntryDate];
+		NSDate *lastEntryDay = [cal dateFromComponents:components];
+		
+		
+		//if last entry was not done today, make a new entry for today
+		if(![currentDay isEqualToDate: lastEntryDay])
+		{   
+			//TODO debugging
+			NSLog(@"it's not the same day!");
+			
+			
+			// gets text of first entry (at the top)
+			NSString *firstEntryText = [(UITextView *)[[[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] contentView] viewWithTag:TEXT_TAG] text];
+			
+			//first, check if the first entry is blank or not. If it is, remove that entry (since it's blank)
+			if (firstEntryText == nil || [firstEntryText isEqualToString:@""]) [overviewArray removeObjectAtIndex:0];
+			
+			// make a new entry because today is a new day
+			[self addNewEntryForToday];
+			
+			// save to file
+			[self saveData];
+			
+			// else if it's still today, do nothing
+		}
+
+		//else if file is missing
     }else {
         // add a new entry
         [self addNewEntryForToday];
@@ -556,66 +616,11 @@
         [self saveData];
         // now update the tableView
         [overviewTableView reloadData];
-        // don't do anything else!
-        return;
     }
-
-    //if file wasn't missing, it continues below
-    
-    //first, dismiss keyboard properly (in case it was already up)
-    
-    [[self dismissKeyBoardButton] setEnabled:NO];
-    // dismiss keyboard in case it was up
-    [self dismissKeyboardButton:nil];
-    
-    //create dateFormatter
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    // set date format
-    [dateFormatter setDateFormat:@"dd-MM-yyyy"];
-    
-    //read in date from last entry
-
-    NSString *lastEntryString = [[self overviewArray] objectAtIndex:0];
-    // the range needed for the date (first line)
-    NSRange rangeOfDate = [lastEntryString lineRangeForRange:NSMakeRange(0,1) ];
-    NSString *lastEntryDateAsString = [lastEntryString substringWithRange: rangeOfDate];
-    
-    // REMOVE RETURN CARRIAGE FROM DATE!!!
-    lastEntryDateAsString = [lastEntryDateAsString substringToIndex:lastEntryDateAsString.length -1];
-    
-    NSDate *lastEntryDate = [dateFormatter dateFromString:lastEntryDateAsString];
-    
-    // set up calendars and components (to compare currentDay and lastEntryDay)
-    NSCalendar *cal = [NSCalendar currentCalendar];
-    NSDateComponents *components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate:[NSDate date]];
-    NSDate *currentDay = [cal dateFromComponents:components];
-    components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate: lastEntryDate];
-    NSDate *lastEntryDay = [cal dateFromComponents:components];
-    
-    
-    //if last entry was not done today, make a new entry for today
-    if(![currentDay isEqualToDate: lastEntryDay])
-    {   
-        //TODO debugging
-        NSLog(@"it's not the same day!");
-        
-        // make a new entry because today is a new day
-        [self addNewEntryForToday];
-        
-        // save to file
-        [self saveData];
-        
-        // else if it's still today, do nothing
-    } else
-    {
-        //TODO debugging
-        NSLog(@"it's still the same day");
-    }
-    
-
+	
     // set the insets back to normal (huge bottom inset was there when keyboard was up)
     [self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 10, 0)];
-
+	
     // finally, reload the tableView (reloads cells and their subviews usw.)    
     [overviewTableView reloadData];
     
@@ -642,7 +647,7 @@
 - (void) saveData
 {
     // new array
-    NSMutableArray *dataToSave = [[NSMutableArray alloc] init];
+    NSMutableArray *dataToSave;
     
     //TODO (new line of code here) save the overviewArray to overviewFile
     dataToSave = [self overviewArray];
@@ -674,7 +679,7 @@
     if([dataToLoad count] < 1)
     {
         NSLog(@"empty file. Cannot load.");
-        // return empty array (to avoid exceptions with returning nil)
+        // return empty array
         return nil;
     }
     
@@ -691,11 +696,11 @@
     // initializes overviewArray to an empty array
     overviewArray = [[NSMutableArray alloc]init];
 
-    [PDFView setHidden:YES];
     
     // UNCOMMENT to DELETE ALL DATA
 //    [self saveData];
-    
+//	return;
+	
     //NOTE: all views and subviews are created in the nib. None are created within the code. Only the tableViewCells are created in code.
 
     // table view properties set here
@@ -723,20 +728,19 @@
     // performs all needed saving and loading action upon launch and close
     [self performUpdateOnLoad];
     
+	
     NSLog(@"in ViewDidLoad");
 } // end viewDidLoad
 
 - (void)viewDidUnload
-{
+{		
     [self setOverviewArray:nil];
     [self setDismissKeyBoardButton:nil];
     [self setOverviewTableView:nil];
     [self setInfoView:nil];
     [self setLastCursorLength:nil];
     [self setLastCursorLocation:nil];
-    
-    
-    [self setPDFView:nil];
+	
     [super viewDidUnload];
     // Release any retained subviews of the main view.
 }
