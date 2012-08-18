@@ -21,6 +21,7 @@
 @synthesize lastCursorLength;
 @synthesize lastCursorLocation;
 @synthesize infoView;
+@synthesize PDFView;
 
 
 #pragma mark - constants for label frames and sizes usw.
@@ -342,10 +343,9 @@
             {
                 MFMailComposeViewController *mailman = [[MFMailComposeViewController alloc]init];
                 mailman.mailComposeDelegate = self;
-                [mailman setSubject:@"Your work journal export PDF"];
-                NSData *fileData = [[NSData alloc] initWithContentsOfFile:[self saveFilePath]];
-                [mailman addAttachmentData:fileData mimeType:@"application/pdf" fileName:@"journal"];
-                [mailman setMessageBody:@"Attached is the pdf copy of your journal." isHTML:NO];
+                [mailman setSubject:@"Your work journal"];
+                NSString *messageString = [NSString stringWithFormat:@"Below is a copy of your journal.\n %@",[self stringFromOverviewArray]];
+                [mailman setMessageBody: messageString isHTML:NO];
                 [self presentModalViewController:mailman animated:YES];
                 
             // if mail is not set up on device, display an alert
@@ -375,6 +375,19 @@
 }
 
 #pragma mark - Helper Methods
+
+// returns the string representation of overviewArray
+- (NSString *) stringFromOverviewArray
+{
+    // goes through each entry and concatenates them all into one string
+    NSString *overviewText=@"";
+    for (NSString *entry in overviewArray) {
+        overviewText = [NSString stringWithFormat:@"%@\n%@",overviewText,entry];
+    }
+    //returns that string
+    return overviewText;
+    
+} //end stringFromOverviewArray
 
 // animates the infoView sliding out (using block animations)
 - (void)infoPageSlideOut
@@ -678,6 +691,7 @@
     // initializes overviewArray to an empty array
     overviewArray = [[NSMutableArray alloc]init];
 
+    [PDFView setHidden:YES];
     
     // UNCOMMENT to DELETE ALL DATA
 //    [self saveData];
@@ -722,6 +736,7 @@
     [self setLastCursorLocation:nil];
     
     
+    [self setPDFView:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
 }

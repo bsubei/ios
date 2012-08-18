@@ -18,6 +18,7 @@
 @property NSInteger lastCursorLength;
 @property (strong, nonatomic) IBOutlet UIImageView *infoView;
 
+@property (strong, nonatomic) IBOutlet UIWebView *PDFView;
 
 - (IBAction)dismissKeyboardButton:(id)sender;
 - (IBAction)optionsButton:(id)sender;
