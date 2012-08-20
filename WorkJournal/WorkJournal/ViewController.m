@@ -18,10 +18,7 @@
 @synthesize overviewArray;
 @synthesize overviewTableView;
 @synthesize dismissKeyBoardButton;
-@synthesize lastCursorLength;
-@synthesize lastCursorLocation;
 @synthesize infoView;
-
 
 
 #pragma mark - constants for label frames and sizes usw.
@@ -262,9 +259,9 @@
     // if tapped textView is top entry, then allow it to be edited
     if ([indexPath row] == 0) {
 		
-        // also set the cursor position to last known one
-        // TODO bouncing bug fix here???
-        [textView setSelectedRange:NSMakeRange(lastCursorLocation, lastCursorLength)];
+		// adds a margin on bottom of tableView so that keyboard does not cover the cursor...
+		[self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 200, 0)];
+
         return YES;
     }
     
@@ -281,23 +278,13 @@
 {
     [[self dismissKeyBoardButton] setEnabled:YES];
     
-    // adds a margin on bottom of tableView so that keyboard does not cover the cursor...
-    [self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 200, 0)];
-}
-
-// called right before keyboard is dismissed (to save current cursor location)
-- (BOOL)textViewShouldEndEditing:(UITextView *)textView
-{
-    self.lastCursorLocation = textView.selectedRange.location;
-    self.lastCursorLength = textView.selectedRange.length;
-    return YES;
-}
+    }
 
 // when user done editing (after dismissKeyboardButton:)
 // saves the top entry to the overviewArray and disables the dismissKeyboardButton
 - (void)textViewDidEndEditing:(UITextView *)textView
 {
-	
+	NSLog(@"dafuuuuq?");
     // disable the button
     [[self dismissKeyBoardButton] setEnabled:NO];
     
@@ -319,11 +306,9 @@
     
     // saves the top tableView cell into the array
     [overviewArray replaceObjectAtIndex:0 withObject:newEntry] ;
-    
-	//	    overviewArray = [[NSMutableArray alloc]init];
 	
     // saves the array to file
-    [self saveData];
+    [self saveDataToFile];
     
     // fixes table view inset (keyboard is now down, return inset to normal)
     [self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 10, 0)];
@@ -412,7 +397,6 @@
 	
 	//    [overviewTableView setHidden:NO];
 	
-    NSLog(@"infoView was tapped!");
 }
 
 // animate the infoView sliding in
@@ -581,7 +565,7 @@
 }// end dayOfWeekUsingInt:
 
 // helper method to get filePath
-- (NSString *) saveFilePath
+- (NSString *) savefilePath
 {
     // get file path (directory)
     NSArray *pathArray = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -594,23 +578,22 @@
 #pragma mark - Saving & loading (file IO) methods
 
 // performs all data updating necessary when loading (reads from files and writes to files)
-- (void) performUpdateOnLoad
+- (void) populateArrayWithData
 {
 	
     // populate the overviewArray from file data
     
     // if readData returns sthg (if file is there)
-    if ([self readData] != nil) {
-		[self setOverviewArray:[self readData]];
-		NSLog(@"file found. Reading in data.");
+    if ([self readDataFromFile] != nil) {
+		[self setOverviewArray:[self readDataFromFile]];		
 		
-		
-		
-		//first, dismiss keyboard properly (in case it was already up)
-		
-		[[self dismissKeyBoardButton] setEnabled:NO];
-		// dismiss keyboard in case it was up
-		[self dismissKeyboardButton:nil];
+
+		//no need since it's always called when entering background state
+//		//first, dismiss keyboard properly (in case it was already up)
+//		
+//		[[self dismissKeyBoardButton] setEnabled:NO];
+//		// dismiss keyboard in case it was up
+//		[self dismissKeyboardButton:nil];
 		
 		
 		//create dateFormatter
@@ -624,6 +607,7 @@
 		// the range needed for the date (first line)
 		NSRange rangeOfDate = [lastEntryString lineRangeForRange:NSMakeRange(0,1) ];
 		NSString *lastEntryDateAsString = [lastEntryString substringWithRange: rangeOfDate];
+		NSString *lastEntryText = [lastEntryString substringFromIndex:rangeOfDate.length];
 		
 		// REMOVE RETURN CARRIAGE FROM DATE!!!
 		lastEntryDateAsString = [lastEntryDateAsString substringToIndex:lastEntryDateAsString.length -1];
@@ -633,21 +617,16 @@
 		//now, we compare lastEntryDate to today's date and see if they are not the same day
 		// if they are not, we will create a new entry for today
 		if(![self isDate:lastEntryDate sameDayAsDate:[NSDate date]]){
-			//TODO debugging
-			NSLog(@"it's not the same day!");
 			
 			
-			// gets text of first entry (at the top)
-			NSString *firstEntryText = [(UITextView *)[[[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] contentView] viewWithTag:TEXT_TAG] text];
-			
-			//first, check if the first entry is blank or not. If it is, remove that entry (since it's blank)
-			if (firstEntryText == nil || [firstEntryText isEqualToString:@""]) [overviewArray removeObjectAtIndex:0];
+			//first, check if the last entry is blank or not. If it is, remove that entry (since it's blank)
+			if (lastEntryText == nil || [lastEntryText isEqualToString:@""]) [overviewArray removeObjectAtIndex:0];
 		
 			// make a new entry because today is a new day
 			[self addNewEntryForToday];
 			
 			// save to file
-			[self saveData];
+			[self saveDataToFile];
 			
 			
 		}// end if(not the same day)
@@ -657,33 +636,20 @@
         // add a new entry
         [self addNewEntryForToday];
         // and save to file
-        [self saveData];
-        // now update the tableView
-        [overviewTableView reloadData];
+        [self saveDataToFile];
     }
 	
-    // set the insets back to normal (huge bottom inset was there when keyboard was up)
-    [self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 10, 0)];
-	
+
 	// FOR TESTING (resets all values)
 	if (RESET) {
 		overviewArray = [[NSMutableArray alloc]init];
-		[self saveData];
+		[self saveDataToFile];
 	}
-	
-    // finally, reload the tableView (reloads cells and their subviews usw.)    
-    [overviewTableView reloadData];
-    
-    
-    //TODO cursor details stored when first loaded
-    // fix bug here (bouncing up and down)
-    lastCursorLength = 0;
-    lastCursorLocation = 0;
-    
+
 }// end performUpdateOnLoad
 
 // saves data from text field into file with given name
-- (void) saveData
+- (void) saveDataToFile
 {
     // new array
     NSMutableArray *dataToSave;
@@ -694,30 +660,28 @@
     // else, there is a problem, don't proceed.
     
     //writes text data to file
-    [dataToSave writeToFile:[self saveFilePath] atomically:YES];
+    [dataToSave writeToFile:[self savefilePath] atomically:YES];
     
 }// end saveData
 
 // returns NSMutableArray of file contents
 // TODO check for nil returns when calling this method
-- (NSMutableArray *) readData
+- (NSMutableArray *) readDataFromFile
 {
     
     //if file doesn't exist, return
-    if (![[NSFileManager defaultManager] fileExistsAtPath:[self saveFilePath]]) {
-        NSLog(@"file not found. Cannot load.");
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[self savefilePath]]) {
         return nil;
     }
     
     // new array
     NSMutableArray *dataToLoad;
     // read in file
-    dataToLoad = [[NSMutableArray alloc] initWithContentsOfFile: [self saveFilePath] ];
+    dataToLoad = [[NSMutableArray alloc] initWithContentsOfFile: [self savefilePath] ];
     
     // check if file is not empty
     if([dataToLoad count] < 1)
     {
-        NSLog(@"empty file. Cannot load.");
         // return empty array
         return nil;
     }
@@ -732,8 +696,14 @@
 	
     [super viewDidLoad];
 	
+	NSLog(@"inViewDidLoad!");
+	
     // initializes overviewArray to an empty array
     overviewArray = [[NSMutableArray alloc] init];
+	
+    // loads data into overview array
+    [self populateArrayWithData];
+    
 	
     //NOTE: all views and subviews are created in the nib. None are created within the code. Only the tableViewCells are created in code.
 	
@@ -758,12 +728,14 @@
 	
     // turn off selection for table view
     overviewTableView.allowsSelection=NO;
-    
-    // performs all needed saving and loading action upon launch and close
-    [self performUpdateOnLoad];
+
+	// set the insets back to normal (huge bottom inset was there when keyboard was up)
+    [self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 10, 0)];
+	
+    // finally, reload the tableView (reloads cells and their subviews usw.)    
+    [overviewTableView reloadData];
     
 	
-    NSLog(@"in ViewDidLoad");
 } // end viewDidLoad
 
 - (void)viewDidUnload

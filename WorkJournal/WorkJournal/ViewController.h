@@ -14,13 +14,10 @@
 @property (strong, nonatomic) IBOutlet UIButton *dismissKeyBoardButton;
 @property (strong, nonatomic) NSMutableArray *overviewArray;
 @property (strong, nonatomic) IBOutlet UITableView *overviewTableView;
-@property NSInteger lastCursorLocation;
-@property NSInteger lastCursorLength;
 @property (strong, nonatomic) IBOutlet UIImageView *infoView;
 
 - (IBAction)dismissKeyboardButton:(id)sender;
 - (IBAction)optionsButton:(id)sender;
-
 
 // UITableViewDataSource protocol methods
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
