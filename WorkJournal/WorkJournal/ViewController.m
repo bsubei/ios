@@ -85,7 +85,7 @@
     //TODO (new bug-fix code here) we set the frame (in case we are dequeueing cell)
     CGFloat rowHeight = [self tableView:[self overviewTableView] heightForRowAtIndexPath:indexPath];
     
-    
+//    [cell setFrame:CGRectMake(0, 0, <#CGFloat width#>, <#CGFloat height#>)];
     
     
 //    CGFloat rowHeight = 50.0;
@@ -131,6 +131,7 @@
     // finally, change textLabel text
     textLabel.text = textString;
     
+//    [textLabel setFrame:CGRectMake(TEXT_OFFSET, 0, TEXT_WIDTH, rowHeight)];
     
     // TODO for debugging (tells when each cell is recreated or re-initialized)
     NSLog(@"making cell number: %i", [indexPath row]);
@@ -176,18 +177,18 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
-
-- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if ([indexPath row] != 0) {
-        [self dismissKeyboardButton:nil];
-        return nil;
-    }
-    
-    [[[tableView cellForRowAtIndexPath:indexPath] viewWithTag:TEXT_TAG] becomeFirstResponder];
-    
-    return nil;
-}
+//
+//- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    if ([indexPath row] != 0) {
+//        [self dismissKeyboardButton:nil];
+//        return nil;
+//    }
+//    
+//    [[[tableView cellForRowAtIndexPath:indexPath] viewWithTag:TEXT_TAG] becomeFirstResponder];
+//    
+//    return nil;
+//}
 #pragma mark - UITextView delegate methods
 
 // when user done editing
@@ -225,7 +226,8 @@
     
     
 
-        [overviewTableView reloadData];
+//        [overviewTableView reloadData];
+    [overviewTableView reloadData];
     
 //    self.textViewBeingEditedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
 }
@@ -238,6 +240,8 @@
 
         return YES;
     }
+    
+    [self dismissKeyboardButton:nil];
     return NO;
 }
 
@@ -264,13 +268,18 @@
 // whenever text is added or removed to textView (resize its cell)
 - (void)textViewDidChange:(UITextView *)textView
 {
+//    [overviewTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
 //    [overviewTableView reloadData];
 //    [[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] becomeFirstResponder];
+//    [UIView setAnimationsEnabled:YES];
 //    [overviewTableView beginUpdates];
 //    [overviewTableView endUpdates];
-    [[textView superview] setNeedsDisplay];
-        [[textView superview] layoutSubviews];
+//    [UIView setAnimationsEnabled:NO];
+    
+//    [[[textView superview]superview] setNeedsDisplay];
+//        [[[textView superview] superview] layoutSubviews];
 //    [textView setNeedsDisplay];
+//    [overviewTableView reloadData];
 }
 
 #pragma mark - UIScrollView delegate methods
@@ -545,6 +554,34 @@
     [cell.contentView addSubview:textView];
     
     
+    
+//    // invisible dismissButton for each cell is made
+//    UIButton *dismissButton;
+//    
+//    rect = CGRectMake(0, 0, CELL_WIDTH, rowHeight);
+//    
+//    dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//    [dismissButton setFrame:rect];
+//    [dismissButton setBackgroundColor:[UIColor clearColor]];
+//    [dismissButton setExclusiveTouch:NO];
+//    [dismissButton setEnabled:NO]
+//    
+//    [dismissButton addTarget:self action:@selector(dismissKeyboardButton:) forControlEvents:UIControlEventTouchUpInside];
+//
+//    [cell setAccessoryView:dismissButton];
+//    
+//    [cell bringSubviewToFront:cell.contentView];
+//    [cell sendSubviewToBack:[cell accessoryView]];
+    
+//    [cell.contentView bringSubviewToFront:textView];
+//    [cell.contentView sendSubviewToBack:[cell accessoryView]];
+    
+    
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dismissKeyboardButton:)];
+    [tap setNumberOfTapsRequired:1];
+    
+    [cell.contentView addGestureRecognizer:tap];
+    
     // now that the cell has the 3 subviews (UILabels), return it
     return cell;
 
@@ -590,6 +627,7 @@
     }else {
         [self addNewEntryForToday];
         [self saveData];
+//        [overviewTableView reloadData];
         [overviewTableView reloadData];
         return;
     }
@@ -663,6 +701,7 @@
     }
 
     // finally, reload the tableView (reloads cells and their subviews usw.)
+//    [overviewTableView reloadData];
     [overviewTableView reloadData];
     
 }// end performUpdateOnLoad

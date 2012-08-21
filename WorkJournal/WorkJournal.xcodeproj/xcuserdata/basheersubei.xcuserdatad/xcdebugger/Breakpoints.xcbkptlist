@@ -8,11 +8,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "WorkJournal/ViewController.m"
-         timestampString = "367222797.651185"
+         timestampString = "367268321.364307"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "727"
-         endingLineNumber = "727"
+         startingLineNumber = "765"
+         endingLineNumber = "765"
          landmarkName = "-viewDidLoad"
          landmarkType = "5">
       </FileBreakpoint>
