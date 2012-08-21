@@ -74,7 +74,7 @@
         cell = [self getCellContentViewWithCellIdentifier:@"cell" AtIndexPath:indexPath];
     
     
-    [cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
+    [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
     
     // all label views are retrieved so their text can be changed
     UILabel *daynameLabel = (UILabel *)[cell viewWithTag:DAYNAME_TAG];
@@ -230,6 +230,17 @@
 //    self.textViewBeingEditedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
 }
 
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView
+{        
+//    NSLog([[[[textView superview] superview] superview]description]);
+    NSIndexPath *ip = [overviewTableView indexPathForCell: (UITableViewCell *)[[textView superview] superview] ];
+    if ([ip row] == 0) {
+
+        return YES;
+    }
+    return NO;
+}
+
 //enables the dismissKeyboardButton only while editing
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
@@ -255,6 +266,11 @@
 {
 //    [overviewTableView reloadData];
 //    [[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] becomeFirstResponder];
+//    [overviewTableView beginUpdates];
+//    [overviewTableView endUpdates];
+    [[textView superview] setNeedsDisplay];
+        [[textView superview] layoutSubviews];
+//    [textView setNeedsDisplay];
 }
 
 #pragma mark - UIScrollView delegate methods
@@ -518,7 +534,7 @@
 	textView.font = [UIFont boldSystemFontOfSize:TEXT_FONT_SIZE];
     textView.backgroundColor = [UIColor clearColor];
     textView.delegate = self;
-    [textView setUserInteractionEnabled:NO];
+    [textView setUserInteractionEnabled:YES];
     
     // makes sure it's multiline
     //    [textView ] = UILineBreakModeWordWrap;
@@ -729,7 +745,7 @@
     [overviewTableView setScrollEnabled:YES];
     
     //TODO try out if selecting can work with textView editing
-    overviewTableView.allowsSelection=YES;
+    overviewTableView.allowsSelection=NO;
     
     
     // performs all needed saving and loading action upon launch and close
