@@ -198,6 +198,7 @@
 //    [self saveDataInFileName:@"today"];
 //    textViewBeingEdited = NO;
     
+
     
     
     // disable the button (to allow swiping scrolling)
@@ -224,7 +225,7 @@
     
     
 
-    
+        [overviewTableView reloadData];
     
 //    self.textViewBeingEditedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
 }
@@ -247,6 +248,13 @@
 //    [self.view bringSubviewToFront:dismissKeyBoardButton];
 //    [[self view] bringSubviewToFront:textView];
     
+}
+
+// whenever text is added or removed to textView (resize its cell)
+- (void)textViewDidChange:(UITextView *)textView
+{
+//    [overviewTableView reloadData];
+//    [[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] becomeFirstResponder];
 }
 
 #pragma mark - UIScrollView delegate methods
@@ -379,10 +387,11 @@
     NSString *currentDayAsString = [dateFormatter stringFromDate:[NSDate date]];
     NSString *newEntry = [[NSString alloc] initWithFormat:@"%@\r",currentDayAsString];
     NSLog(@"LOOK HERE: %@",newEntry);
-    NSInteger indexToInsert = [overviewArray count]-1;
-    if (indexToInsert<0) {
-        indexToInsert = 0;
-    }
+//    NSInteger indexToInsert = [overviewArray count]-1;
+    NSInteger indexToInsert = 0;
+//    if (indexToInsert<0) {
+//        indexToInsert = 0;
+//    }
     [[self overviewArray] insertObject:newEntry atIndex:indexToInsert];
 }
 
