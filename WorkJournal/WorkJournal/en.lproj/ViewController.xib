@@ -76,9 +76,10 @@
 					<object class="IBUITableView" id="495437608">
 						<reference key="NSNextResponder" ref="774585933"/>
 						<int key="NSvFlags">274</int>
-						<string key="NSFrame">{{0, 30}, {320, 420}}</string>
+						<string key="NSFrame">{{0, 10}, {320, 420}}</string>
 						<reference key="NSSuperview" ref="774585933"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="80322433"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">3</int>
@@ -100,6 +101,7 @@
 						<string key="NSFrame">{{282, 427}, {18, 19}}</string>
 						<reference key="NSSuperview" ref="774585933"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
@@ -293,7 +295,6 @@
 						<string key="dismissKeyBoardButton">UIButton</string>
 						<string key="overviewTableView">UITableView</string>
 						<string key="overviewTextView">UITextView</string>
-						<string key="pageControl">UIPageControl</string>
 						<string key="scrollView">UIScrollView</string>
 						<string key="todayTextView">UITextView</string>
 					</dictionary>
@@ -309,10 +310,6 @@
 						<object class="IBToOneOutletInfo" key="overviewTextView">
 							<string key="name">overviewTextView</string>
 							<string key="candidateClassName">UITextView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="pageControl">
-							<string key="name">pageControl</string>
-							<string key="candidateClassName">UIPageControl</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="scrollView">
 							<string key="name">scrollView</string>

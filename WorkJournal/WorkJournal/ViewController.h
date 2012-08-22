@@ -15,7 +15,9 @@
 @property (strong, nonatomic) IBOutlet UIButton *dismissKeyBoardButton;
 @property (strong, nonatomic) NSMutableArray *overviewArray;
 @property (strong, nonatomic) IBOutlet UITableView *overviewTableView;
-
+@property NSInteger lastCursorLocation;
+@property NSInteger lastCursorLength;
+@property BOOL textBeingEdited;
 
 - (IBAction)dismissKeyboardButton:(id)sender;
 - (IBAction)optionsButton:(id)sender;

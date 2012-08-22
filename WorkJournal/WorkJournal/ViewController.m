@@ -16,7 +16,7 @@
 
 @implementation ViewController
 
-@synthesize scrollView, todayTextView, overviewTextView, overviewArray, overviewTableView, dismissKeyBoardButton;
+@synthesize scrollView, todayTextView, overviewTextView, overviewArray, overviewTableView, dismissKeyBoardButton,lastCursorLength,lastCursorLocation,textBeingEdited;
 
 
 
@@ -220,11 +220,12 @@
     NSString *date = [dateFormatter stringFromDate:[NSDate date]];    
     NSString *newEntry = [[NSString alloc]initWithFormat:@"%@\r%@",date,text];
     
-    [ overviewArray replaceObjectAtIndex:0 withObject:newEntry] ;
+    [overviewArray replaceObjectAtIndex:0 withObject:newEntry] ;
     
     [self saveData];
     
-    
+    [self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 10, 0)];
+
 
 //        [overviewTableView reloadData];
     [overviewTableView reloadData];
@@ -238,11 +239,25 @@
     NSIndexPath *ip = [overviewTableView indexPathForCell: (UITableViewCell *)[[textView superview] superview] ];
     if ([ip row] == 0) {
 
+        [textView setSelectedRange:NSMakeRange(lastCursorLocation, lastCursorLength)];
+        
+//        if(!textBeingEdited) textBeingEdited=YES;
+        
         return YES;
     }
     
     [self dismissKeyboardButton:nil];
     return NO;
+}
+
+- (BOOL)textViewShouldEndEditing:(UITextView *)textView
+{
+//    if(!textBeingEdited){
+        self.lastCursorLocation = textView.selectedRange.location;
+        self.lastCursorLength = textView.selectedRange.length;
+//    }
+    
+    return YES;
 }
 
 //enables the dismissKeyboardButton only while editing
@@ -256,7 +271,8 @@
 
     [[self dismissKeyBoardButton] setEnabled:YES];
 
-    
+    // adds a margin on bottom of tableView so that keyboard does not cover the cursor...
+    [self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 200, 0)];
     
     
     
@@ -271,24 +287,72 @@
 {
 //    [overviewTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
 //    [overviewTableView reloadData];
-//    [[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] becomeFirstResponder];
-//    [UIView setAnimationsEnabled:YES];
+    //    [[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] becomeFirstResponder];
+    //    [UIView setAnimationsEnabled:YES];
     
+    //TODO beware of when selectedRange.length is not 0
 
-//    NSLog(@"%@",[self.overviewTableView visibleCells]
+    NSString *lastTwoChars;
+    
+//    if(textView.text.length>2){
+//        
+//        
+//        
+//        
+//        
+//        lastTwoChars = [textView.text substringWithRange:NSMakeRange(textView.selectedRange.location -2, 2)];
+//        
+//        if ([lastTwoChars isEqualToString:@"\n\n"]){
+//            
+//            [textView setText:         [textView.text stringByReplacingCharactersInRange:NSMakeRange(textView.selectedRange.location -2, 2) withString:@"\n"]];
+//            
+//            NSLog(@"double return detected!");
+//        }
+//
+//        
+//        
+//        if(textView.selectedRange.location +1 < textView.text.length){
+//            lastTwoChars = [textView.text substringWithRange:NSMakeRange(textView.selectedRange.location -1, 2)];
+//            
+//            if ([lastTwoChars isEqualToString:@"\n\n"]){
+//                
+//                [textView setText:         [textView.text stringByReplacingCharactersInRange:NSMakeRange(textView.selectedRange.location -1, 2) withString:@"\n"]];
+//                
+//                NSLog(@"double return detected!");
+//            }
+//            
+//            
+//            
+//            //if cursor is last or before last position
+//        }else if (textView.selectedRange.location +1 >= textView.text.length) {
+//        
+//        }
+//        
+//        NSLog(@"lastTwoChars are: %@",lastTwoChars);
+//
+//    }
+    
+    
+    
+        //    NSLog(@"%@",[self.overviewTableView visibleCells]
+    
+//    self.lastCursorLocation = textView.selectedRange.location;
+//    self.lastCursorLength = textView.selectedRange.length;
+
     
     NSIndexPath *ipForFirstCell = [NSIndexPath indexPathForRow:0 inSection:0];
-   CGFloat newRowHeight = [self tableView:overviewTableView heightForRowAtIndexPath: ipForFirstCell];
+//   CGFloat newRowHeight = [self tableView:overviewTableView heightForRowAtIndexPath: ipForFirstCell];
 
-    NSLog(@"before %@",    [textView description]);
+//    NSLog(@"before %@",    [textView description]);
 //    [self.overviewTableView beginUpdates];
     [self.overviewTableView reloadData];
     [[[[overviewTableView cellForRowAtIndexPath:ipForFirstCell] contentView] viewWithTag:TEXT_TAG] becomeFirstResponder];
+
 //    [self.overviewTableView setRowHeight:newRowHeight];
 //        [[[self.overviewTableView cellForRowAtIndexPath:ipForFirstCell] contentView] setFrame:CGRectMake(0, 0, CELL_WIDTH, newRowHeight)];
 //    [self.overviewTableView endUpdates];
 
-    NSLog(@"after: %@",    [textView description]);
+//    NSLog(@"after: %@",    [textView description]);
     //    
 //    [textView removeFromSuperview];
 //    [[[self overviewTableView]cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] addSubview:textView];
@@ -398,7 +462,7 @@
 //    NSLog(@"dismiss keyboard!");
     
     [(UITextView *)[[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] viewWithTag:TEXT_TAG] resignFirstResponder];
-
+    textBeingEdited = NO;
 
 
 }
@@ -729,7 +793,23 @@
 
     // finally, reload the tableView (reloads cells and their subviews usw.)
 //    [overviewTableView reloadData];
+    
+    [self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 10, 0)];
+
+
+    
     [overviewTableView reloadData];
+
+    
+    
+    
+    //TODO cursor details stored when first loaded
+//    lastCursorLength = [(UITextView *)[[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] viewWithTag: TEXT_TAG] selectedRange].length;
+//    lastCursorLocation = [(UITextView *)[[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] viewWithTag: TEXT_TAG] selectedRange].location;
+    lastCursorLength = 0;
+    lastCursorLocation = 0;
+    
+    textBeingEdited = NO;
     
 }// end performUpdateOnLoad
 
