@@ -89,7 +89,7 @@
     
     
 //    CGFloat rowHeight = 50.0;
-    NSLog(@"in cellForRowAtIndexPath height is: %f", rowHeight);
+//    NSLog(@"in cellForRowAtIndexPath height is: %f", rowHeight);
     CGRect rect = CGRectMake(TEXT_OFFSET, 0, TEXT_WIDTH, rowHeight);
     [textLabel setFrame:rect];
     
@@ -134,7 +134,7 @@
 //    [textLabel setFrame:CGRectMake(TEXT_OFFSET, 0, TEXT_WIDTH, rowHeight)];
     
     // TODO for debugging (tells when each cell is recreated or re-initialized)
-    NSLog(@"making cell number: %i", [indexPath row]);
+//    NSLog(@"making cell number: %i", [indexPath row]);
 
     
     // return that cell
@@ -200,7 +200,7 @@
 //    textViewBeingEdited = NO;
     
 
-    
+//    NSLog(@"didEndEditing!");
     
     // disable the button (to allow swiping scrolling)
     [[self dismissKeyBoardButton] setEnabled:NO];
@@ -265,6 +265,7 @@
     
 }
 
+
 // whenever text is added or removed to textView (resize its cell)
 - (void)textViewDidChange:(UITextView *)textView
 {
@@ -272,15 +273,45 @@
 //    [overviewTableView reloadData];
 //    [[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] becomeFirstResponder];
 //    [UIView setAnimationsEnabled:YES];
-//    [overviewTableView beginUpdates];
-//    [overviewTableView endUpdates];
+    
+
+//    NSLog(@"%@",[self.overviewTableView visibleCells]
+    
+    NSIndexPath *ipForFirstCell = [NSIndexPath indexPathForRow:0 inSection:0];
+   CGFloat newRowHeight = [self tableView:overviewTableView heightForRowAtIndexPath: ipForFirstCell];
+
+    NSLog(@"before %@",    [textView description]);
+//    [self.overviewTableView beginUpdates];
+    [self.overviewTableView reloadData];
+    [[[[overviewTableView cellForRowAtIndexPath:ipForFirstCell] contentView] viewWithTag:TEXT_TAG] becomeFirstResponder];
+//    [self.overviewTableView setRowHeight:newRowHeight];
+//        [[[self.overviewTableView cellForRowAtIndexPath:ipForFirstCell] contentView] setFrame:CGRectMake(0, 0, CELL_WIDTH, newRowHeight)];
+//    [self.overviewTableView endUpdates];
+
+    NSLog(@"after: %@",    [textView description]);
+    //    
+//    [textView removeFromSuperview];
+//    [[[self overviewTableView]cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] addSubview:textView];
 //    [UIView setAnimationsEnabled:NO];
     
 //    [[[textView superview]superview] setNeedsDisplay];
 //        [[[textView superview] superview] layoutSubviews];
 //    [textView setNeedsDisplay];
 //    [overviewTableView reloadData];
+    
+    
+
+
+
+//    NSLog(@"you SUCK!");
+//    NSLog(@"%f",newRowHeight);
+//    [[[overviewTableView cellForRowAtIndexPath:ipForFirstCell] contentView]setFrame:CGRectMake(0, 0, CELL_WIDTH, newRowHeight)];
+//    [[overviewTableView cellForRowAtIndexPath:ipForFirstCell] setFrame:CGRectMake(0, 0, CELL_WIDTH, newRowHeight)];
+
+//    [overviewTableView reloadSections:0 withRowAnimation:UITableViewRowAnimationNone];
+    
 }
+
 
 #pragma mark - UIScrollView delegate methods
 
@@ -364,7 +395,7 @@
  
 // actually dismisses keyboard (called within many other methods like below one)
 - (IBAction)dismissKeyboardButton:(id)sender {
-    NSLog(@"dismiss keyboard!");
+//    NSLog(@"dismiss keyboard!");
     
     [(UITextView *)[[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] viewWithTag:TEXT_TAG] resignFirstResponder];
 
@@ -411,7 +442,7 @@
     // TODO expect bugs if carriage line doesnt work (trying to read date in first line)
     NSString *currentDayAsString = [dateFormatter stringFromDate:[NSDate date]];
     NSString *newEntry = [[NSString alloc] initWithFormat:@"%@\r",currentDayAsString];
-    NSLog(@"LOOK HERE: %@",newEntry);
+//    NSLog(@"LOOK HERE: %@",newEntry);
 //    NSInteger indexToInsert = [overviewArray count]-1;
     NSInteger indexToInsert = 0;
 //    if (indexToInsert<0) {
@@ -478,7 +509,7 @@
     CGRect rect;
 //    CGFloat rowHeight = 50.0;
     
-    NSLog(@"we're inside getCellContentView. this cell is not being reused (made from scratch) the rowHeight is %f", rowHeight);
+//    NSLog(@"we're inside getCellContentView. this cell is not being reused (made from scratch) the rowHeight is %f", rowHeight);
     
 
     // TODO label tweaking below
@@ -544,7 +575,7 @@
     textView.backgroundColor = [UIColor clearColor];
     textView.delegate = self;
     [textView setUserInteractionEnabled:YES];
-    
+//    textView.scrollEnabled = NO;
     // makes sure it's multiline
     //    [textView ] = UILineBreakModeWordWrap;
     //    textLabel.numberOfLines = 0;
@@ -671,10 +702,6 @@
     //if last entry was not done today, make a new entry for today
     if(![currentDay isEqualToDate: lastEntryDay])
     {   
-        NSLog(@"lastEntryDateAsString %@", lastEntryDateAsString);
-        NSLog(@"currentDay %@", currentDay);
-        NSLog(@"lastEntryDate %@", lastEntryDate);
-        NSLog(@"lastEntryDay %@", lastEntryDay);
         //TODO debugging
         NSLog(@"it's not the same day!");
         
@@ -695,10 +722,10 @@
     
     //TODO debugging and checking overview array 
     // read in file
-    NSLog(@"overviewArray count = %i", [[self overviewArray] count]);
-    for (int i=0; i<[overviewArray count]; i++) {
-        NSLog(@"index%i: %@",i,[overviewArray objectAtIndex:i]);
-    }
+//    NSLog(@"overviewArray count = %i", [[self overviewArray] count]);
+//    for (int i=0; i<[overviewArray count]; i++) {
+//        NSLog(@"index%i: %@",i,[overviewArray objectAtIndex:i]);
+//    }
 
     // finally, reload the tableView (reloads cells and their subviews usw.)
 //    [overviewTableView reloadData];
@@ -793,6 +820,12 @@
     NSLog(@"in ViewDidLoad");
 } // end viewDidLoad
 
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self.overviewTableView beginUpdates];
+    [self.overviewTableView endUpdates];
+}
 
 - (void)viewDidUnload
 {

@@ -29,6 +29,7 @@
 // UITableViewDelegate protocol method
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath;
 
+- (void)textViewDidChange:(UITextView *)textView;
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView;
 //- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex;
