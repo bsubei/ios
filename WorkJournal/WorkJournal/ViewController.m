@@ -16,7 +16,15 @@
 
 @implementation ViewController
 
-@synthesize scrollView, todayTextView, overviewTextView, overviewArray, overviewTableView, dismissKeyBoardButton,lastCursorLength,lastCursorLocation,textBeingEdited;
+@synthesize scrollView;
+@synthesize todayTextView;
+@synthesize overviewTextView;
+@synthesize overviewArray;
+@synthesize overviewTableView;
+@synthesize dismissKeyBoardButton;
+@synthesize lastCursorLength;
+@synthesize lastCursorLocation;
+@synthesize textBeingEdited;
 
 
 
@@ -292,7 +300,7 @@
     
     //TODO beware of when selectedRange.length is not 0
 
-    NSString *lastTwoChars;
+//    NSString *lastTwoChars;
     
 //    if(textView.text.length>2){
 //        
@@ -374,6 +382,44 @@
 
 //    [overviewTableView reloadSections:0 withRowAnimation:UITableViewRowAnimationNone];
     
+}
+
+// called whenever any text is to be inputted. checks if it is a return key and disallows it
+// if there already is a return before or after cursor (to disallow double returns)
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+{
+    // if insertion point (not highlighted text)
+    if (range.length ==0) {
+        NSInteger cursorIndex = range.location;
+        
+        // if user types return
+        if ([text isEqualToString:@"\n"]){
+
+            //check if there is a return before cursor (short circuit AND to make sure cursor
+            // isn't in FIRST position; cursorIndex-1 would then give negative number -> error)
+            // if there is a return before cursor, don't change the text (i.e. don't let the 
+            // \n go through)
+            if( range.location > 0 && [textView.text characterAtIndex:cursorIndex-1] == '\n')
+            {
+                return  NO;
+                
+            //check if there is a return after cursor (short circuit AND to make sure cursor isn't
+            // in LAST position; cursorIndex would be out of bounds if we try to get char)
+            // if there is a return after cursor, don't let it through (return NO)
+            } else if(cursorIndex < textView.text.length && [textView.text characterAtIndex:cursorIndex] == '\n') {
+                return NO;
+            }
+
+        }
+        
+    }
+    
+    
+    // BUG, user can enter more than one return if they use highlighting in some way (range.length>0)
+    // or when copying and pasting a double return... negligible
+    
+    // in normal cases, allow the textView to be changed...
+    return YES;
 }
 
 
