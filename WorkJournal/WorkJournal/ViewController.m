@@ -414,7 +414,7 @@
     // goes through each entry and concatenates them all into one string
     NSString *overviewText=@"";
     for (NSString *entry in overviewArray) {
-        overviewText = [NSString stringWithFormat:@"%@\n%@",overviewText,entry];
+        overviewText = [NSString stringWithFormat:@"%@\n\n%@",overviewText,entry];
     }
     //returns that string
     return overviewText;
