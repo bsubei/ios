@@ -226,7 +226,7 @@
     
     NSString *text = [tv text];
     NSString *date = [dateFormatter stringFromDate:[NSDate date]];    
-    NSString *newEntry = [[NSString alloc]initWithFormat:@"%@\r%@",date,text];
+    NSString *newEntry = [[NSString alloc]initWithFormat:@"%@\n%@",date,text];
     
     [overviewArray replaceObjectAtIndex:0 withObject:newEntry] ;
     
@@ -412,15 +412,21 @@
 
         }
         
+    // if highlighted text then pressed return
     }else if(range.length >0){
-        if ([text rangeOfString:@"\n"].length != 0) {
+        if ([text rangeOfString:@"\n"].length != 0)
             return NO;
-        }
+        
+
     }
+    // if pasted more than one return
+//else if([text rangeOfString:@"\n\n"].length != 0){
+//        return NO;
+//    }
 
     
-    NSLog(@"return: %i", [text rangeOfString:@"\n"].length);
-    NSLog(@"range length %i",range.length);
+//    NSLog(@"return: %i", [text rangeOfString:@"\n"].length);
+//    NSLog(@"range length %i",range.length);
     
     // BUG, user can enter more than one return if they use highlighting in some way (range.length>0)
     // or when copying and pasting a double return... negligible
@@ -558,7 +564,7 @@
     //TODO make a new entry in overviewArray (check new carriage line is correct)
     // TODO expect bugs if carriage line doesnt work (trying to read date in first line)
     NSString *currentDayAsString = [dateFormatter stringFromDate:[NSDate date]];
-    NSString *newEntry = [[NSString alloc] initWithFormat:@"%@\r",currentDayAsString];
+    NSString *newEntry = [[NSString alloc] initWithFormat:@"%@\n",currentDayAsString];
 //    NSLog(@"LOOK HERE: %@",newEntry);
 //    NSInteger indexToInsert = [overviewArray count]-1;
     NSInteger indexToInsert = 0;
