@@ -408,7 +408,10 @@
             // if there is a return after cursor, don't let it through (return NO)
             } else if(cursorIndex < textView.text.length && [textView.text characterAtIndex:cursorIndex] == '\n') {
                 return NO;
-            }
+            
+            // if return typed at beginning of entry
+            }else if(range.location==0)
+                return NO;
 
         }
         
