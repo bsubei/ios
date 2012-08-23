@@ -412,8 +412,15 @@
 
         }
         
+    }else if(range.length >0){
+        if ([text rangeOfString:@"\n"].length != 0) {
+            return NO;
+        }
     }
+
     
+    NSLog(@"return: %i", [text rangeOfString:@"\n"].length);
+    NSLog(@"range length %i",range.length);
     
     // BUG, user can enter more than one return if they use highlighting in some way (range.length>0)
     // or when copying and pasting a double return... negligible
