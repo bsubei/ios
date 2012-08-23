@@ -66,13 +66,13 @@
     
     // extracted date from entryString
     NSString *dateAsString = [entryString substringWithRange: rangeOfDate];
-
+	
     // gets the (log) text from entry (by taking substring of entryString from point where dateAsString finished and onwards)
     NSString *textString = [entryString substringFromIndex:rangeOfDate.length];    
     
     // the entry's cell is initialized (gets reusable cell if possible)
     UITableViewCell *cell;
-
+	
     // reuse cell with dequeueing if possible
     cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
     // if not possible, make cell from scratch
@@ -83,7 +83,7 @@
     UILabel *daynameLabel = (UILabel *)[cell viewWithTag:DAYNAME_TAG];
     UILabel *dateLabel = (UILabel *)[cell viewWithTag:DATE_TAG];
     UITextView *textView = (UITextView *)[cell viewWithTag:TEXT_TAG];    
-
+	
     
     // get the dayOfTheWeek and set daynameLabel text to it
     
@@ -96,7 +96,7 @@
     dateAsString = [dateAsString substringToIndex:[dateAsString length] -1];
     // obtain date from string using dateFormatter
     NSDate *date = [dateFormatter dateFromString:dateAsString];
-
+	
     // sets calendar and components to get weekday
     NSCalendar *cal = [[NSCalendar alloc]initWithCalendarIdentifier:NSGregorianCalendar];
     NSDateComponents *comp = [cal components:NSWeekdayCalendarUnit fromDate: date];
@@ -105,7 +105,12 @@
     NSInteger *dayOfWeekAsInt = (NSInteger *)[comp weekday];
     // gets the weekday string from helper method
     daynameLabel.text =  [self dayOfWeekUsingInt:dayOfWeekAsInt];
-
+	
+	// if cell's date is today, then set text to TODAY
+	if ([self isDate:date sameDayAsDate:[NSDate date]]) {
+		daynameLabel.text = @"TODAY";
+	}
+	
     // now, change dateLabel text
     
     //first, get the date without the year (excludes last 5 chars)
@@ -139,10 +144,10 @@
 {
     // get the text for the cell's entry
     NSString *text = [overviewArray objectAtIndex:[indexPath row]];
-
+	
     // set up a constraint
     CGSize constraint = CGSizeMake(TEXT_WIDTH, MAX_CELL_HEIGHT);
-
+	
     //TODO don't forget to use same font here as used in cell
     // calculated size of the text label using the constraint
     CGSize size = [text sizeWithFont:[UIFont systemFontOfSize:TEXT_FONT_SIZE] constrainedToSize:constraint lineBreakMode:UILineBreakModeWordWrap];
@@ -165,7 +170,7 @@
 // saves the top entry to the overviewArray and disables the dismissKeyboardButton
 - (void)textViewDidEndEditing:(UITextView *)textView
 {
-
+	
     // disable the button
     [[self dismissKeyBoardButton] setEnabled:NO];
     
@@ -177,7 +182,7 @@
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     // set date format
     [dateFormatter setDateFormat:@"dd-MM-yyyy"];
-
+	
     //gets text from top cell
     NSString *text = [tv text];
     // gets the date
@@ -188,18 +193,18 @@
     // saves the top tableView cell into the array
     [overviewArray replaceObjectAtIndex:0 withObject:newEntry] ;
     
-//	    overviewArray = [[NSMutableArray alloc]init];
+	//	    overviewArray = [[NSMutableArray alloc]init];
 	
     // saves the array to file
     [self saveData];
     
     // fixes table view inset (keyboard is now down, return inset to normal)
     [self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 10, 0)];
-
+	
     // update the table view entries
     [overviewTableView reloadData];
 	
-
+	
     
 }
 
@@ -209,10 +214,10 @@
 {        
     // get indexPath of tapped textView cell
     NSIndexPath *indexPath = [overviewTableView indexPathForCell: (UITableViewCell *)[[textView superview] superview] ];
-
+	
     // if tapped textView is top entry, then allow it to be edited
     if ([indexPath row] == 0) {
-
+		
         // also set the cursor position to last known one
         // TODO bouncing bug fix here???
         [textView setSelectedRange:NSMakeRange(lastCursorLocation, lastCursorLength)];
@@ -250,7 +255,7 @@
 {
     // gets indexPath for top entry
     NSIndexPath *ipForFirstCell = [NSIndexPath indexPathForRow:0 inSection:0];
-
+	
     // update the table view (but this dismisses keyboard)
     [self.overviewTableView reloadData];
     // call the keyboard back up
@@ -269,7 +274,7 @@
         
         // if user types return
         if ([text isEqualToString:@"\n"]){
-
+			
             //check if there is a return before cursor (short circuit AND to make sure cursor
             // isn't in FIRST position, index 0; cursorIndex-1 would then give negative number -> error)
             // if there is a return before cursor, don't change the text (i.e. don't let the 
@@ -277,19 +282,19 @@
             if( cursorIndex > 0 && [textView.text characterAtIndex:cursorIndex-1] == '\n')
             {
                 return  NO;
-            
-            //check if there is a return after cursor (short circuit AND to make sure cursor isn't
-            // in LAST position; cursorIndex would then be out of bounds if we try to get char)
-            // if there is a return after cursor, don't let it through (return NO)
+				
+				//check if there is a return after cursor (short circuit AND to make sure cursor isn't
+				// in LAST position; cursorIndex would then be out of bounds if we try to get char)
+				// if there is a return after cursor, don't let it through (return NO)
             } else if(cursorIndex < textView.text.length && [textView.text characterAtIndex:cursorIndex] == '\n') {
                 return NO;
-            
-            // if return typed at beginning of entry, also don't allow \n to go through
+				
+				// if return typed at beginning of entry, also don't allow \n to go through
             }else if(range.location==0)
                 return NO;
         }
         
-    // if highlighted text then pressed return, don't allow /n to go through
+		// if highlighted text then pressed return, don't allow /n to go through
     }else if(range.length >0){
         if ([text rangeOfString:@"\n"].length != 0)
             return NO;
@@ -333,7 +338,7 @@
 - (IBAction)dismissKeyboardButton:(id)sender {
     
     [(UITextView *)[[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] viewWithTag:TEXT_TAG] resignFirstResponder];
-
+	
 }
 
 // when actionSheet buttons are pressed
@@ -354,7 +359,7 @@
                 [mailman setMessageBody: messageString isHTML:NO];
                 [self presentModalViewController:mailman animated:YES];
                 
-            // if mail is not set up on device, display an alert
+				// if mail is not set up on device, display an alert
             }else {
                 UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Error" message:@"Device is not configured for sending emails. Please configure your email options in the Mail app." delegate:nil cancelButtonTitle:@"OK, my bad" otherButtonTitles: nil];
                 [alert show];
@@ -382,6 +387,27 @@
 
 #pragma mark - Helper Methods
 
+// TODO NEEDS FIXING!
+- (BOOL)isDate:(NSDate *)d1 sameDayAsDate:(NSDate *)d2
+{
+
+	// set up calendars and components (to compare the day parts of d1 and d2)
+	NSCalendar *cal = [NSCalendar currentCalendar];
+	
+	NSDateComponents *components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate: d1];
+	NSDate *day1 = [cal dateFromComponents:components];
+	
+	components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate: d2];
+	NSDate *day2 = [cal dateFromComponents:components];
+	
+	
+	//if d1 is same day as d2, return YES
+	if([day1 isEqualToDate: day2]){ return YES;}
+	
+	// if not same day, return NO
+	return NO;
+}
+
 // returns the string representation of overviewArray
 - (NSString *) stringFromOverviewArray
 {
@@ -402,12 +428,12 @@
         //change infoView y position to 460
         [self.infoView setFrame:CGRectMake(0, 460, self.infoView.frame.size.width, infoView.frame.size.height)];
         // set overviewTableView to opaque
-//        [overviewTableView setAlpha:100.0];
+		//        [overviewTableView setAlpha:100.0];
     }
-    ];
-
-//    [overviewTableView setHidden:NO];
-
+	 ];
+	
+	//    [overviewTableView setHidden:NO];
+	
     NSLog(@"infoView was tapped!");
 }
 
@@ -417,31 +443,35 @@
     
     [UIView animateWithDuration:1 animations:^{
         [self.infoView setFrame:CGRectMake(0, 0, self.infoView.frame.size.width, infoView.frame.size.height)];
-//            [overviewTableView setAlpha:0.0];
+		//            [overviewTableView setAlpha:0.0];
     }];
 }
 
 // adds a new entry in overviewArray with today's date
 - (void)addNewEntryForToday
 {
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     // set date format
-    [dateFormatter setDateFormat:@"dd-MM-yyyy"];
+	[dateFormatter setDateFormat:@"dd-MM-yyyy"];
     
     //gets currentDay
-    NSString *currentDayAsString = [dateFormatter stringFromDate:[NSDate date]];
-    // newEntry will be simply currentDay + a return line
-    NSString *newEntry = [[NSString alloc] initWithFormat:@"%@\n",currentDayAsString];
-    NSInteger indexToInsert = 0;
+	    NSString *currentDayAsString = [dateFormatter stringFromDate:[NSDate date]];
+	    // newEntry will be simply currentDay + a return line
+	    NSString *newEntry = [[NSString alloc] initWithFormat:@"%@\n",currentDayAsString];
+	
+//	//TODO add the word today instead of current date ONLY for first entry
+//	NSString *newEntry = @"Today\n";
+	
+	NSInteger indexToInsert = 0;
     
     //adds the new entry as first index
     [[self overviewArray] insertObject:newEntry atIndex:indexToInsert];
-
+	
 }
 
 // returns a string of dayOfWeek using given int
 - (NSString *)dayOfWeekUsingInt: (NSInteger *)number
-{
+{	
     switch ((int)number) {
         case 1:
             return @"SUN";
@@ -486,19 +516,19 @@
     
     // disable selection of table cells
     [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-     
+	
     
-
+	
     // get the rowHeight dynamically
     CGFloat rowHeight = [self tableView:[self overviewTableView] heightForRowAtIndexPath:indexPath];
     CGRect rect;
-
+	
     // TODO label tweaking below
     
     // the DAYNAME label is created and configured    
     // Create a dayname label for the cell and add to cell's contentView as a subview
     UILabel *daynameLabel;
-
+	
 	rect = CGRectMake(DAYNAME_OFFSET, 40, DAYNAME_WIDTH, LABEL_HEIGHT);
 	daynameLabel = [[UILabel alloc] initWithFrame:rect];
 	daynameLabel.tag = DAYNAME_TAG;
@@ -506,7 +536,7 @@
     daynameLabel.backgroundColor = [UIColor clearColor];
 	// add the dayname label as a subview to the cell
     [cell.contentView addSubview:daynameLabel];
-        
+	
     // now, the DATE label is created and configured
     
     UILabel *dateLabel;
@@ -516,14 +546,14 @@
 	dateLabel.tag = DATE_TAG;
 	dateLabel.font = [UIFont boldSystemFontOfSize:DATE_FONT_SIZE];
     dateLabel.backgroundColor = [UIColor clearColor];
-
+	
     // add the date label as a subview to the cell
     [cell.contentView addSubview:dateLabel];
     
- 
+	
     // now the actual textView (to hold user-entered text) is created and configured
     UITextView *textView;
-
+	
 	rect = CGRectMake(TEXT_OFFSET, 0, TEXT_WIDTH, rowHeight);
 	textView = [[UITextView alloc] initWithFrame:rect];
     //    textLabel.textAlignment = UITextAlignmentCenter;
@@ -532,14 +562,14 @@
     textView.backgroundColor = [UIColor clearColor];
     textView.delegate = self;
     [textView setUserInteractionEnabled:YES];
-//    textView.scrollEnabled = NO;
-        
+	//    textView.scrollEnabled = NO;
+	
     // add the text view as a subview to the cell
     [cell.contentView addSubview:textView];
     
     // now that the cell has the 3 subviews ready, return it
     return cell;
-
+	
 }// end getCellContentViewWithCellIdentifier:AtIndexPath:
 
 #pragma mark - Saving & loading methods
@@ -553,7 +583,7 @@
     // if readData returns sthg (if file is there)
     if ([self readData] != nil) {
 		[self setOverviewArray:[self readData]];
-		
+		NSLog(@"file found. Reading in data.");
 		
 		
 		
@@ -562,6 +592,7 @@
 		[[self dismissKeyBoardButton] setEnabled:NO];
 		// dismiss keyboard in case it was up
 		[self dismissKeyboardButton:nil];
+		
 		
 		//create dateFormatter
 		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -580,17 +611,9 @@
 		
 		NSDate *lastEntryDate = [dateFormatter dateFromString:lastEntryDateAsString];
 		
-		// set up calendars and components (to compare currentDay and lastEntryDay)
-		NSCalendar *cal = [NSCalendar currentCalendar];
-		NSDateComponents *components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate:[NSDate date]];
-		NSDate *currentDay = [cal dateFromComponents:components];
-		components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate: lastEntryDate];
-		NSDate *lastEntryDay = [cal dateFromComponents:components];
-		
-		
-		//if last entry was not done today, make a new entry for today
-		if(![currentDay isEqualToDate: lastEntryDay])
-		{   
+		//now, we compare lastEntryDate to today's date and see if they are not the same day
+		// if they are not, we will create a new entry for today
+		if(![self isDate:lastEntryDate sameDayAsDate:[NSDate date]]){
 			//TODO debugging
 			NSLog(@"it's not the same day!");
 			
@@ -600,16 +623,16 @@
 			
 			//first, check if the first entry is blank or not. If it is, remove that entry (since it's blank)
 			if (firstEntryText == nil || [firstEntryText isEqualToString:@""]) [overviewArray removeObjectAtIndex:0];
-			
+		
 			// make a new entry because today is a new day
 			[self addNewEntryForToday];
 			
 			// save to file
 			[self saveData];
 			
-			// else if it's still today, do nothing
-		}
-
+			
+		}// end if(not the same day)
+		
 		//else if file is missing
     }else {
         // add a new entry
@@ -622,7 +645,7 @@
 	
     // set the insets back to normal (huge bottom inset was there when keyboard was up)
     [self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 10, 0)];
-
+	
 	// FOR TESTING (resets all values)
 	if (RESET) {
 		overviewArray = [[NSMutableArray alloc]init];
@@ -659,7 +682,7 @@
     
     //TODO (new line of code here) save the overviewArray to overviewFile
     dataToSave = [self overviewArray];
-        
+	
     // else, there is a problem, don't proceed.
     
     //writes text data to file
@@ -698,19 +721,14 @@
 // called every time the view loads (usually upon app launch or unminimize)
 - (void)viewDidLoad
 {
-
+	
     [super viewDidLoad];
-
+	
     // initializes overviewArray to an empty array
-    overviewArray = [[NSMutableArray alloc]init];
-
-    
-    // UNCOMMENT to DELETE ALL DATA
-//    [self saveData];
-//	return;
+    overviewArray = [[NSMutableArray alloc] init];
 	
     //NOTE: all views and subviews are created in the nib. None are created within the code. Only the tableViewCells are created in code.
-
+	
     // table view properties set here
     [overviewTableView setBounces:YES];
     [overviewTableView setAlwaysBounceVertical:YES];
@@ -719,17 +737,17 @@
     
     //VERY IMPORTANT (so that infoView can be tapped)
     [self.infoView setUserInteractionEnabled:YES];
-
+	
     // set up (tap recognizer for the infoView)
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(infoPageSlideOut)];
     [tap setNumberOfTapsRequired:1];
     [self.infoView addGestureRecognizer:tap];
-
+	
     // set up (tap rec for overviewTableView)
     tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dismissKeyboardButton:)];
     [tap setNumberOfTapsRequired:1];
     [self.overviewTableView addGestureRecognizer:tap];
-
+	
     // turn off selection for table view
     overviewTableView.allowsSelection=NO;
     
@@ -746,8 +764,6 @@
     [self setDismissKeyBoardButton:nil];
     [self setOverviewTableView:nil];
     [self setInfoView:nil];
-    [self setLastCursorLength:nil];
-    [self setLastCursorLocation:nil];
 	
     [super viewDidUnload];
     // Release any retained subviews of the main view.
