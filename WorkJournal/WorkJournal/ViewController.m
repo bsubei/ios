@@ -106,9 +106,13 @@
     // gets the weekday string from helper method
     daynameLabel.text =  [self dayOfWeekUsingInt:dayOfWeekAsInt];
 	
-	// if cell's date is today, then set text to TODAY
+	// if cell's date is today, then set text to TODAY and change colors
 	if ([self isDate:date sameDayAsDate:[NSDate date]]) {
 		daynameLabel.text = @"TODAY";
+		
+		[dateLabel setTextColor:[UIColor redColor]];
+		[daynameLabel setTextColor:[UIColor redColor]];
+		[textView setTextColor:[UIColor redColor]];
 	}
 	
     // now, change dateLabel text
