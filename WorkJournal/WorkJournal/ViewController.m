@@ -125,10 +125,10 @@
     //sets the dateLabel text
     dateLabel.text = dateWithoutYearAsString;
     
-    // textView rowHeight is calculated and set
-    CGFloat rowHeight = [self tableView:[self overviewTableView] heightForRowAtIndexPath:indexPath];
+    // textView rowHeight is calculated and set AGAIN in case of dequeueing
+        CGFloat rowHeight = [self tableView:overviewTableView heightForRowAtIndexPath:indexPath];
     //we set the frame (in case we are dequeueing cell)
-    CGRect rect = CGRectMake(TEXT_OFFSET, 0, TEXT_WIDTH, rowHeight);
+    CGRect rect = CGRectMake(TEXT_OFFSET, TEXT_MARGIN, TEXT_WIDTH, rowHeight - TEXT_MARGIN*2);
     [textView setFrame:rect];
     // finally, change textLabel text
     textView.text = textString;
@@ -156,8 +156,7 @@
 	
     
 	
-    // get the rowHeight dynamically
-    CGFloat rowHeight = [self tableView:[self overviewTableView] heightForRowAtIndexPath:indexPath];
+
     CGRect rect;
 	
     // TODO label tweaking below
@@ -194,7 +193,10 @@
     // now the actual textView (to hold user-entered text) is created and configured
     UITextView *textView;
 	
-	rect = CGRectMake(TEXT_OFFSET, 0, TEXT_WIDTH, rowHeight);
+	// get the rowHeight dynamically
+    CGFloat rowHeight = [self tableView:[self overviewTableView] heightForRowAtIndexPath:indexPath];
+	
+	rect = CGRectMake(TEXT_OFFSET, TEXT_MARGIN, TEXT_WIDTH, rowHeight - TEXT_MARGIN*2);
 	textView = [[UITextView alloc] initWithFrame:rect];
     //    textLabel.textAlignment = UITextAlignmentCenter;
 	textView.tag = TEXT_TAG;
@@ -203,6 +205,8 @@
     textView.delegate = self;
     [textView setUserInteractionEnabled:YES];
 	[textView setOpaque:YES];
+	// REMOVES the inner margins inside the textView (fixes dynamic height)
+	[textView setContentInset:UIEdgeInsetsMake(-8,-8,-8,-8)];
 	
 	//    textView.scrollEnabled = NO;
 	
@@ -235,10 +239,13 @@
     //TODO don't forget to use same font here as used in cell
     // calculated size of the text label using the constraint
     CGSize size = [text sizeWithFont:[UIFont systemFontOfSize:TEXT_FONT_SIZE] constrainedToSize:constraint lineBreakMode:UILineBreakModeWordWrap];
+	
+	
     
     // gets the rowHeight (either this or the minimum)
     CGFloat rowHeight = MAX(size.height, MIN_CELL_HEIGHT);
-    
+	
+
     // returns it (also adds margins on top and bottom)
     return rowHeight + (TEXT_MARGIN*2);    
 }// end
