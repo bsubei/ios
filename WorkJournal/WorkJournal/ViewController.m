@@ -7,8 +7,7 @@
 //
 
 #import "ViewController.h"
-
-#import "QuartzCore/QuartzCore.h"
+#import <MessageUI/MessageUI.h>
 
 @interface ViewController()
 
@@ -25,7 +24,7 @@
 @synthesize lastCursorLength;
 @synthesize lastCursorLocation;
 @synthesize textBeingEdited;
-
+@synthesize infoView;
 
 
 #pragma mark - constants for label frames and sizes usw.
@@ -82,7 +81,7 @@
         cell = [self getCellContentViewWithCellIdentifier:@"cell" AtIndexPath:indexPath];
     
     
-    [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+//    [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
     
     // all label views are retrieved so their text can be changed
     UILabel *daynameLabel = (UILabel *)[cell viewWithTag:DAYNAME_TAG];
@@ -102,7 +101,7 @@
     [textLabel setFrame:rect];
     
     //TODO for debugging (to check frame borders)
-    [[textLabel layer] setBorderWidth:2.0f];
+//    [[textLabel layer] setBorderWidth:2.0f];
     
     // get the dayOfTheWeek and set daynameLabel text to it
     
@@ -490,7 +489,7 @@
     NSMutableArray *dataToSave = [[NSMutableArray alloc] init];
     
     // write over overview files with empty array
-    [dataToSave writeToFile:[self saveFilePath: @"overview"] atomically:YES];
+    [dataToSave writeToFile:[self saveFilePath] atomically:YES];
 
     //sets todayTextView to default
     [[self todayTextView] setText:@"Nichts"];
@@ -526,10 +525,10 @@
     [(UITextView *)[[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] viewWithTag:TEXT_TAG] resignFirstResponder];
     textBeingEdited = NO;
 
-
+    
 }
 
-/*
+
 // when actionSheet buttons are pressed
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
@@ -539,23 +538,100 @@
             
             // if email button
         case 0:
-            
+            //TODO test this and see if we should add .pdf to filename
+            //check if mail is set-up
+            if([MFMailComposeViewController canSendMail])
+            {
+                MFMailComposeViewController *mailman = [[MFMailComposeViewController alloc]init];
+                mailman.mailComposeDelegate = self;
+                [mailman setSubject:@"Your work journal export PDF"];
+                NSData *fileData = [[NSData alloc] initWithContentsOfFile:[self saveFilePath]];
+                [mailman addAttachmentData:fileData mimeType:@"application/pdf" fileName:@"journal"];
+                [mailman setMessageBody:@"Attached is the pdf copy of your journal." isHTML:NO];
+                [self presentModalViewController:mailman animated:YES];
+                
+            // if not, display an alert
+            }else {
+                UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Error" message:@"Device is not configured for sending emails. Please configure your email options in the Mail app." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+                [alert show];
+                
+            }
             break;
             
             // if punch button
         case 1:
             
+            [self infoPageSlideIn];
+           
+//            [self.view bringSubviewToFront:infoView];
+//            [infoView setExclusiveTouch:YES];
+            
+            
+            
+//            [self infoPageSlideOut];
+            
+//            [infoView setHidden:NO];
+            
+//            UIViewController *infoViewController = [[UIViewController alloc] init];
+//            [infoViewController ]
+            
             break;
             
             //case 2 is cancel (already handled; do nothing)
-        default:
-            break;
+//        default:
+//            break;
     }
     
 }// end actionSheet:clickedButtonAtIndex:
-*/
+
  
+
+- (void)mailComposeController:(MFMailComposeViewController *)mailController didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    //TODO add alerts for results of the email sending or do stuff when user cancels or saves draft
+    
+    [self dismissModalViewControllerAnimated:YES];
+}
+
 #pragma mark - Helper Methods
+
+
+- (void)infoPageSlideOut
+{
+    
+    [UIView animateWithDuration:1 animations:^{
+//        self.infoView.hidden=YES;
+        [self.infoView setFrame:CGRectMake(0, 460, self.infoView.frame.size.width, infoView.frame.size.height)];
+        [overviewTableView setAlpha:100.0];
+    }];
+    
+    [overviewTableView setHidden:NO];
+
+    
+
+    NSLog(@"infoView was tapped!");
+
+}
+
+// animate the infoView sliding in
+- (void)infoPageSlideIn
+{
+
+//    NSLog(@"%@", overviewTableView.gestureRecognizers);
+    
+    [UIView animateWithDuration:1 animations:^{
+        self.infoView.hidden=NO;
+        [self.infoView setFrame:CGRectMake(0, 0, self.infoView.frame.size.width, infoView.frame.size.height)];
+            [overviewTableView setAlpha:0.0];
+    }];
+    
+//    [overviewTableView setHidden:YES];
+
+    
+    
+    [self.view bringSubviewToFront:infoView];
+    
+}
 
 // adds a new entry in overviewArray with today's date
 - (void)addNewEntryForToday
@@ -734,10 +810,10 @@
 //    [cell.contentView sendSubviewToBack:[cell accessoryView]];
     
     
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dismissKeyboardButton:)];
-    [tap setNumberOfTapsRequired:1];
-    
-    [cell.contentView addGestureRecognizer:tap];
+//    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dismissKeyboardButton:)];
+//    [tap setNumberOfTapsRequired:1];
+//    
+//    [cell.contentView addGestureRecognizer:tap];
     
     // now that the cell has the 3 subviews (UILabels), return it
     return cell;
@@ -862,6 +938,9 @@
     
     [overviewTableView reloadData];
 
+
+    
+    
     
     
     
@@ -876,12 +955,12 @@
 }// end performUpdateOnLoad
 
 // helper method to get filePath
-- (NSString *) saveFilePath: (NSString *) fileName
+- (NSString *) saveFilePath
 {
     // get file path (directory)
     NSArray *pathArray = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     // file name with extension
-    NSString *fileWithExtension = [[NSString alloc] initWithFormat:@"%@.plist", fileName];
+    NSString *fileWithExtension = [[NSString alloc] initWithFormat:@"overview.plist"];
     // return full path with full name
     return [[pathArray objectAtIndex:0] stringByAppendingPathComponent: fileWithExtension];
 } // end saveFilePath
@@ -898,7 +977,7 @@
         // else, there is a problem, don't proceed.
     
     //writes text data to file
-    [dataToSave writeToFile:[self saveFilePath: @"overview"] atomically:YES];
+    [dataToSave writeToFile:[self saveFilePath] atomically:YES];
     
 }// end saveData
 
@@ -908,7 +987,7 @@
 {
     
     //if file doesn't exist, return
-    if (![[NSFileManager defaultManager] fileExistsAtPath:[self saveFilePath: @"overview"]]) {
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[self saveFilePath]]) {
         NSLog(@"file not found. Cannot load.");
         return nil;
     }
@@ -916,7 +995,7 @@
     // new array
     NSMutableArray *dataToLoad;
     // read in file
-    dataToLoad = [[NSMutableArray alloc] initWithContentsOfFile: [self saveFilePath:@"overview"] ];
+    dataToLoad = [[NSMutableArray alloc] initWithContentsOfFile: [self saveFilePath] ];
     
     // check if file is not empty
     if([dataToLoad count] < 1)
@@ -952,6 +1031,21 @@
     [overviewTableView setDelaysContentTouches:YES];
     [overviewTableView setScrollEnabled:YES];
     
+    
+    [self.infoView setUserInteractionEnabled:YES];
+
+    // set up (tap recognizer for the infoView)
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(infoPageSlideOut)];
+    [tap setNumberOfTapsRequired:1];
+    [self.infoView addGestureRecognizer:tap];
+
+    // set up (tap rec for overviewTableView)
+    tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dismissKeyboardButton:)];
+    [tap setNumberOfTapsRequired:1];
+    [self.overviewTableView addGestureRecognizer:tap];
+
+
+    
     //TODO try out if selecting can work with textView editing
     overviewTableView.allowsSelection=NO;
     
@@ -977,6 +1071,7 @@
     [self setDismissKeyBoardButton:nil];
     [self setOverviewTableView:nil];
     [self setOverviewTableView:nil];
+    [self setInfoView:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
 }

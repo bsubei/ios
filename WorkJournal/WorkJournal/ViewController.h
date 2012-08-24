@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MessageUI/MessageUI.h>
 
-@interface ViewController : UIViewController <UIScrollViewDelegate, UIActionSheetDelegate, UITextViewDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface ViewController : UIViewController <UIScrollViewDelegate, UIActionSheetDelegate, UITextViewDelegate, UITableViewDataSource, UITableViewDelegate, MFMailComposeViewControllerDelegate>
 @property (strong, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (strong, nonatomic) IBOutlet UITextView *todayTextView;
 @property (strong, nonatomic) IBOutlet UITextView *overviewTextView;
@@ -18,6 +19,8 @@
 @property NSInteger lastCursorLocation;
 @property NSInteger lastCursorLength;
 @property BOOL textBeingEdited;
+@property (strong, nonatomic) IBOutlet UIImageView *infoView;
+
 
 - (IBAction)dismissKeyboardButton:(id)sender;
 - (IBAction)optionsButton:(id)sender;
@@ -36,5 +39,7 @@
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView;
 //- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex;
 //- (void) performUpdateOnLoad;
+
+//- (void)mailComposeController:(MFMailComposeViewController *)mailController didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error;
 
 @end

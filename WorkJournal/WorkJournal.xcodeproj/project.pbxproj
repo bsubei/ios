@@ -16,6 +16,7 @@
 		7671A9B415BBC2E6005E4777 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7671A9B315BBC2E6005E4777 /* ViewController.m */; };
 		7671A9B715BBC2E6005E4777 /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7671A9B515BBC2E6005E4777 /* ViewController.xib */; };
 		76D71C3515D3238900414A63 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76D71C3415D3238900414A63 /* QuartzCore.framework */; };
+		76DEE4B015E7EF60008EA8A0 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76DEE4AF15E7EF60008EA8A0 /* MessageUI.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,7 @@
 		7671A9B315BBC2E6005E4777 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		7671A9B615BBC2E6005E4777 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController.xib; sourceTree = "<group>"; };
 		76D71C3415D3238900414A63 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		76DEE4AF15E7EF60008EA8A0 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,6 +42,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				76DEE4B015E7EF60008EA8A0 /* MessageUI.framework in Frameworks */,
 				76D71C3515D3238900414A63 /* QuartzCore.framework in Frameworks */,
 				7671A9A115BBC2E6005E4777 /* UIKit.framework in Frameworks */,
 				7671A9A315BBC2E6005E4777 /* Foundation.framework in Frameworks */,
@@ -70,6 +73,7 @@
 		7671A99F15BBC2E6005E4777 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				76DEE4AF15E7EF60008EA8A0 /* MessageUI.framework */,
 				76D71C3415D3238900414A63 /* QuartzCore.framework */,
 				7671A9A015BBC2E6005E4777 /* UIKit.framework */,
 				7671A9A215BBC2E6005E4777 /* Foundation.framework */,
