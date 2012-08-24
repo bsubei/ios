@@ -19,6 +19,7 @@
 @synthesize overviewTableView;
 @synthesize dismissKeyBoardButton;
 @synthesize infoView;
+@synthesize optionsButton;
 
 
 #pragma mark - constants for label frames and sizes usw.
@@ -146,7 +147,8 @@
     
     // set the whole cell to opaque (for performance issues when scrolling)
     [cell setOpaque:YES];
-    
+    [cell.contentView setOpaque:YES];
+	
     //TODO consider setting each UILabel below as opaque also...
     
     // disable selection of table cells
@@ -168,7 +170,9 @@
 	daynameLabel = [[UILabel alloc] initWithFrame:rect];
 	daynameLabel.tag = DAYNAME_TAG;
 	daynameLabel.font = [UIFont boldSystemFontOfSize:DAYNAME_FONT_SIZE];
-    daynameLabel.backgroundColor = [UIColor clearColor];
+    daynameLabel.backgroundColor = [UIColor whiteColor];
+	[daynameLabel setOpaque:YES];
+	
 	// add the dayname label as a subview to the cell
     [cell.contentView addSubview:daynameLabel];
 	
@@ -180,7 +184,8 @@
 	dateLabel = [[UILabel alloc] initWithFrame:rect];
 	dateLabel.tag = DATE_TAG;
 	dateLabel.font = [UIFont boldSystemFontOfSize:DATE_FONT_SIZE];
-    dateLabel.backgroundColor = [UIColor clearColor];
+    dateLabel.backgroundColor = [UIColor whiteColor];
+	[dateLabel setOpaque:YES];
 	
     // add the date label as a subview to the cell
     [cell.contentView addSubview:dateLabel];
@@ -194,9 +199,11 @@
     //    textLabel.textAlignment = UITextAlignmentCenter;
 	textView.tag = TEXT_TAG;
 	textView.font = [UIFont boldSystemFontOfSize:TEXT_FONT_SIZE];
-    textView.backgroundColor = [UIColor clearColor];
+    textView.backgroundColor = [UIColor whiteColor];
     textView.delegate = self;
     [textView setUserInteractionEnabled:YES];
+	[textView setOpaque:YES];
+	
 	//    textView.scrollEnabled = NO;
 	
     // add the text view as a subview to the cell
@@ -261,7 +268,7 @@
 		
 		// adds a margin on bottom of tableView so that keyboard does not cover the cursor...
 		[self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 200, 0)];
-
+		
         return YES;
     }
     
@@ -277,8 +284,7 @@
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
     [[self dismissKeyBoardButton] setEnabled:YES];
-    
-    }
+}
 
 // when user done editing (after dismissKeyboardButton:)
 // saves the top entry to the overviewArray and disables the dismissKeyboardButton
@@ -384,29 +390,50 @@
 	
 }
 
-// animates the infoView sliding out (using block animations)
-- (void)infoPageSlideOut
+// animates the infoView fading out (using block animations)
+- (void)infoPageFadeOut
 {
-    [UIView animateWithDuration:1 animations:^{
-        //change infoView y position to 460
-        [self.infoView setFrame:CGRectMake(0, 460, self.infoView.frame.size.width, infoView.frame.size.height)];
-        // set overviewTableView to opaque
-		//        [overviewTableView setAlpha:100.0];
-    }
-	 ];
+	[overviewTableView setOpaque:YES];
+
+	[UIView animateWithDuration:1 animations:^(void){
+		
+		[infoView setAlpha:0.0];
+		
+	} completion:^(BOOL finished){
+		if (finished) {
+			[UIView animateWithDuration:1 animations:^(void){
+				
+				[overviewTableView setAlpha:1.0];
+				[optionsButton setAlpha:1.0];
+				
+			}  ];
+		}
+	}];
 	
-	//    [overviewTableView setHidden:NO];
-	
+
 }
 
-// animate the infoView sliding in
-- (void)infoPageSlideIn
+// animate the infoView fading in
+- (void)infoPageFadeIn
 {
-    
-    [UIView animateWithDuration:1 animations:^{
-        [self.infoView setFrame:CGRectMake(0, 0, self.infoView.frame.size.width, infoView.frame.size.height)];
-		//            [overviewTableView setAlpha:0.0];
-    }];
+	[overviewTableView setOpaque:NO];
+	
+	[UIView animateWithDuration:1 animations:^(void){
+		
+		[overviewTableView setAlpha:0.0];
+		[optionsButton setAlpha:0.0];
+		
+	} completion:^(BOOL finished){
+		if (finished) {
+			[UIView animateWithDuration:1 animations:^(void){
+				
+
+				[infoView setAlpha:1.0];
+				
+			}  ];
+		}
+	}];
+	
 }
 
 
@@ -440,8 +467,8 @@
             
             // if info button
         case 1:
-            //slide in the info page
-            [self infoPageSlideIn];
+            //fade in the info page
+            [self infoPageFadeIn];
             break;
     }// end switch
     
@@ -477,7 +504,7 @@
 // TODO NEEDS FIXING!
 - (BOOL)isDate:(NSDate *)d1 sameDayAsDate:(NSDate *)d2
 {
-
+	
 	// set up calendars and components (to compare the day parts of d1 and d2)
 	NSCalendar *cal = [NSCalendar currentCalendar];
 	
@@ -516,12 +543,12 @@
 	[dateFormatter setDateFormat:@"dd-MM-yyyy"];
     
     //gets currentDay
-	    NSString *currentDayAsString = [dateFormatter stringFromDate:[NSDate date]];
-	    // newEntry will be simply currentDay + a return line
-	    NSString *newEntry = [[NSString alloc] initWithFormat:@"%@\n",currentDayAsString];
+	NSString *currentDayAsString = [dateFormatter stringFromDate:[NSDate date]];
+	// newEntry will be simply currentDay + a return line
+	NSString *newEntry = [[NSString alloc] initWithFormat:@"%@\n",currentDayAsString];
 	
-//	//TODO add the word today instead of current date ONLY for first entry
-//	NSString *newEntry = @"Today\n";
+	//	//TODO add the word today instead of current date ONLY for first entry
+	//	NSString *newEntry = @"Today\n";
 	
 	NSInteger indexToInsert = 0;
     
@@ -587,13 +614,13 @@
     if ([self readDataFromFile] != nil) {
 		[self setOverviewArray:[self readDataFromFile]];		
 		
-
+		
 		//no need since it's always called when entering background state
-//		//first, dismiss keyboard properly (in case it was already up)
-//		
-//		[[self dismissKeyBoardButton] setEnabled:NO];
-//		// dismiss keyboard in case it was up
-//		[self dismissKeyboardButton:nil];
+		//		//first, dismiss keyboard properly (in case it was already up)
+		//		
+		//		[[self dismissKeyBoardButton] setEnabled:NO];
+		//		// dismiss keyboard in case it was up
+		//		[self dismissKeyboardButton:nil];
 		
 		
 		//create dateFormatter
@@ -621,7 +648,7 @@
 			
 			//first, check if the last entry is blank or not. If it is, remove that entry (since it's blank)
 			if (lastEntryText == nil || [lastEntryText isEqualToString:@""]) [overviewArray removeObjectAtIndex:0];
-		
+			
 			// make a new entry because today is a new day
 			[self addNewEntryForToday];
 			
@@ -639,13 +666,13 @@
         [self saveDataToFile];
     }
 	
-
+	
 	// FOR TESTING (resets all values)
 	if (RESET) {
 		overviewArray = [[NSMutableArray alloc]init];
 		[self saveDataToFile];
 	}
-
+	
 }// end performUpdateOnLoad
 
 // saves data from text field into file with given name
@@ -712,12 +739,16 @@
     [overviewTableView setAlwaysBounceVertical:YES];
     [overviewTableView setDelaysContentTouches:YES];
     [overviewTableView setScrollEnabled:YES];
+	[overviewTableView setOpaque:YES];
     
     //VERY IMPORTANT (so that infoView can be tapped)
     [self.infoView setUserInteractionEnabled:YES];
+	[self.infoView setFrame:CGRectMake(0, 0, infoView.frame.size.width, infoView.frame.size.height)];
+	[self.infoView setAlpha:0.0];
+	
 	
     // set up (tap recognizer for the infoView)
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(infoPageSlideOut)];
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(infoPageFadeOut)];
     [tap setNumberOfTapsRequired:1];
     [self.infoView addGestureRecognizer:tap];
 	
@@ -728,7 +759,7 @@
 	
     // turn off selection for table view
     overviewTableView.allowsSelection=NO;
-
+	
 	// set the insets back to normal (huge bottom inset was there when keyboard was up)
     [self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 10, 0)];
 	
@@ -745,6 +776,7 @@
     [self setOverviewTableView:nil];
     [self setInfoView:nil];
 	
+	[self setOptionsButton:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
 }

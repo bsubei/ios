@@ -15,6 +15,7 @@
 @property (strong, nonatomic) NSMutableArray *overviewArray;
 @property (strong, nonatomic) IBOutlet UITableView *overviewTableView;
 @property (strong, nonatomic) IBOutlet UIImageView *infoView;
+@property (strong, nonatomic) IBOutlet UIButton *optionsButton;
 
 - (IBAction)dismissKeyboardButton:(id)sender;
 - (IBAction)optionsButton:(id)sender;
