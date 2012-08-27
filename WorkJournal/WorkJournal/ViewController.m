@@ -430,7 +430,7 @@
 }
 
 
-# pragma mark - UIActionSheet methods
+# pragma mark - UIActionSheet and MFMail methods
 
 // when actionSheet buttons are pressed
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
@@ -468,6 +468,15 @@
 }// end actionSheet:clickedButtonAtIndex:
 
 
+// MFMailComposeViewController delegate protocol method.
+// called when an MFMailComposeViewController is dismissed
+- (void)mailComposeController:(MFMailComposeViewController *)mailController didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    //TODO add alerts for results of the email sending or do stuff when user cancels or saves draft
+    
+    [self dismissModalViewControllerAnimated:YES];
+}
+
 // brings up option menu
 // TODO tweak string names and options
 - (IBAction)optionsButton:(id)sender {
@@ -482,17 +491,6 @@
     [actionSheet showInView:self.view];
     
 }// end optionsButton
-
-#pragma mark - MFMailComposeViewController method
-
-// MFMailComposeViewController delegate protocol method.
-// called when an MFMailComposeViewController is dismissed
-- (void)mailComposeController:(MFMailComposeViewController *)mailController didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
-{
-    //TODO add alerts for results of the email sending or do stuff when user cancels or saves draft
-    
-    [self dismissModalViewControllerAnimated:YES];
-}
 
 #pragma mark - Helper Methods
 
