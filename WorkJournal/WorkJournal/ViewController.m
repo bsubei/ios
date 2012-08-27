@@ -52,10 +52,11 @@
 #define LABEL_HEIGHT 26.0
 
 
-#pragma mark - UITableView protocol methods
+#pragma mark - UITableView protocol & other methods
 
 //UITableViewDataSource protocol method
 // responsible for creating each cell within the tableView
+// calls getCellContentView to create cell content from scratch or dequeues it (reuses it)
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // the cell's entry string (that day's date+log)
@@ -113,6 +114,10 @@
 		[dateLabel setTextColor:[UIColor redColor]];
 		[daynameLabel setTextColor:[UIColor redColor]];
 		[textView setTextColor:[UIColor redColor]];
+	}else {
+		[dateLabel setTextColor:[UIColor blackColor]];
+		[daynameLabel setTextColor:[UIColor blackColor]];
+		[textView setTextColor:[UIColor blackColor]];
 	}
 	
     // now, change dateLabel text
@@ -134,6 +139,77 @@
     return cell;
     
 } // end tableView:cellForRowAtIndexPath:
+
+
+// gets UITableViewCell contentView (basically creates each cell from scratch here)
+- (UITableViewCell *) getCellContentViewWithCellIdentifier: (NSString *) cellIdentifier AtIndexPath: (NSIndexPath *) indexPath
+{
+    // creates cell
+    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle: UITableViewCellStyleDefault reuseIdentifier:@"cell" ];
+    
+    // set the whole cell to opaque (for performance issues when scrolling)
+    [cell setOpaque:YES];
+    
+    //TODO consider setting each UILabel below as opaque also...
+    
+    // disable selection of table cells
+    [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+	
+    
+	
+    // get the rowHeight dynamically
+    CGFloat rowHeight = [self tableView:[self overviewTableView] heightForRowAtIndexPath:indexPath];
+    CGRect rect;
+	
+    // TODO label tweaking below
+    
+    // the DAYNAME label is created and configured    
+    // Create a dayname label for the cell and add to cell's contentView as a subview
+    UILabel *daynameLabel;
+	
+	rect = CGRectMake(DAYNAME_OFFSET, 40, DAYNAME_WIDTH, LABEL_HEIGHT);
+	daynameLabel = [[UILabel alloc] initWithFrame:rect];
+	daynameLabel.tag = DAYNAME_TAG;
+	daynameLabel.font = [UIFont boldSystemFontOfSize:DAYNAME_FONT_SIZE];
+    daynameLabel.backgroundColor = [UIColor clearColor];
+	// add the dayname label as a subview to the cell
+    [cell.contentView addSubview:daynameLabel];
+	
+    // now, the DATE label is created and configured
+    
+    UILabel *dateLabel;
+    
+	rect = CGRectMake(DATE_OFFSET, 10, DATE_WIDTH, LABEL_HEIGHT);
+	dateLabel = [[UILabel alloc] initWithFrame:rect];
+	dateLabel.tag = DATE_TAG;
+	dateLabel.font = [UIFont boldSystemFontOfSize:DATE_FONT_SIZE];
+    dateLabel.backgroundColor = [UIColor clearColor];
+	
+    // add the date label as a subview to the cell
+    [cell.contentView addSubview:dateLabel];
+    
+	
+    // now the actual textView (to hold user-entered text) is created and configured
+    UITextView *textView;
+	
+	rect = CGRectMake(TEXT_OFFSET, 0, TEXT_WIDTH, rowHeight);
+	textView = [[UITextView alloc] initWithFrame:rect];
+    //    textLabel.textAlignment = UITextAlignmentCenter;
+	textView.tag = TEXT_TAG;
+	textView.font = [UIFont boldSystemFontOfSize:TEXT_FONT_SIZE];
+    textView.backgroundColor = [UIColor clearColor];
+    textView.delegate = self;
+    [textView setUserInteractionEnabled:YES];
+	//    textView.scrollEnabled = NO;
+	
+    // add the text view as a subview to the cell
+    [cell.contentView addSubview:textView];
+    
+    // now that the cell has the 3 subviews ready, return it
+    return cell;
+	
+}// end getCellContentViewWithCellIdentifier:AtIndexPath:
+
 
 //UITableViewDataSource protocol method
 // returns the number of rows (cells)
@@ -166,6 +242,12 @@
 // informs (all) tableviews that they should have one section only...
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
+}
+
+// detects when view (tableView in this case) is dragged and dismisses keyboard
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    [self dismissKeyboardButton:nil];
 }
 
 #pragma mark - UITextView delegate methods
@@ -311,31 +393,7 @@
     return YES;
 }
 
-
-#pragma mark - UIScrollView delegate methods
-
-// detects when view (tableView in this case) is dragged and dismisses keyboard
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
-{
-    [self dismissKeyboardButton:nil];
-}
-
-#pragma mark - Button and misc. event methods
-
-// brings up option menu
-// TODO tweak string names and options
-- (IBAction)optionsButton:(id)sender {
-    
-    // create action sheet
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Options"
-                                                             delegate:self
-                                                    cancelButtonTitle:@"Cancel"
-                                               destructiveButtonTitle:nil
-                                                    otherButtonTitles:@"Email", @"Info", nil];
-    // show action sheet
-    [actionSheet showInView:self.view];
-    
-}// end optionsButton
+#pragma mark - Buttons and misc. event methods
 
 
 // actually dismisses keyboard (called within many other methods); causes textViewDidEndEditing to be called
@@ -344,6 +402,35 @@
     [(UITextView *)[[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] viewWithTag:TEXT_TAG] resignFirstResponder];
 	
 }
+
+// animates the infoView sliding out (using block animations)
+- (void)infoPageSlideOut
+{
+    [UIView animateWithDuration:1 animations:^{
+        //change infoView y position to 460
+        [self.infoView setFrame:CGRectMake(0, 460, self.infoView.frame.size.width, infoView.frame.size.height)];
+        // set overviewTableView to opaque
+		//        [overviewTableView setAlpha:100.0];
+    }
+	 ];
+	
+	//    [overviewTableView setHidden:NO];
+	
+    NSLog(@"infoView was tapped!");
+}
+
+// animate the infoView sliding in
+- (void)infoPageSlideIn
+{
+    
+    [UIView animateWithDuration:1 animations:^{
+        [self.infoView setFrame:CGRectMake(0, 0, self.infoView.frame.size.width, infoView.frame.size.height)];
+		//            [overviewTableView setAlpha:0.0];
+    }];
+}
+
+
+# pragma mark - UIActionSheet methods
 
 // when actionSheet buttons are pressed
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
@@ -379,6 +466,24 @@
     }// end switch
     
 }// end actionSheet:clickedButtonAtIndex:
+
+
+// brings up option menu
+// TODO tweak string names and options
+- (IBAction)optionsButton:(id)sender {
+    
+    // create action sheet
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Options"
+                                                             delegate:self
+                                                    cancelButtonTitle:@"Cancel"
+                                               destructiveButtonTitle:nil
+                                                    otherButtonTitles:@"Email", @"Info", nil];
+    // show action sheet
+    [actionSheet showInView:self.view];
+    
+}// end optionsButton
+
+#pragma mark - MFMailComposeViewController method
 
 // MFMailComposeViewController delegate protocol method.
 // called when an MFMailComposeViewController is dismissed
@@ -424,32 +529,6 @@
     return overviewText;
     
 } //end stringFromOverviewArray
-
-// animates the infoView sliding out (using block animations)
-- (void)infoPageSlideOut
-{
-    [UIView animateWithDuration:1 animations:^{
-        //change infoView y position to 460
-        [self.infoView setFrame:CGRectMake(0, 460, self.infoView.frame.size.width, infoView.frame.size.height)];
-        // set overviewTableView to opaque
-		//        [overviewTableView setAlpha:100.0];
-    }
-	 ];
-	
-	//    [overviewTableView setHidden:NO];
-	
-    NSLog(@"infoView was tapped!");
-}
-
-// animate the infoView sliding in
-- (void)infoPageSlideIn
-{
-    
-    [UIView animateWithDuration:1 animations:^{
-        [self.infoView setFrame:CGRectMake(0, 0, self.infoView.frame.size.width, infoView.frame.size.height)];
-		//            [overviewTableView setAlpha:0.0];
-    }];
-}
 
 // adds a new entry in overviewArray with today's date
 - (void)addNewEntryForToday
@@ -507,76 +586,18 @@
     return @"dafuq?";
 }// end dayOfWeekUsingInt:
 
-// gets UITableViewCell contentView (basically creates each cell from scratch here)
-- (UITableViewCell *) getCellContentViewWithCellIdentifier: (NSString *) cellIdentifier AtIndexPath: (NSIndexPath *) indexPath
+// helper method to get filePath
+- (NSString *) saveFilePath
 {
-    // creates cell
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle: UITableViewCellStyleDefault reuseIdentifier:@"cell" ];
-    
-    // set the whole cell to opaque (for performance issues when scrolling)
-    [cell setOpaque:YES];
-    
-    //TODO consider setting each UILabel below as opaque also...
-    
-    // disable selection of table cells
-    [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-	
-    
-	
-    // get the rowHeight dynamically
-    CGFloat rowHeight = [self tableView:[self overviewTableView] heightForRowAtIndexPath:indexPath];
-    CGRect rect;
-	
-    // TODO label tweaking below
-    
-    // the DAYNAME label is created and configured    
-    // Create a dayname label for the cell and add to cell's contentView as a subview
-    UILabel *daynameLabel;
-	
-	rect = CGRectMake(DAYNAME_OFFSET, 40, DAYNAME_WIDTH, LABEL_HEIGHT);
-	daynameLabel = [[UILabel alloc] initWithFrame:rect];
-	daynameLabel.tag = DAYNAME_TAG;
-	daynameLabel.font = [UIFont boldSystemFontOfSize:DAYNAME_FONT_SIZE];
-    daynameLabel.backgroundColor = [UIColor clearColor];
-	// add the dayname label as a subview to the cell
-    [cell.contentView addSubview:daynameLabel];
-	
-    // now, the DATE label is created and configured
-    
-    UILabel *dateLabel;
-    
-	rect = CGRectMake(DATE_OFFSET, 10, DATE_WIDTH, LABEL_HEIGHT);
-	dateLabel = [[UILabel alloc] initWithFrame:rect];
-	dateLabel.tag = DATE_TAG;
-	dateLabel.font = [UIFont boldSystemFontOfSize:DATE_FONT_SIZE];
-    dateLabel.backgroundColor = [UIColor clearColor];
-	
-    // add the date label as a subview to the cell
-    [cell.contentView addSubview:dateLabel];
-    
-	
-    // now the actual textView (to hold user-entered text) is created and configured
-    UITextView *textView;
-	
-	rect = CGRectMake(TEXT_OFFSET, 0, TEXT_WIDTH, rowHeight);
-	textView = [[UITextView alloc] initWithFrame:rect];
-    //    textLabel.textAlignment = UITextAlignmentCenter;
-	textView.tag = TEXT_TAG;
-	textView.font = [UIFont boldSystemFontOfSize:TEXT_FONT_SIZE];
-    textView.backgroundColor = [UIColor clearColor];
-    textView.delegate = self;
-    [textView setUserInteractionEnabled:YES];
-	//    textView.scrollEnabled = NO;
-	
-    // add the text view as a subview to the cell
-    [cell.contentView addSubview:textView];
-    
-    // now that the cell has the 3 subviews ready, return it
-    return cell;
-	
-}// end getCellContentViewWithCellIdentifier:AtIndexPath:
+    // get file path (directory)
+    NSArray *pathArray = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    // file name with extension
+    NSString *fileWithExtension = [[NSString alloc] initWithFormat:@"overview.plist"];
+    // return full path with full name
+    return [[pathArray objectAtIndex:0] stringByAppendingPathComponent: fileWithExtension];
+} // end saveFilePath
 
-#pragma mark - Saving & loading methods
+#pragma mark - Saving & loading (file IO) methods
 
 // performs all data updating necessary when loading (reads from files and writes to files)
 - (void) performUpdateOnLoad
@@ -666,17 +687,6 @@
     lastCursorLocation = 0;
     
 }// end performUpdateOnLoad
-
-// helper method to get filePath
-- (NSString *) saveFilePath
-{
-    // get file path (directory)
-    NSArray *pathArray = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    // file name with extension
-    NSString *fileWithExtension = [[NSString alloc] initWithFormat:@"overview.plist"];
-    // return full path with full name
-    return [[pathArray objectAtIndex:0] stringByAppendingPathComponent: fileWithExtension];
-} // end saveFilePath
 
 // saves data from text field into file with given name
 - (void) saveData
