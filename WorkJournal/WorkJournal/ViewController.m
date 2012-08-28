@@ -124,7 +124,7 @@
 		//check if the cell is NOT in the same year as today's date
 		if(![self isDate:date sameYearAsDate:[NSDate date]])
 		{
-//			numberOfCharsToDeleteAtEndOfDate = 0;
+			numberOfCharsToDeleteAtEndOfDate = 0;
 		}
 	}
 
