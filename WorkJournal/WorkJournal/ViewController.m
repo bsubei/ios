@@ -34,20 +34,25 @@
 #define DATE_TAG 2
 #define TEXT_TAG 3
 
-#define DAYNAME_OFFSET 10.0
+#define DAYNAME_X_OFFSET 110.0
+#define DAYNAME_Y_OFFSET 64.0
 #define DAYNAME_WIDTH 100.0
+#define DAYNAME_HEIGHT 44.0
 
-#define DATE_OFFSET 10.0
-#define DATE_WIDTH 90.0
+#define DATE_X_OFFSET 110.0
+#define DATE_Y_OFFSET 10.0
+#define DATE_WIDTH 130.0
+#define DATE_HEIGHT 44.0
 
-#define TEXT_OFFSET 160.0
+#define TEXT_X_OFFSET 160.0
 #define TEXT_WIDTH 100.0
-#define TEXT_MARGIN 20.0
+//y margin on top of text AND at bottom (so twice as this much pixels total)
+#define TEXT_Y_OFFSET 20.0
 
 #define DAYNAME_FONT_SIZE 18.0
 #define TEXT_FONT_SIZE 18.0
 #define DATE_FONT_SIZE 18.0
-#define LABEL_HEIGHT 26.0
+
 
 
 #pragma mark - UITableView protocol & other methods
@@ -131,15 +136,16 @@
 
     // now, change dateLabel text
     
-    //first, get the date without the year (excludes last 5 chars)
+    //first, get the date without the year (excludes last 5 chars) UNLESS we're in a diff year
     NSString *dateWithoutYearAsString = [dateAsString substringToIndex:[dateAsString length] - numberOfCharsToDeleteAtEndOfDate];
     //sets the dateLabel text
     dateLabel.text = dateWithoutYearAsString;
-    
+	
+	
     // textView rowHeight is calculated and set AGAIN in case of dequeueing
         CGFloat rowHeight = [self tableView:overviewTableView heightForRowAtIndexPath:indexPath];
     //we set the frame (in case we are dequeueing cell)
-    CGRect rect = CGRectMake(TEXT_OFFSET, TEXT_MARGIN, TEXT_WIDTH, rowHeight - TEXT_MARGIN*2);
+    CGRect rect = CGRectMake(TEXT_X_OFFSET, TEXT_Y_OFFSET, TEXT_WIDTH, rowHeight - TEXT_Y_OFFSET*2);
     [textView setFrame:rect];
     // finally, change textLabel text
     textView.text = textString;
@@ -165,9 +171,6 @@
     // disable selection of table cells
     [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
-    
-	
-
     CGRect rect;
 	
     // TODO label tweaking below
@@ -176,8 +179,11 @@
     // Create a dayname label for the cell and add to cell's contentView as a subview
     UILabel *daynameLabel;
 	
-	rect = CGRectMake(DAYNAME_OFFSET, 40, DAYNAME_WIDTH, LABEL_HEIGHT);
+	rect = CGRectMake(DAYNAME_X_OFFSET - DAYNAME_WIDTH, DAYNAME_Y_OFFSET, DAYNAME_WIDTH, DAYNAME_HEIGHT);
 	daynameLabel = [[UILabel alloc] initWithFrame:rect];
+	[daynameLabel setTextAlignment:UITextAlignmentRight];
+	[daynameLabel setLineBreakMode:UILineBreakModeClip];
+	
 	daynameLabel.tag = DAYNAME_TAG;
 	daynameLabel.font = [UIFont boldSystemFontOfSize:DAYNAME_FONT_SIZE];
     daynameLabel.backgroundColor = [UIColor whiteColor];
@@ -190,8 +196,12 @@
     
     UILabel *dateLabel;
     
-	rect = CGRectMake(DATE_OFFSET, 10, DATE_WIDTH, LABEL_HEIGHT);
+	// the x position is configured for rightAlignment
+	rect = CGRectMake(DATE_X_OFFSET- DATE_WIDTH, DATE_Y_OFFSET, DATE_WIDTH, DATE_HEIGHT);
 	dateLabel = [[UILabel alloc] initWithFrame:rect];
+	
+	[dateLabel setTextAlignment:UITextAlignmentRight];
+	[dateLabel setLineBreakMode:UILineBreakModeClip];
 	dateLabel.tag = DATE_TAG;
 	dateLabel.font = [UIFont boldSystemFontOfSize:DATE_FONT_SIZE];
     dateLabel.backgroundColor = [UIColor whiteColor];
@@ -207,7 +217,7 @@
 	// get the rowHeight dynamically
     CGFloat rowHeight = [self tableView:[self overviewTableView] heightForRowAtIndexPath:indexPath];
 	
-	rect = CGRectMake(TEXT_OFFSET, TEXT_MARGIN, TEXT_WIDTH, rowHeight - TEXT_MARGIN*2);
+	rect = CGRectMake(TEXT_X_OFFSET, TEXT_Y_OFFSET, TEXT_WIDTH, rowHeight - TEXT_Y_OFFSET*2);
 	textView = [[UITextView alloc] initWithFrame:rect];
     //    textLabel.textAlignment = UITextAlignmentCenter;
 	textView.tag = TEXT_TAG;
@@ -258,7 +268,7 @@
 	
 
     // returns it (also adds margins on top and bottom)
-    return rowHeight + (TEXT_MARGIN*2);    
+    return rowHeight + (TEXT_Y_OFFSET*2);    
 }// end
 
 // informs (all) tableviews that they should have one section only...
