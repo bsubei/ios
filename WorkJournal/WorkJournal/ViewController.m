@@ -27,7 +27,7 @@
 #define RESET 0
 
 #define CELL_WIDTH 320.0
-#define MAX_CELL_HEIGHT 2000.0
+#define MAX_CELL_HEIGHT 300.0
 #define MIN_CELL_HEIGHT 44.0
 
 #define DAYNAME_TAG 1
