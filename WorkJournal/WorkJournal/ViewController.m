@@ -105,6 +105,9 @@
     // gets the weekday string from helper method
     daynameLabel.text =  [self dayOfWeekUsingInt:dayOfWeekAsInt];
 	
+	// this variable will tell whether to delete year part in dateLabel or not
+	int numberOfCharsToDeleteAtEndOfDate = 5;
+	
 	// if cell's date is today, then set text to TODAY and change colors
 	if ([self isDate:date sameDayAsDate:[NSDate date]]) {
 		daynameLabel.text = @"TODAY";
@@ -112,16 +115,24 @@
 		[dateLabel setTextColor:[UIColor redColor]];
 		[daynameLabel setTextColor:[UIColor redColor]];
 		[textView setTextColor:[UIColor redColor]];
+	// if it's not today, then keep it black AND check if it's a diff year (to keep the year part)
 	}else {
 		[dateLabel setTextColor:[UIColor blackColor]];
 		[daynameLabel setTextColor:[UIColor blackColor]];
 		[textView setTextColor:[UIColor blackColor]];
+		
+		//check if the cell is NOT in the same year as today's date
+		if(![self isDate:date sameYearAsDate:[NSDate date]])
+		{
+//			numberOfCharsToDeleteAtEndOfDate = 0;
+		}
 	}
-	
+
+
     // now, change dateLabel text
     
     //first, get the date without the year (excludes last 5 chars)
-    NSString *dateWithoutYearAsString = [dateAsString substringToIndex:[dateAsString length] - 5];
+    NSString *dateWithoutYearAsString = [dateAsString substringToIndex:[dateAsString length] - numberOfCharsToDeleteAtEndOfDate];
     //sets the dateLabel text
     dateLabel.text = dateWithoutYearAsString;
     
@@ -238,7 +249,7 @@
 	
     //TODO don't forget to use same font here as used in cell
     // calculated size of the text label using the constraint
-    CGSize size = [text sizeWithFont:[UIFont systemFontOfSize:TEXT_FONT_SIZE] constrainedToSize:constraint lineBreakMode:UILineBreakModeWordWrap];
+    CGSize size = [text sizeWithFont:[UIFont systemFontOfSize:TEXT_FONT_SIZE] constrainedToSize:constraint lineBreakMode:UILineBreakModeCharacterWrap];
 	
 	
     
@@ -507,8 +518,29 @@
 }// end optionsButton
 
 #pragma mark - Helper Methods
+//returns true if the two dates are in the same year
+- (BOOL)isDate:(NSDate *)d1 sameYearAsDate:(NSDate *)d2
+{
+	
+	// set up calendars and components (to compare the year parts of d1 and d2)
+	NSCalendar *cal = [NSCalendar currentCalendar];
+	
+	NSDateComponents *components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit) fromDate: d1];
+	NSDate *day1 = [cal dateFromComponents:components];
+	
+	components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit) fromDate: d2];
+	NSDate *day2 = [cal dateFromComponents:components];
+	
+	
+	//if d1 is same year as d2, return YES
+	if([day1 isEqualToDate: day2]){ return YES;}
+	
+	// if not same year, return NO
+	return NO;
 
-// TODO NEEDS FIXING!
+}
+
+//returns true if the two dates are in the same day
 - (BOOL)isDate:(NSDate *)d1 sameDayAsDate:(NSDate *)d2
 {
 	
