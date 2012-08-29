@@ -27,7 +27,8 @@
 #define RESET 0
 
 #define CELL_WIDTH 320.0
-#define MAX_CELL_HEIGHT 300.0
+#define MAX_CELL_HEIGHT 10000.0
+#define MAX_TODAY_CELL_HEIGHT 300.0
 #define MIN_CELL_HEIGHT 44.0
 
 #define DAYNAME_TAG 1
@@ -113,18 +114,20 @@
 	// this variable will tell whether to delete year part in dateLabel or not
 	int numberOfCharsToDeleteAtEndOfDate = 5;
 	
-	// if cell's date is today, then set text to TODAY and change colors
+	// if cell's date is today, then set text to TODAY and change colors and set it scrollable
 	if ([self isDate:date sameDayAsDate:[NSDate date]]) {
 		daynameLabel.text = @"TODAY";
 		
 		[dateLabel setTextColor:[UIColor redColor]];
 		[daynameLabel setTextColor:[UIColor redColor]];
 		[textView setTextColor:[UIColor redColor]];
-	// if it's not today, then keep it black AND check if it's a diff year (to keep the year part)
+		[textView setScrollEnabled:YES];
+	// if it's not today, then keep it black and non-scrollable AND check if it's a diff year (to keep the year part)
 	}else {
 		[dateLabel setTextColor:[UIColor blackColor]];
 		[daynameLabel setTextColor:[UIColor blackColor]];
 		[textView setTextColor:[UIColor blackColor]];
+		[textView setScrollEnabled:NO];
 		
 		//check if the cell is NOT in the same year as today's date
 		if(![self isDate:date sameYearAsDate:[NSDate date]])
@@ -257,15 +260,18 @@
     // set up a constraint
     CGSize constraint = CGSizeMake(TEXT_WIDTH, MAX_CELL_HEIGHT);
 	
+	// set today cell max height (less than other heights)
+	if ([indexPath row] == 0) {
+		constraint = CGSizeMake(TEXT_WIDTH, MAX_TODAY_CELL_HEIGHT);
+	}	
+	
     //TODO don't forget to use same font here as used in cell
     // calculated size of the text label using the constraint
     CGSize size = [text sizeWithFont:[UIFont systemFontOfSize:TEXT_FONT_SIZE] constrainedToSize:constraint lineBreakMode:UILineBreakModeCharacterWrap];
+
 	
-	
-    
     // gets the rowHeight (either this or the minimum)
     CGFloat rowHeight = MAX(size.height, MIN_CELL_HEIGHT);
-	
 
     // returns it (also adds margins on top and bottom)
     return rowHeight + (TEXT_Y_OFFSET*2);    
