@@ -54,7 +54,8 @@
 #define TEXT_FONT_SIZE 18.0
 #define DATE_FONT_SIZE 18.0
 
-
+int lastCursorLocation;
+int lastCursorLength;
 
 #pragma mark - UITableView protocol & other methods
 
@@ -300,6 +301,9 @@
     // if tapped textView is top entry, then allow it to be edited
     if ([indexPath row] == 0) {
 		
+		[textView setSelectedRange:NSMakeRange(lastCursorLocation, lastCursorLength)];
+
+		
 		// adds a margin on bottom of tableView so that keyboard does not cover the cursor...
 		[self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 200, 0)];
 		
@@ -318,6 +322,14 @@
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
     [[self dismissKeyBoardButton] setEnabled:YES];
+}
+
+// called right before keyboard is dismissed (to save current cursor location)
+- (BOOL)textViewShouldEndEditing:(UITextView *)textView
+{
+    lastCursorLocation = textView.selectedRange.location;
+    lastCursorLength = textView.selectedRange.length;
+    return YES;
 }
 
 // when user done editing (after dismissKeyboardButton:)
@@ -355,6 +367,12 @@
 	
     // update the table view entries
     [overviewTableView reloadData];
+	
+//	[textView scrollRangeToVisible:NSMakeRange(lastCursorLocation, lastCursorLength)];
+// also set the cursor position to last known one
+// TODO bouncing bug fix here???
+//	[textView setSelectedRange:NSMakeRange(lastCursorLocation, lastCursorLength)];
+
 	
 }
 
@@ -411,9 +429,20 @@
     // BUG, user can enter more than one return if they use highlighting in some way (range.length>0)
     // or when copying and pasting a double return... negligible
     
+	
+//	lastCursorLength = range.length;
+//	lastCursorLocation = range.location;
+	
     // in normal cases, allow the textView to be changed...
     return YES;
 }
+
+//- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+//{
+//	if (scrollView ) {
+//		<#statements#>
+//	}
+//}
 
 #pragma mark - Buttons and misc. event methods
 
