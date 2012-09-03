@@ -54,9 +54,11 @@
 #define TEXT_FONT_SIZE 18.0
 #define DATE_FONT_SIZE 18.0
 
+
 int lastCursorLocation;
 int lastCursorLength;
 bool isFirstTap;
+NSString *DEFAULT_TEXT = @"Enter your J here...";
 #pragma mark - UITableView protocol & other methods
 
 //UITableViewDataSource protocol method
@@ -136,8 +138,8 @@ bool isFirstTap;
 			numberOfCharsToDeleteAtEndOfDate = 0;
 		}
 	}
-
-
+	
+	
     // now, change dateLabel text
     
     //first, get the date without the year (excludes last 5 chars) UNLESS we're in a diff year
@@ -300,12 +302,11 @@ bool isFirstTap;
 	
     // if tapped textView is top entry, then allow it to be edited
     if ([indexPath row] == 0) {
-		
-		
 		[textView setSelectedRange:NSMakeRange(lastCursorLocation, lastCursorLength)];
 
-		
-	
+		//TODO TEST BELOW
+		// adds a margin on bottom of tableView so that keyboard does not cover the cursor...
+		[self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 200, 0)];
         return YES;
     }
     
@@ -320,8 +321,7 @@ bool isFirstTap;
 // doesn't cover the cursor)
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
-	// adds a margin on bottom of tableView so that keyboard does not cover the cursor...
-	[self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 200, 0)];
+	
 	
 	
     [[self dismissKeyBoardButton] setEnabled:YES];
@@ -383,9 +383,12 @@ bool isFirstTap;
 
 	
 }
-
+//called whenever cursor is moved or when user taps textView or when edited
+//checks if this is firstTap to set cursor at end.
 - (void)textViewDidChangeSelection:(UITextView *)textView
 {
+	
+	//TODO fix bug when user tries to select text by holding (when firstTap)
 	if (isFirstTap) {
 		[self performSelector:@selector(setCursorToEnd:) withObject:textView afterDelay:0.01];
 	}
@@ -581,7 +584,10 @@ bool isFirstTap;
 
 - (void)setCursorToEnd:(UITextView *)textView
 {
+
+	
 	[textView setSelectedRange:NSMakeRange([[textView text]length], 0)];
+
 }
 //returns true if the two dates are in the same year
 - (BOOL)isDate:(NSDate *)d1 sameYearAsDate:(NSDate *)d2
@@ -649,10 +655,10 @@ bool isFirstTap;
     //gets currentDay
 	NSString *currentDayAsString = [dateFormatter stringFromDate:[NSDate date]];
 	// newEntry will be simply currentDay + a return line
-	NSString *newEntry = [[NSString alloc] initWithFormat:@"%@\n",currentDayAsString];
+	NSString *newEntry = [[NSString alloc] initWithFormat:@"%@\n%@",currentDayAsString,DEFAULT_TEXT];
 	
 	//	//TODO add the word today instead of current date ONLY for first entry
-	//	NSString *newEntry = @"Today\n";
+//		NSString *newEntry = DEFAULT_TEXT;
 	
 	NSInteger indexToInsert = 0;
     
@@ -751,7 +757,7 @@ bool isFirstTap;
 			
 			
 			//first, check if the last entry is blank or not. If it is, remove that entry (since it's blank)
-			if (lastEntryText == nil || [lastEntryText isEqualToString:@""]) [overviewArray removeObjectAtIndex:0];
+			if (lastEntryText == nil || [lastEntryText isEqualToString:@""] || [lastEntryText isEqualToString:DEFAULT_TEXT]) [overviewArray removeObjectAtIndex:0];
 			
 			// make a new entry because today is a new day
 			[self addNewEntryForToday];
