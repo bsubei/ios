@@ -304,9 +304,7 @@ int lastCursorLength;
 		[textView setSelectedRange:NSMakeRange(lastCursorLocation, lastCursorLength)];
 
 		
-		// adds a margin on bottom of tableView so that keyboard does not cover the cursor...
-		[self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 200, 0)];
-		
+	
         return YES;
     }
     
@@ -321,6 +319,10 @@ int lastCursorLength;
 // doesn't cover the cursor)
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
+	// adds a margin on bottom of tableView so that keyboard does not cover the cursor...
+	[self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 200, 0)];
+	
+	
     [[self dismissKeyBoardButton] setEnabled:YES];
 }
 
