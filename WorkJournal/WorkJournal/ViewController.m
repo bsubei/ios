@@ -117,14 +117,26 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 	// this variable will tell whether to delete year part in dateLabel or not
 	int numberOfCharsToDeleteAtEndOfDate = 5;
 	
+	
+	    textView.text = textString;
+	
 	// if cell's date is today, then set text to TODAY and change colors and set it scrollable
 	if ([self isDate:date sameDayAsDate:[NSDate date]]) {
 		daynameLabel.text = @"TODAY";
 		
 		[dateLabel setTextColor:[UIColor redColor]];
 		[daynameLabel setTextColor:[UIColor redColor]];
-		[textView setTextColor:[UIColor redColor]];
+		
 		[textView setScrollEnabled:YES];
+		
+		//TODO how does this refresh? need to refresh this after textViewChange or edit
+		//gray out the default text 
+		if ([[textView text] isEqualToString:DEFAULT_TEXT]) {
+			[textView setTextColor:[UIColor grayColor]];
+		}else {
+			[textView setTextColor:[UIColor redColor]];
+		}
+		
 	// if it's not today, then keep it black and non-scrollable AND check if it's a diff year (to keep the year part)
 	}else {
 		[dateLabel setTextColor:[UIColor blackColor]];
