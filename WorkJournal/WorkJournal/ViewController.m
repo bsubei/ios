@@ -56,7 +56,7 @@
 
 int lastCursorLocation;
 int lastCursorLength;
-
+bool isFirstTap;
 #pragma mark - UITableView protocol & other methods
 
 //UITableViewDataSource protocol method
@@ -301,6 +301,7 @@ int lastCursorLength;
     // if tapped textView is top entry, then allow it to be edited
     if ([indexPath row] == 0) {
 		
+		
 		[textView setSelectedRange:NSMakeRange(lastCursorLocation, lastCursorLength)];
 
 		
@@ -329,8 +330,13 @@ int lastCursorLength;
 // called right before keyboard is dismissed (to save current cursor location)
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView
 {
-    lastCursorLocation = textView.selectedRange.location;
-    lastCursorLength = textView.selectedRange.length;
+	if (!isFirstTap) {
+		lastCursorLocation = textView.selectedRange.location;
+		lastCursorLength = textView.selectedRange.length;
+	} else {
+		isFirstTap=NO;
+	}
+
     return YES;
 }
 
@@ -376,6 +382,13 @@ int lastCursorLength;
 //	[textView setSelectedRange:NSMakeRange(lastCursorLocation, lastCursorLength)];
 
 	
+}
+
+- (void)textViewDidChangeSelection:(UITextView *)textView
+{
+	if (isFirstTap) {
+		[self performSelector:@selector(setCursorToEnd:) withObject:textView afterDelay:0.01];
+	}
 }
 
 // whenever text is added or removed to textView (for live resizing)
@@ -452,7 +465,7 @@ int lastCursorLength;
 - (IBAction)dismissKeyboardButton:(id)sender {
     
     [(UITextView *)[[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] viewWithTag:TEXT_TAG] resignFirstResponder];
-	
+	isFirstTap=YES;
 }
 
 // animates the infoView fading out (using block animations)
@@ -565,6 +578,11 @@ int lastCursorLength;
 }// end optionsButton
 
 #pragma mark - Helper Methods
+
+- (void)setCursorToEnd:(UITextView *)textView
+{
+	[textView setSelectedRange:NSMakeRange([[textView text]length], 0)];
+}
 //returns true if the two dates are in the same year
 - (BOOL)isDate:(NSDate *)d1 sameYearAsDate:(NSDate *)d2
 {
@@ -852,6 +870,7 @@ int lastCursorLength;
     // finally, reload the tableView (reloads cells and their subviews usw.)    
     [overviewTableView reloadData];
     
+	isFirstTap=YES;
 	
 } // end viewDidLoad
 
