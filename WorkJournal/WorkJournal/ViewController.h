@@ -16,7 +16,7 @@
 @property (strong, nonatomic) IBOutlet UITableView *overviewTableView;
 @property (strong, nonatomic) IBOutlet UIImageView *infoView;
 @property (strong, nonatomic) IBOutlet UIButton *optionsButton;
-@property (strong, nonatomic) UILongPressGestureRecognizer *loupeGestureDetector;
+
 
 - (IBAction)dismissKeyboardButton:(id)sender;
 - (IBAction)optionsButton:(id)sender;

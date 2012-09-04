@@ -20,7 +20,7 @@
 @synthesize dismissKeyBoardButton;
 @synthesize infoView;
 @synthesize optionsButton;
-@synthesize loupeGestureDetector;
+
 
 #pragma mark - constants for label frames and sizes usw.
 
@@ -598,8 +598,6 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 
 - (void)setCursorToEnd:(UITextView *)textView
 {
-
-	NSLog(@"this is the state of loupeDetector: %@", [loupeGestureDetector state]);
 	
 	[textView setSelectedRange:NSMakeRange([[textView text]length], 0)];
 
@@ -892,12 +890,7 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
     // finally, reload the tableView (reloads cells and their subviews usw.)    
     [overviewTableView reloadData];
     
-	// TODO note that this is only called once (viewDidLoad). what if day changes?
-	// adds the longPress gesture recognizer to the first cell
-	UITextView *topTextView = (UITextView *) [[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] viewWithTag:TEXT_TAG];
-	loupeGestureDetector = [[UILongPressGestureRecognizer alloc] initWithTarget:nil action:nil];
-	[topTextView addGestureRecognizer:loupeGestureDetector];
-	
+
 	
 	isFirstTap=YES;
 	
