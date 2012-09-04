@@ -20,7 +20,7 @@
 @synthesize dismissKeyBoardButton;
 @synthesize infoView;
 @synthesize optionsButton;
-
+@synthesize loupeGestureDetector;
 
 #pragma mark - constants for label frames and sizes usw.
 
@@ -58,6 +58,7 @@
 int lastCursorLocation;
 int lastCursorLength;
 bool isFirstTap;
+
 NSString *DEFAULT_TEXT = @"Enter your J here...";
 #pragma mark - UITableView protocol & other methods
 
@@ -346,7 +347,7 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 		lastCursorLocation = textView.selectedRange.location;
 		lastCursorLength = textView.selectedRange.length;
 	} else {
-		isFirstTap=NO;
+//		isFirstTap=NO;
 	}
 
     return YES;
@@ -399,10 +400,11 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 //checks if this is firstTap to set cursor at end.
 - (void)textViewDidChangeSelection:(UITextView *)textView
 {
-	
+	NSLog(@"textView DID CHANGE!");
 	//TODO fix bug when user tries to select text by holding (when firstTap)
 	if (isFirstTap) {
 		[self performSelector:@selector(setCursorToEnd:) withObject:textView afterDelay:0.01];
+		isFirstTap=NO;
 	}
 }
 
@@ -597,6 +599,7 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 - (void)setCursorToEnd:(UITextView *)textView
 {
 
+	NSLog(@"this is the state of loupeDetector: %@", [loupeGestureDetector state]);
 	
 	[textView setSelectedRange:NSMakeRange([[textView text]length], 0)];
 
@@ -874,6 +877,7 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
     [tap setNumberOfTapsRequired:1];
     [self.infoView addGestureRecognizer:tap];
 	
+	
     // set up (tap rec for overviewTableView)
     tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dismissKeyboardButton:)];
     [tap setNumberOfTapsRequired:1];
@@ -888,6 +892,13 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
     // finally, reload the tableView (reloads cells and their subviews usw.)    
     [overviewTableView reloadData];
     
+	// TODO note that this is only called once (viewDidLoad). what if day changes?
+	// adds the longPress gesture recognizer to the first cell
+	UITextView *topTextView = (UITextView *) [[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] viewWithTag:TEXT_TAG];
+	loupeGestureDetector = [[UILongPressGestureRecognizer alloc] initWithTarget:nil action:nil];
+	[topTextView addGestureRecognizer:loupeGestureDetector];
+	
+	
 	isFirstTap=YES;
 	
 } // end viewDidLoad
