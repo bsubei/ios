@@ -58,6 +58,7 @@
 int lastCursorLocation;
 int lastCursorLength;
 bool isFirstTap;
+bool isEditing;
 
 NSString *DEFAULT_TEXT = @"Enter your J here...";
 #pragma mark - UITableView protocol & other methods
@@ -88,6 +89,7 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
     if(cell == nil)
         cell = [self getCellContentViewWithCellIdentifier:@"cell" AtIndexPath:indexPath];
     
+
     // all of the cell's subviews are retrieved (using tags) so their text can be changed
     UILabel *daynameLabel = (UILabel *)[cell viewWithTag:DAYNAME_TAG];
     UILabel *dateLabel = (UILabel *)[cell viewWithTag:DATE_TAG];
@@ -129,7 +131,7 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 		[daynameLabel setTextColor:[UIColor redColor]];
 		
 		[textView setScrollEnabled:YES];
-		
+//		[textView setScrollEnabled:NO];
 		//TODO how does this refresh? need to refresh this after textViewChange or edit
 		//gray out the default text 
 		if ([[textView text] isEqualToString:DEFAULT_TEXT]) {
@@ -188,7 +190,8 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
     //TODO consider setting each UILabel below as opaque also...
     
     // disable selection of table cells
-    [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+//    [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+//    [cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
 	
     CGRect rect;
 	
@@ -315,11 +318,12 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 	
     // if tapped textView is top entry, then allow it to be edited
     if ([indexPath row] == 0) {
-		[textView setSelectedRange:NSMakeRange(lastCursorLocation, lastCursorLength)];
+//		[textView setSelectedRange:NSMakeRange(lastCursorLocation, lastCursorLength)];
 
 		//TODO TEST BELOW
 		// adds a margin on bottom of tableView so that keyboard does not cover the cursor...
 		[self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 200, 0)];
+        isEditing=YES;
         return YES;
     }
     
@@ -343,9 +347,17 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 // called right before keyboard is dismissed (to save current cursor location)
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView
 {
+    
+    // prohibits textView from resigning as first responder if it's being edited by user
+    // isEditing is only turned OFF in dismissKeyBoardButton:
+    if (isEditing) {
+        return NO;
+    }
+    
+    
 	if (!isFirstTap) {
-		lastCursorLocation = textView.selectedRange.location;
-		lastCursorLength = textView.selectedRange.length;
+//		lastCursorLocation = textView.selectedRange.location;
+//		lastCursorLength = textView.selectedRange.length;
 	} else {
 //		isFirstTap=NO;
 	}
@@ -386,8 +398,11 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
     // fixes table view inset (keyboard is now down, return inset to normal)
     [self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 10, 0)];
 	
+    // TODO no need here?
     // update the table view entries
     [overviewTableView reloadData];
+//    [overviewTableView beginUpdates];
+//    [overviewTableView endUpdates];
 	
 //	[textView scrollRangeToVisible:NSMakeRange(lastCursorLocation, lastCursorLength)];
 // also set the cursor position to last known one
@@ -400,12 +415,14 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 //checks if this is firstTap to set cursor at end.
 - (void)textViewDidChangeSelection:(UITextView *)textView
 {
-	NSLog(@"textView DID CHANGE!");
+	NSLog(@"textView DID CHANGE selection!");
 	//TODO fix bug when user tries to select text by holding (when firstTap)
 	if (isFirstTap) {
 		[self performSelector:@selector(setCursorToEnd:) withObject:textView afterDelay:0.01];
 		isFirstTap=NO;
 	}
+    
+    
 }
 
 // whenever text is added or removed to textView (for live resizing)
@@ -415,9 +432,45 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
     NSIndexPath *ipForFirstCell = [NSIndexPath indexPathForRow:0 inSection:0];
 	
     // update the table view (but this dismisses keyboard)
-    [self.overviewTableView reloadData];
+//    [overviewTableView beginUpdates];
+//    [self.overviewTableView reloadInputViews];
+//    [overviewTableView endUpdates];
+  
+
+//    [[overviewTableView cellForRowAtIndexPath:ipForFirstCell] resignFirstResponder];
+    
+//    [[overviewTableView cellForRowAtIndexPath:ipForFirstCell] setFrame:CGRectMake(0, 0, CELL_WIDTH, [overviewTableView cellForRowAtIndexPath:ipForFirstCell].frame.size.height)];
+    
+//    [(UITableViewCell *)[[textView superview] superview] setNeedsLayout];
+    
+    //    [(UITableViewCell *)[[textView superview] superview] setNeedsDisplay];
+    
+    
+//    
+
+//    NSArray *arr= [[NSArray alloc]initWithObjects:[NSIndexPath indexPathForRow:0 inSection:0], nil];
+    
+//    [overviewTableView reloadRowsAtIndexPaths:arr withRowAnimation:UITableViewRowAnimationNone];
+
+//    [overviewTableView beginUpdates];
+
+//    [overviewTableView endUpdates];
+
+    [overviewTableView reloadData];
+    
+
+    /*
+    [(UITableViewCell *)[[textView superview] superview] setSelected:YES animated:YES];
+    NSLog(@"the top entry text is selected? %i",     [(UITableViewCell *)[[textView superview] superview] isSelected]);
+    [(UITableViewCell *)[[textView superview] superview] setSelected:NO animated:YES];
+    NSLog(@"the top entry text is selected? %i",     [(UITableViewCell *)[[textView superview] superview] isSelected]);
+     */
+    
+    
+
+    
     // call the keyboard back up
-    [[[[overviewTableView cellForRowAtIndexPath:ipForFirstCell] contentView] viewWithTag:TEXT_TAG] becomeFirstResponder];
+//    [[[[overviewTableView cellForRowAtIndexPath:ipForFirstCell] contentView] viewWithTag:TEXT_TAG] becomeFirstResponder];
 }
 
 // called RIGHT before any text is inputted (to check if to allow or not). checks if it is a return 
@@ -478,11 +531,24 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 
 #pragma mark - Buttons and misc. event methods
 
+
+
+
+- (IBAction)updateMeNow:(id)sender {
+    [overviewTableView beginUpdates];
+    
+    [overviewTableView endUpdates];
+
+}
+
 // actually dismisses keyboard (called within many other methods); causes textViewDidEndEditing to be called
 - (IBAction)dismissKeyboardButton:(id)sender {
     
+    
+    isEditing=NO;
     [(UITextView *)[[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] viewWithTag:TEXT_TAG] resignFirstResponder];
 	isFirstTap=YES;
+    
 }
 
 // animates the infoView fading out (using block animations)
@@ -881,19 +947,24 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
     [tap setNumberOfTapsRequired:1];
     [self.overviewTableView addGestureRecognizer:tap];
 	
+
     // turn off selection for table view
     overviewTableView.allowsSelection=NO;
 	
 	// set the insets back to normal (huge bottom inset was there when keyboard was up)
     [self.overviewTableView setContentInset:UIEdgeInsetsMake(0, 0, 10, 0)];
 	
+    
+//    overviewTableView.tableHeaderView = [[UITextView alloc] initWithFrame:CGRectMake(CELL_WIDTH-100, 10, 100, 50)];
+    
     // finally, reload the tableView (reloads cells and their subviews usw.)    
     [overviewTableView reloadData];
     
 
 	
 	isFirstTap=YES;
-	
+	isEditing = NO;
+    
 } // end viewDidLoad
 
 - (void)viewDidUnload

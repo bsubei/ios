@@ -16,6 +16,7 @@
 @property (strong, nonatomic) IBOutlet UITableView *overviewTableView;
 @property (strong, nonatomic) IBOutlet UIImageView *infoView;
 @property (strong, nonatomic) IBOutlet UIButton *optionsButton;
+- (IBAction)updateMeNow:(id)sender;
 
 
 - (IBAction)dismissKeyboardButton:(id)sender;
