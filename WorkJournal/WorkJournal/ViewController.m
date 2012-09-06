@@ -273,9 +273,24 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 // TODO dynamic row height here
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+ 
     // get the text for the cell's entry
     NSString *text = [overviewArray objectAtIndex:[indexPath row]];
 	
+    /*
+    // TODO live resizing should be fixed here. If the cell is already initialized, then get the CURRENT text to use in height calculation (from textView, NOT from overviewArray)
+    if (indexPath.row ==0) {
+        if ([overviewTableView cellForRowAtIndexPath:indexPath] !=nil) {
+            NSLog(@"used CURRENT text to find height!");
+            NSLog(@"text was: %@", text);
+            text = [(UITextView *)[[overviewTableView cellForRowAtIndexPath:indexPath]viewWithTag:TEXT_TAG] text];
+            NSLog(@"text is now: %@", text);
+        }
+        
+    }
+    */
+    
+    
     // set up a constraint
     CGSize constraint = CGSizeMake(TEXT_WIDTH, MAX_CELL_HEIGHT);
 	
@@ -351,7 +366,7 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
     // prohibits textView from resigning as first responder if it's being edited by user
     // isEditing is only turned OFF in dismissKeyBoardButton:
     if (isEditing) {
-        return NO;
+//        return NO;
     }
     
     
@@ -429,14 +444,21 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 - (void)textViewDidChange:(UITextView *)textView
 {
     // gets indexPath for top entry
-    NSIndexPath *ipForFirstCell = [NSIndexPath indexPathForRow:0 inSection:0];
+//    NSIndexPath *ipForFirstCell = [NSIndexPath indexPathForRow:0 inSection:0];
 	
     // update the table view (but this dismisses keyboard)
 //    [overviewTableView beginUpdates];
 //    [self.overviewTableView reloadInputViews];
 //    [overviewTableView endUpdates];
   
+    [overviewArray removeObjectAtIndex:0];
+    [overviewArray insertObject:[textView text] atIndex:0];
 
+    
+    //this does live resizing
+    [self.overviewTableView beginUpdates];
+    [self.overviewTableView endUpdates];
+    
 //    [[overviewTableView cellForRowAtIndexPath:ipForFirstCell] resignFirstResponder];
     
 //    [[overviewTableView cellForRowAtIndexPath:ipForFirstCell] setFrame:CGRectMake(0, 0, CELL_WIDTH, [overviewTableView cellForRowAtIndexPath:ipForFirstCell].frame.size.height)];
@@ -456,7 +478,7 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 
 //    [overviewTableView endUpdates];
 
-    [overviewTableView reloadData];
+//    [overviewTableView reloadData];
     
 
     /*
@@ -478,6 +500,7 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 // returns)
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
+
     // if insertion point (no highlighted text)
     if (range.length ==0) {
         // gets location of cursor
