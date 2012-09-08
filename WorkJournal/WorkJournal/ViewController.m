@@ -208,7 +208,9 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 	
 	daynameLabel.tag = DAYNAME_TAG;
 	daynameLabel.font = [UIFont boldSystemFontOfSize:DAYNAME_FONT_SIZE];
-    daynameLabel.backgroundColor = [UIColor whiteColor];
+//    daynameLabel.backgroundColor = [UIColor whiteColor];
+    daynameLabel.backgroundColor = [UIColor clearColor];
+    
 	[daynameLabel setOpaque:YES];
 	
 	// add the dayname label as a subview to the cell
@@ -226,7 +228,9 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 	[dateLabel setLineBreakMode:UILineBreakModeClip];
 	dateLabel.tag = DATE_TAG;
 	dateLabel.font = [UIFont boldSystemFontOfSize:DATE_FONT_SIZE];
-    dateLabel.backgroundColor = [UIColor whiteColor];
+//    dateLabel.backgroundColor = [UIColor whiteColor];
+    dateLabel.backgroundColor = [UIColor clearColor];
+    
 	[dateLabel setOpaque:YES];
 	
     // add the date label as a subview to the cell
@@ -244,7 +248,9 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
     //    textLabel.textAlignment = UITextAlignmentCenter;
 	textView.tag = TEXT_TAG;
 	textView.font = [UIFont boldSystemFontOfSize:TEXT_FONT_SIZE];
-    textView.backgroundColor = [UIColor whiteColor];
+//    textView.backgroundColor = [UIColor whiteColor];
+    textView.backgroundColor = [UIColor clearColor];
+    
     textView.delegate = self;
     [textView setUserInteractionEnabled:YES];
 	[textView setOpaque:YES];
@@ -255,6 +261,24 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 	
     // add the text view as a subview to the cell
     [cell.contentView addSubview:textView];
+    
+    
+    
+    NSString *pathOfImageFile;
+    
+    if ([indexPath row] % 2 == 0) {
+        NSLog(@"even? %i", [indexPath row]);
+        pathOfImageFile = [[[NSBundle mainBundle] resourcePath]  stringByAppendingPathComponent:@"evenImage.png"];
+    } else{
+        NSLog(@"odd? %i", [indexPath row]);
+        pathOfImageFile = [[[NSBundle mainBundle] resourcePath]  stringByAppendingPathComponent:@"oddImage.png"];
+
+    }
+        NSLog(@"%@",pathOfImageFile);
+    //set the background image of the cell
+    UIImage *img = [[UIImage alloc]initWithContentsOfFile:pathOfImageFile];
+    UIImageView *imgView = [[UIImageView alloc]initWithImage:img];
+    [cell setBackgroundView:imgView];
     
     // now that the cell has the 3 subviews ready, return it
     return cell;

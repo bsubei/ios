@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7630666A15FAFDBD002DA077 /* oddImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 7630666815FAFDBD002DA077 /* oddImage.png */; };
+		7630666B15FAFDBD002DA077 /* evenImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 7630666915FAFDBD002DA077 /* evenImage.png */; };
 		7671A9A115BBC2E6005E4777 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7671A9A015BBC2E6005E4777 /* UIKit.framework */; };
 		7671A9A315BBC2E6005E4777 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7671A9A215BBC2E6005E4777 /* Foundation.framework */; };
 		7671A9AB15BBC2E6005E4777 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7671A9A915BBC2E6005E4777 /* InfoPlist.strings */; };
@@ -18,6 +20,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7630666815FAFDBD002DA077 /* oddImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = oddImage.png; sourceTree = "<group>"; };
+		7630666915FAFDBD002DA077 /* evenImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = evenImage.png; sourceTree = "<group>"; };
 		7671A99C15BBC2E6005E4777 /* WorkJournal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WorkJournal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7671A9A015BBC2E6005E4777 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		7671A9A215BBC2E6005E4777 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -90,6 +94,8 @@
 		7671A9A715BBC2E6005E4777 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				7630666815FAFDBD002DA077 /* oddImage.png */,
+				7630666915FAFDBD002DA077 /* evenImage.png */,
 				7671A9A815BBC2E6005E4777 /* WorkJournal-Info.plist */,
 				7671A9A915BBC2E6005E4777 /* InfoPlist.strings */,
 				7671A9AC15BBC2E6005E4777 /* main.m */,
@@ -150,6 +156,8 @@
 			files = (
 				7671A9AB15BBC2E6005E4777 /* InfoPlist.strings in Resources */,
 				7671A9B715BBC2E6005E4777 /* ViewController.xib in Resources */,
+				7630666A15FAFDBD002DA077 /* oddImage.png in Resources */,
+				7630666B15FAFDBD002DA077 /* evenImage.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
