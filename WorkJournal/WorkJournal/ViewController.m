@@ -203,8 +203,8 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 	
 	rect = CGRectMake(DAYNAME_X_OFFSET - DAYNAME_WIDTH, DAYNAME_Y_OFFSET, DAYNAME_WIDTH, DAYNAME_HEIGHT);
 	daynameLabel = [[UILabel alloc] initWithFrame:rect];
-	[daynameLabel setTextAlignment:UITextAlignmentRight];
-	[daynameLabel setLineBreakMode:UILineBreakModeClip];
+	[daynameLabel setTextAlignment:NSTextAlignmentRight];
+	[daynameLabel setLineBreakMode:NSLineBreakByClipping];
 	
 	daynameLabel.tag = DAYNAME_TAG;
 	daynameLabel.font = [UIFont boldSystemFontOfSize:DAYNAME_FONT_SIZE];
@@ -224,8 +224,8 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 	rect = CGRectMake(DATE_X_OFFSET- DATE_WIDTH, DATE_Y_OFFSET, DATE_WIDTH, DATE_HEIGHT);
 	dateLabel = [[UILabel alloc] initWithFrame:rect];
 	
-	[dateLabel setTextAlignment:UITextAlignmentRight];
-	[dateLabel setLineBreakMode:UILineBreakModeClip];
+	[dateLabel setTextAlignment:NSTextAlignmentRight];
+	[dateLabel setLineBreakMode:NSLineBreakByClipping];
 	dateLabel.tag = DATE_TAG;
 	dateLabel.font = [UIFont boldSystemFontOfSize:DATE_FONT_SIZE];
 //    dateLabel.backgroundColor = [UIColor whiteColor];
@@ -325,7 +325,7 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 	
     //TODO don't forget to use same font here as used in cell
     // calculated size of the text label using the constraint
-    CGSize size = [text sizeWithFont:[UIFont systemFontOfSize:TEXT_FONT_SIZE] constrainedToSize:constraint lineBreakMode:UILineBreakModeCharacterWrap];
+    CGSize size = [text sizeWithFont:[UIFont systemFontOfSize:TEXT_FONT_SIZE] constrainedToSize:constraint lineBreakMode:NSLineBreakByWordWrapping];
 
 	
     // gets the rowHeight (either this or the minimum)
@@ -663,7 +663,7 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
                 [mailman setSubject:@"Your work journal"];
                 NSString *messageString = [NSString stringWithFormat:@"Below is a copy of your journal.\n%@",[self stringFromOverviewArray]];
                 [mailman setMessageBody: messageString isHTML:NO];
-                [self presentModalViewController:mailman animated:YES];
+                [self presentViewController:mailman animated:YES completion:nil];
                 
 				// if mail is not set up on device, display an alert
             }else {
@@ -689,7 +689,7 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 {
     //TODO add alerts for results of the email sending or do stuff when user cancels or saves draft
     
-    [self dismissModalViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 // brings up option menu
