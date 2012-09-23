@@ -16,6 +16,8 @@
 
 @synthesize topScreenIsVisible;
 
+#define TOP_SCREEN_TEXT_VIEW_PLACEHOLDER_TEXT @"Enter today's journal here..."
+
 - (void)dismissKeyboard
 {
     [self.topScreenTextView resignFirstResponder];
@@ -34,6 +36,13 @@
     [tap setNumberOfTapsRequired:1];
     [self.topScreenView addGestureRecognizer:tap];
 
+    //set delegate for topScreenTextView so that we can intercept textViewDidChange: calls and others
+    [[self topScreenTextView]setDelegate:self];
+    
+    //set default placeholder text and color for topScreenTextView
+    [self.topScreenTextView setText:TOP_SCREEN_TEXT_VIEW_PLACEHOLDER_TEXT];
+    [self.topScreenTextView setTextColor:[UIColor grayColor]];
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -48,6 +57,37 @@
     [self setDzeiButton:nil];
     [super viewDidUnload];
 }
+
+// called whenever a textView wants to begin editing (return YES to allow editing and NO to disallow editing and ignore the request)
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView
+{
+    
+    // if text is default, then change color to normal and delete the text
+    if ([self.topScreenTextView.text isEqualToString:TOP_SCREEN_TEXT_VIEW_PLACEHOLDER_TEXT]) {
+        
+        [self.topScreenTextView setText:@""];
+        [self.topScreenTextView setTextColor:[UIColor darkTextColor]];
+    }
+    
+    // return yes (to allow editing; kb comes up)
+    return YES;
+}// end textViewShouldBeginEditing:
+
+// called whenever textView is about to end editing (return YES to allow so that it resigns firstresponder and NO to keep it firstResponder)
+- (BOOL)textViewShouldEndEditing:(UITextView *)textView
+{
+    
+    // if text is left empty, then reset it to default text and light color
+    if ([self.topScreenTextView.text isEqualToString:@""]) {
+        
+        [self.topScreenTextView setText:TOP_SCREEN_TEXT_VIEW_PLACEHOLDER_TEXT];
+        [self.topScreenTextView setTextColor:[UIColor grayColor]];
+    }
+    
+    
+    // return yes (to allow resign first responder)
+    return YES;
+}// end textViewShouldEndEditing:
 
 // disables and enables the dzei button
 - (void)toggleButtonEnabled
