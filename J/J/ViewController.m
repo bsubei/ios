@@ -43,6 +43,8 @@
     [self.topScreenTextView setText:TOP_SCREEN_TEXT_VIEW_PLACEHOLDER_TEXT];
     [self.topScreenTextView setTextColor:[UIColor grayColor]];
     
+
+    
 }
 
 - (void)didReceiveMemoryWarning
