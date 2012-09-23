@@ -45,7 +45,17 @@
 - (void)viewDidUnload {
     [self setTopScreenTextView:nil];
     [self setTopScreenView:nil];
+    [self setDzeiButton:nil];
     [super viewDidUnload];
+}
+
+// disables and enables the dzei button
+- (void)toggleButtonEnabled
+{
+    if([[self dzeiButton]isEnabled])
+        [[self dzeiButton]setEnabled:NO];
+    else
+        [[self dzeiButton]setEnabled:YES];
 }
 
 // fades the topScreen in and out
@@ -60,6 +70,11 @@
         } completion:^(BOOL finished){}// completion block is empty in this case
          ];// if we put sthg there, it would be performed after animation is completed
         
+        //disable the dzei button
+        [self toggleButtonEnabled];
+        // then re-enable it after a delay
+        [self performSelector:@selector(toggleButtonEnabled) withObject:nil afterDelay:1.2];
+        
         // don't forget to set the bool value to NO so that it can fade back in on next button tap.
         [self setTopScreenIsVisible:NO];
         
@@ -71,6 +86,11 @@
             [[self topScreenView] setAlpha:1.0];
         } completion:^(BOOL finished){} // completion block is empty in this case
          ];                             // if we put sthg there, it would be performed after animation is completed
+
+        //disable the dzei button
+        [self toggleButtonEnabled];
+        // then re-enable it after a delay
+        [self performSelector:@selector(toggleButtonEnabled) withObject:nil afterDelay:1.2];
         
         // don't forget to set the bool value to YES so that it can fade back out on next button tap.
         [self setTopScreenIsVisible:YES];
