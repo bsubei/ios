@@ -43,7 +43,8 @@
     [self.topScreenTextView setText:TOP_SCREEN_TEXT_VIEW_PLACEHOLDER_TEXT];
     [self.topScreenTextView setTextColor:[UIColor grayColor]];
     
-
+    // set inset to normal (keyboard is not up)
+    [self.topScreenTextView setContentInset:UIEdgeInsetsMake(0, 0, 0, 0)];
     
 }
 
@@ -71,6 +72,9 @@
         [self.topScreenTextView setTextColor:[UIColor darkTextColor]];
     }
     
+    // set inset (keyboard is now up)
+    [self.topScreenTextView setContentInset:UIEdgeInsetsMake(0, 0, 50, 0)];
+    
     // return yes (to allow editing; kb comes up)
     return YES;
 }// end textViewShouldBeginEditing:
@@ -86,6 +90,9 @@
         [self.topScreenTextView setTextColor:[UIColor grayColor]];
     }
     
+    
+    // set inset to normal (keyboard is not up anymore)
+    [self.topScreenTextView setContentInset:UIEdgeInsetsMake(0, 0, 0, 0)];
     
     // return yes (to allow resign first responder)
     return YES;
