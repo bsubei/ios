@@ -15,6 +15,8 @@
 - (IBAction)topScreenFade:(id)sender;
 @property (weak, nonatomic) IBOutlet UIButton *dzeiButton;
 
+@property (strong, nonatomic) NSMutableArray *overviewArray;
+
 @property BOOL topScreenIsVisible;
 
 @end

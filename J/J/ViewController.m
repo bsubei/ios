@@ -15,6 +15,9 @@
 @implementation ViewController
 
 @synthesize topScreenIsVisible;
+@synthesize overviewArray;
+
+NSString *DEFAULT_TEXT = @"Enter your J here...";
 
 #define TOP_SCREEN_TEXT_VIEW_PLACEHOLDER_TEXT @"Enter today's journal here..."
 
@@ -146,5 +149,137 @@
     } //end if
 
 }// end topScreenFade:
+
+
+#pragma mark - Helper Methods
+
+- (void)setCursorToEnd:(UITextView *)textView
+{
+	
+	[textView setSelectedRange:NSMakeRange([[textView text]length], 0)];
+    
+}
+//returns true if the two dates are in the same year
+- (BOOL)isDate:(NSDate *)d1 sameYearAsDate:(NSDate *)d2
+{
+	
+	// set up calendars and components (to compare the year parts of d1 and d2)
+	NSCalendar *cal = [NSCalendar currentCalendar];
+	
+	NSDateComponents *components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit) fromDate: d1];
+	NSDate *day1 = [cal dateFromComponents:components];
+	
+	components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit) fromDate: d2];
+	NSDate *day2 = [cal dateFromComponents:components];
+	
+	
+	//if d1 is same year as d2, return YES
+	if([day1 isEqualToDate: day2]){ return YES;}
+	
+	// if not same year, return NO
+	return NO;
+    
+}
+
+//returns true if the two dates are in the same day
+- (BOOL)isDate:(NSDate *)d1 sameDayAsDate:(NSDate *)d2
+{
+	
+	// set up calendars and components (to compare the day parts of d1 and d2)
+	NSCalendar *cal = [NSCalendar currentCalendar];
+	
+	NSDateComponents *components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate: d1];
+	NSDate *day1 = [cal dateFromComponents:components];
+	
+	components = [cal components:(NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit) fromDate: d2];
+	NSDate *day2 = [cal dateFromComponents:components];
+	
+	
+	//if d1 is same day as d2, return YES
+	if([day1 isEqualToDate: day2]){ return YES;}
+	
+	// if not same day, return NO
+	return NO;
+}
+
+// returns the string representation of overviewArray
+- (NSString *) stringFromOverviewArray
+{
+    // goes through each entry and concatenates them all into one string
+    NSString *overviewText=@"";
+    for (NSString *entry in overviewArray) {
+        overviewText = [NSString stringWithFormat:@"%@\n\n%@",overviewText,entry];
+    }
+    //returns that string
+    return overviewText;
+    
+} //end stringFromOverviewArray
+
+// adds a new entry in overviewArray with today's date
+- (void)addNewEntryForToday
+{
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    // set date format
+	[dateFormatter setDateFormat:@"dd-MM-yyyy"];
+    
+    //gets currentDay
+	NSString *currentDayAsString = [dateFormatter stringFromDate:[NSDate date]];
+	// newEntry will be simply currentDay + a return line
+	NSString *newEntry = [[NSString alloc] initWithFormat:@"%@\n%@",currentDayAsString,DEFAULT_TEXT];
+	
+	//	//TODO add the word today instead of current date ONLY for first entry
+    //		NSString *newEntry = DEFAULT_TEXT;
+	
+	NSInteger indexToInsert = 0;
+    
+    //adds the new entry as first index
+    [[self overviewArray] insertObject:newEntry atIndex:indexToInsert];
+	
+}
+
+// returns a string of dayOfWeek using given int
+- (NSString *)dayOfWeekUsingInt: (NSInteger *)number
+{
+    switch ((int)number) {
+        case 1:
+            return @"SUN";
+            break;
+        case 2:
+            return @"MON";
+            break;
+        case 3:
+            return @"TUE";
+            break;
+        case 4:
+            return @"WED";
+            break;
+        case 5:
+            return @"THU";
+            break;
+        case 6:
+            return @"FRI";
+            break;
+        case 7:
+            return @"SAT";
+            break;
+        default:
+            break;
+    }
+    
+    // sanity check (always between 1 and 7 if using gregorian calendar); if this is reached, then
+    // sthg is wrong with the calendar not being gregorian
+    return @"dafuq?";
+}// end dayOfWeekUsingInt:
+
+// helper method to get filePath
+- (NSString *) savefilePath
+{
+    // get file path (directory)
+    NSArray *pathArray = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    // file name with extension
+    NSString *fileWithExtension = [[NSString alloc] initWithFormat:@"overview.plist"];
+    // return full path with full name
+    return [[pathArray objectAtIndex:0] stringByAppendingPathComponent: fileWithExtension];
+} // end saveFilePath
 
 @end
