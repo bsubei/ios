@@ -17,7 +17,8 @@
 @synthesize topScreenIsVisible;
 @synthesize overviewArray;
 
-NSString *DEFAULT_TEXT = @"Enter your J here...";
+#define DEFAULT_TEXT @"Enter your J here..."
+#define RESET 0
 
 #define TOP_SCREEN_TEXT_VIEW_PLACEHOLDER_TEXT @"Enter today's journal here..."
 
@@ -150,15 +151,123 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 
 }// end topScreenFade:
 
+#pragma mark - Saving & loading (file IO) methods
+
+// performs all data updating necessary when loading (reads from files and writes to files)
+- (void) populateArrayWithData
+{
+	
+    // populate the overviewArray from file data
+    
+    // if readData returns sthg (if file is there)
+    if ([self readDataFromFile] != nil) {
+		[self setOverviewArray:[self readDataFromFile]];
+		
+		
+		//no need since it's always called when entering background state
+		//		//first, dismiss keyboard properly (in case it was already up)
+		//
+		//		[[self dismissKeyBoardButton] setEnabled:NO];
+		//		// dismiss keyboard in case it was up
+		//		[self dismissKeyboardButton:nil];
+		
+		
+		//create dateFormatter
+		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+		// set date format
+		[dateFormatter setDateFormat:@"dd-MM-yyyy"];
+		
+		//read in date from last entry
+		
+		NSString *lastEntryString = [[self overviewArray] objectAtIndex:0];
+		// the range needed for the date (first line)
+		NSRange rangeOfDate = [lastEntryString lineRangeForRange:NSMakeRange(0,1) ];
+		NSString *lastEntryDateAsString = [lastEntryString substringWithRange: rangeOfDate];
+		NSString *lastEntryText = [lastEntryString substringFromIndex:rangeOfDate.length];
+		
+		// REMOVE RETURN CARRIAGE FROM DATE!!!
+		lastEntryDateAsString = [lastEntryDateAsString substringToIndex:lastEntryDateAsString.length -1];
+		
+		NSDate *lastEntryDate = [dateFormatter dateFromString:lastEntryDateAsString];
+		
+		//now, we compare lastEntryDate to today's date and see if they are not the same day
+		// if they are not, we will create a new entry for today
+		if(![self isDate:lastEntryDate sameDayAsDate:[NSDate date]]){
+			
+			
+			//first, check if the last entry is blank or not. If it is, remove that entry (since it's blank)
+			if (lastEntryText == nil || [lastEntryText isEqualToString:@""] || [lastEntryText isEqualToString:DEFAULT_TEXT]) [overviewArray removeObjectAtIndex:0];
+			
+			// make a new entry because today is a new day
+			[self addNewEntryForToday];
+			
+			// save to file
+			[self saveDataToFile];
+			
+			
+		}// end if(not the same day)
+		
+		//else if file is missing
+    }else {
+        // add a new entry
+        [self addNewEntryForToday];
+        // and save to file
+        [self saveDataToFile];
+    }
+	
+	
+	// FOR TESTING (resets all values)
+	if (RESET) {
+		overviewArray = [[NSMutableArray alloc]init];
+		[self saveDataToFile];
+	}
+	
+}// end performUpdateOnLoad
+
+// saves data from text field into file with given name
+- (void) saveDataToFile
+{
+    // new array
+    NSMutableArray *dataToSave;
+    
+    //TODO (new line of code here) save the overviewArray to overviewFile
+    dataToSave = [self overviewArray];
+	
+    // else, there is a problem, don't proceed.
+    
+    //writes text data to file
+    [dataToSave writeToFile:[self savefilePath] atomically:YES];
+    
+}// end saveData
+
+// returns NSMutableArray of file contents
+// TODO check for nil returns when calling this method
+- (NSMutableArray *) readDataFromFile
+{
+    
+    //if file doesn't exist, return
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[self savefilePath]]) {
+        return nil;
+    }
+    
+    // new array
+    NSMutableArray *dataToLoad;
+    // read in file
+    dataToLoad = [[NSMutableArray alloc] initWithContentsOfFile: [self savefilePath] ];
+    
+    // check if file is not empty
+    if([dataToLoad count] < 1)
+    {
+        // return empty array
+        return nil;
+    }
+    
+    return dataToLoad;
+}// end readDataFromFileName
+
 
 #pragma mark - Helper Methods
 
-- (void)setCursorToEnd:(UITextView *)textView
-{
-	
-	[textView setSelectedRange:NSMakeRange([[textView text]length], 0)];
-    
-}
 //returns true if the two dates are in the same year
 - (BOOL)isDate:(NSDate *)d1 sameYearAsDate:(NSDate *)d2
 {
