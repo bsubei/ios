@@ -65,6 +65,97 @@
     [super viewDidUnload];
 }
 
+
+
+// whenever text is added or removed to textView (for live saving)
+- (void)textViewDidChange:(UITextView *)textView
+{
+    //TODO CHECK if we need to do live saving. why not just save on didEndEditing? also handle all the interruptions like quit or home button
+    
+    [overviewArray removeObjectAtIndex:0];
+    [overviewArray insertObject:[textView text] atIndex:0];
+    
+}
+
+// called RIGHT before any text is inputted (to check if to allow or not). checks if it is a return
+// key and disallows it if there already is a return before or after cursor (to disallow double
+// returns)
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+{
+    
+    // if insertion point (no highlighted text)
+    if (range.length ==0) {
+        // gets location of cursor
+        NSInteger cursorIndex = range.location;
+        
+        // if user types return
+        if ([text isEqualToString:@"\n"]){
+			
+            //check if there is a return before cursor (short circuit AND to make sure cursor
+            // isn't in FIRST position, index 0; cursorIndex-1 would then give negative number -> error)
+            // if there is a return before cursor, don't change the text (i.e. don't let the
+            // \n go through)
+            if( cursorIndex > 0 && [textView.text characterAtIndex:cursorIndex-1] == '\n')
+            {
+                return  NO;
+				
+				//check if there is a return after cursor (short circuit AND to make sure cursor isn't
+				// in LAST position; cursorIndex would then be out of bounds if we try to get char)
+				// if there is a return after cursor, don't let it through (return NO)
+            } else if(cursorIndex < textView.text.length && [textView.text characterAtIndex:cursorIndex] == '\n') {
+                return NO;
+				
+				// if return typed at beginning of entry, also don't allow \n to go through
+            }else if(range.location==0)
+                return NO;
+        }
+        
+		// if highlighted text then pressed return, don't allow /n to go through
+    }else if(range.length >0){
+        if ([text rangeOfString:@"\n"].length != 0)
+            return NO;
+    }
+    
+    // BUG, user can enter more than one return if they use highlighting in some way (range.length>0)
+    // or when copying and pasting a double return... negligible
+    
+	
+    //	lastCursorLength = range.length;
+    //	lastCursorLocation = range.location;
+	
+    // in normal cases, allow the textView to be changed...
+    return YES;
+}
+
+
+// when user done editing
+// saves the top entry to the overviewArray (plus prefixing date meta data)
+- (void)textViewDidEndEditing:(UITextView *)textView
+{
+    
+    UITextView *tv = [self topScreenTextView];
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    // set date format
+    [dateFormatter setDateFormat:@"dd-MM-yyyy"];
+	
+    //gets text from top cell
+    NSString *text = [tv text];
+    // gets the date
+    NSString *date = [dateFormatter stringFromDate:[NSDate date]];
+    // the newEntry will be date + text with a return line in between
+    NSString *newEntry = [[NSString alloc]initWithFormat:@"%@\n%@",date,text];
+    
+    // saves the top tableView cell into the array
+    [overviewArray replaceObjectAtIndex:0 withObject:newEntry] ;
+	
+    // saves the array to file
+    [self saveDataToFile];
+    
+}
+
+
+
 // called whenever a textView wants to begin editing (return YES to allow editing and NO to disallow editing and ignore the request)
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
@@ -150,6 +241,7 @@
     } //end if
 
 }// end topScreenFade:
+
 
 #pragma mark - Saving & loading (file IO) methods
 
