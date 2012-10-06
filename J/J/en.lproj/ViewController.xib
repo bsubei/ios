@@ -213,6 +213,14 @@
 					<int key="connectionID">125</int>
 				</object>
 				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">overviewTextView</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="990225582"/>
+					</object>
+					<int key="connectionID">136</int>
+				</object>
+				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">topScreenFade:</string>
 						<reference key="source" ref="786392176"/>
@@ -298,7 +306,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">134</int>
+			<int key="maxID">136</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -318,6 +326,7 @@
 					</object>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="dzeiButton">UIButton</string>
+						<string key="overviewTextView">UITextView</string>
 						<string key="topScreenTextView">UITextView</string>
 						<string key="topScreenView">UIView</string>
 					</dictionary>
@@ -325,6 +334,10 @@
 						<object class="IBToOneOutletInfo" key="dzeiButton">
 							<string key="name">dzeiButton</string>
 							<string key="candidateClassName">UIButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="overviewTextView">
+							<string key="name">overviewTextView</string>
+							<string key="candidateClassName">UITextView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="topScreenTextView">
 							<string key="name">topScreenTextView</string>

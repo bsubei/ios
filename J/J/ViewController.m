@@ -17,21 +17,21 @@
 @synthesize topScreenIsVisible;
 @synthesize overviewArray;
 
-#define DEFAULT_TEXT @"Enter your J here..."
-#define RESET 0
+#pragma mark - Constants
 
+#define RESET 0
 #define TOP_SCREEN_TEXT_VIEW_PLACEHOLDER_TEXT @"Enter today's journal here..."
 
-- (void)dismissKeyboard
-{
-    [self.topScreenTextView resignFirstResponder];
-}
+#pragma mark - UIView life cycle methods
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
 
+    overviewArray = [[NSMutableArray alloc] init];
+    
+    [self populateArrayWithData];
     
     [self setTopScreenIsVisible:YES];
     
@@ -50,6 +50,11 @@
     // set inset to normal (keyboard is not up)
     [self.topScreenTextView setContentInset:UIEdgeInsetsMake(0, 0, 0, 0)];
     
+    
+    // load in values from overviewArray and set overviewTextView text
+    [self.overviewTextView setText: [self stringFromOverviewArray]];
+    NSLog(@"%@", [self stringFromOverviewArray]);
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -62,11 +67,12 @@
     [self setTopScreenTextView:nil];
     [self setTopScreenView:nil];
     [self setDzeiButton:nil];
+    [self setOverviewTextView:nil];
     [super viewDidUnload];
 }
 
 
-
+#pragma mark - textViewDelegate methods
 // whenever text is added or removed to textView (for live saving)
 - (void)textViewDidChange:(UITextView *)textView
 {
@@ -193,55 +199,6 @@
     return YES;
 }// end textViewShouldEndEditing:
 
-// disables and enables the dzei button
-- (void)toggleButtonEnabled
-{
-    if([[self dzeiButton]isEnabled])
-        [[self dzeiButton]setEnabled:NO];
-    else
-        [[self dzeiButton]setEnabled:YES];
-}
-
-// fades the topScreen in and out
-- (IBAction)topScreenFade:(id)sender {
-    
-    // if the topScreen is already visible, then fade out
-    if (topScreenIsVisible) {
-
-        //fade out. Method that animates whatever is in the ^(void) block (setting alpha to zero in this case)
-        [UIView animateWithDuration:1 animations:^(void){
-            [[self topScreenView] setAlpha:0.0];
-        } completion:^(BOOL finished){}// completion block is empty in this case
-         ];// if we put sthg there, it would be performed after animation is completed
-        
-        //disable the dzei button
-        [self toggleButtonEnabled];
-        // then re-enable it after a delay
-        [self performSelector:@selector(toggleButtonEnabled) withObject:nil afterDelay:1.2];
-        
-        // don't forget to set the bool value to NO so that it can fade back in on next button tap.
-        [self setTopScreenIsVisible:NO];
-        
-        // if topScreen is not visible, then fade it in
-    } else{
-
-        //fade in. Method that animates whatever is in the ^(void) block (setting alpha to one in this case)
-        [UIView animateWithDuration:1 animations:^(void){
-            [[self topScreenView] setAlpha:1.0];
-        } completion:^(BOOL finished){} // completion block is empty in this case
-         ];                             // if we put sthg there, it would be performed after animation is completed
-
-        //disable the dzei button
-        [self toggleButtonEnabled];
-        // then re-enable it after a delay
-        [self performSelector:@selector(toggleButtonEnabled) withObject:nil afterDelay:1.2];
-        
-        // don't forget to set the bool value to YES so that it can fade back out on next button tap.
-        [self setTopScreenIsVisible:YES];
-    } //end if
-
-}// end topScreenFade:
-
 
 #pragma mark - Saving & loading (file IO) methods
 
@@ -288,7 +245,8 @@
 			
 			
 			//first, check if the last entry is blank or not. If it is, remove that entry (since it's blank)
-			if (lastEntryText == nil || [lastEntryText isEqualToString:@""] || [lastEntryText isEqualToString:DEFAULT_TEXT]) [overviewArray removeObjectAtIndex:0];
+			if (lastEntryText == nil || [lastEntryText isEqualToString:@""] || [lastEntryText isEqualToString:TOP_SCREEN_TEXT_VIEW_PLACEHOLDER_TEXT])
+                [overviewArray removeObjectAtIndex:0];
 			
 			// make a new entry because today is a new day
 			[self addNewEntryForToday];
@@ -426,7 +384,7 @@
     //gets currentDay
 	NSString *currentDayAsString = [dateFormatter stringFromDate:[NSDate date]];
 	// newEntry will be simply currentDay + a return line
-	NSString *newEntry = [[NSString alloc] initWithFormat:@"%@\n%@",currentDayAsString,DEFAULT_TEXT];
+	NSString *newEntry = [[NSString alloc] initWithFormat:@"%@\n%@",currentDayAsString,TOP_SCREEN_TEXT_VIEW_PLACEHOLDER_TEXT];
 	
 	//	//TODO add the word today instead of current date ONLY for first entry
     //		NSString *newEntry = DEFAULT_TEXT;
@@ -482,5 +440,63 @@
     // return full path with full name
     return [[pathArray objectAtIndex:0] stringByAppendingPathComponent: fileWithExtension];
 } // end saveFilePath
+
+
+// disables and enables the dzei button
+- (void)toggleButtonEnabled
+{
+    if([[self dzeiButton]isEnabled])
+        [[self dzeiButton]setEnabled:NO];
+    else
+        [[self dzeiButton]setEnabled:YES];
+}
+
+#pragma mark - user input event methods
+
+// fades the topScreen in and out
+- (IBAction)topScreenFade:(id)sender {
+    
+    // if the topScreen is already visible, then fade out
+    if (topScreenIsVisible) {
+        
+        //fade out. Method that animates whatever is in the ^(void) block (setting alpha to zero in this case)
+        [UIView animateWithDuration:1 animations:^(void){
+            [[self topScreenView] setAlpha:0.0];
+        } completion:^(BOOL finished){}// completion block is empty in this case
+         ];// if we put sthg there, it would be performed after animation is completed
+        
+        //disable the dzei button
+        [self toggleButtonEnabled];
+        // then re-enable it after a delay
+        [self performSelector:@selector(toggleButtonEnabled) withObject:nil afterDelay:1.2];
+        
+        // don't forget to set the bool value to NO so that it can fade back in on next button tap.
+        [self setTopScreenIsVisible:NO];
+        
+        // if topScreen is not visible, then fade it in
+    } else{
+        
+        //fade in. Method that animates whatever is in the ^(void) block (setting alpha to one in this case)
+        [UIView animateWithDuration:1 animations:^(void){
+            [[self topScreenView] setAlpha:1.0];
+        } completion:^(BOOL finished){} // completion block is empty in this case
+         ];                             // if we put sthg there, it would be performed after animation is completed
+        
+        //disable the dzei button
+        [self toggleButtonEnabled];
+        // then re-enable it after a delay
+        [self performSelector:@selector(toggleButtonEnabled) withObject:nil afterDelay:1.2];
+        
+        // don't forget to set the bool value to YES so that it can fade back out on next button tap.
+        [self setTopScreenIsVisible:YES];
+    } //end if
+    
+}// end topScreenFade:
+
+- (void)dismissKeyboard
+{
+    [self.topScreenTextView resignFirstResponder];
+}
+
 
 @end
