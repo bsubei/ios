@@ -49,8 +49,8 @@
 
     //set delegate for topScreenTextView so that we can intercept textViewDidChange: calls and others
     [[self topScreenTextView]setDelegate:self];
-    
 
+    [self.topScreenTextView setReturnKeyType:UIReturnKeyDone];
     
     // set inset to normal (keyboard is not up)
     [self.topScreenTextView setContentInset:UIEdgeInsetsMake(0, 0, 0, 0)];
@@ -74,6 +74,18 @@
 
 
 #pragma mark - textViewDelegate methods
+
+// disables return completely and implements "done" functionality
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+{
+    if ([text isEqualToString:@"\n"]) {
+        [textView resignFirstResponder];
+        return NO;
+    }
+    
+    return YES;
+}
+
 // whenever text is added or removed to textView (for live saving)
 - (void)textViewDidChange:(UITextView *)textView
 {
@@ -86,51 +98,6 @@
     
 }
 
-// called RIGHT before any text is inputted (to check if to allow or not). checks if it is a return
-// key and disallows it if there already is a return before or after cursor (to disallow double
-// returns)
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
-{
-    
-    // if insertion point (no highlighted text)
-    if (range.length ==0) {
-        // gets location of cursor
-        NSInteger cursorIndex = range.location;
-        
-        // if user types return
-        if ([text isEqualToString:@"\n"]){
-			
-            //check if there is a return before cursor (short circuit AND to make sure cursor
-            // isn't in FIRST position, index 0; cursorIndex-1 would then give negative number -> error)
-            // if there is a return before cursor, don't change the text (i.e. don't let the
-            // \n go through)
-            if( cursorIndex > 0 && [textView.text characterAtIndex:cursorIndex-1] == '\n')
-            {
-                return  NO;
-				
-				//check if there is a return after cursor (short circuit AND to make sure cursor isn't
-				// in LAST position; cursorIndex would then be out of bounds if we try to get char)
-				// if there is a return after cursor, don't let it through (return NO)
-            } else if(cursorIndex < textView.text.length && [textView.text characterAtIndex:cursorIndex] == '\n') {
-                return NO;
-				
-				// if return typed at beginning of entry, also don't allow \n to go through
-            }else if(range.location==0)
-                return NO;
-        }
-        
-		// if highlighted text then pressed return, don't allow /n to go through
-    }else if(range.length >0){
-        if ([text rangeOfString:@"\n"].length != 0)
-            return NO;
-    }
-    
-    // BUG, user can enter more than one return if they use highlighting in some way (range.length>0)
-    // or when copying and pasting a double return... negligible
-    
-    // in normal cases, allow the textView to be changed...
-    return YES;
-}
 
 
 // when user done editing
