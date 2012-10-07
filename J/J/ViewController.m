@@ -55,6 +55,8 @@
     // set inset to normal (keyboard is not up)
     [self.topScreenTextView setContentInset:UIEdgeInsetsMake(0, 0, 0, 0)];
 
+    // disables tint change when button is pressed (the other button has this set in xib)
+    [self.topDzeiButton setAdjustsImageWhenHighlighted:NO];
     
 }
 
@@ -67,7 +69,7 @@
 - (void)viewDidUnload {
     [self setTopScreenTextView:nil];
     [self setTopScreenView:nil];
-    [self setDzeiButton:nil];
+    [self setTopDzeiButton:nil];
     [self setOverviewTextView:nil];
     [super viewDidUnload];
 }
@@ -435,10 +437,10 @@
 // disables and enables the dzei button
 - (void)toggleButtonEnabled
 {
-    if([[self dzeiButton]isEnabled])
-        [[self dzeiButton]setEnabled:NO];
+    if([[self topDzeiButton]isEnabled])
+        [[self topDzeiButton]setEnabled:NO];
     else
-        [[self dzeiButton]setEnabled:YES];
+        [[self topDzeiButton]setEnabled:YES];
 }
 
 #pragma mark - user input event methods
@@ -452,6 +454,9 @@
         //fade out. Method that animates whatever is in the ^(void) block (setting alpha to zero in this case)
         [UIView animateWithDuration:1 animations:^(void){
             [[self topScreenView] setAlpha:0.0];
+            
+            [[self topDzeiButton] setAlpha:0.0];
+            
         } completion:^(BOOL finished){}// completion block is empty in this case
          ];// if we put sthg there, it would be performed after animation is completed
         
@@ -469,6 +474,9 @@
         //fade in. Method that animates whatever is in the ^(void) block (setting alpha to one in this case)
         [UIView animateWithDuration:1 animations:^(void){
             [[self topScreenView] setAlpha:1.0];
+            
+            [[self topDzeiButton] setAlpha:1.0];
+
         } completion:^(BOOL finished){} // completion block is empty in this case
          ];                             // if we put sthg there, it would be performed after animation is completed
         

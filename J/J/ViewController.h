@@ -13,7 +13,7 @@
 @property (weak, nonatomic) IBOutlet UITextView *topScreenTextView;
 @property (weak, nonatomic) IBOutlet UIView *topScreenView;
 - (IBAction)topScreenFade:(id)sender;
-@property (weak, nonatomic) IBOutlet UIButton *dzeiButton;
+@property (weak, nonatomic) IBOutlet UIButton *topDzeiButton;
 @property (weak, nonatomic) IBOutlet UITextView *overviewTextView;
 
 @property (strong, nonatomic) NSMutableArray *overviewArray;

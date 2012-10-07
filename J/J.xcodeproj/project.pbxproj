@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7648C41C16223DB00064C456 /* JImage2.png in Resources */ = {isa = PBXBuildFile; fileRef = 7648C41B16223DB00064C456 /* JImage2.png */; };
 		76A996CB160E713F00A31947 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76A996CA160E713F00A31947 /* UIKit.framework */; };
 		76A996CD160E713F00A31947 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76A996CC160E713F00A31947 /* Foundation.framework */; };
 		76A996CF160E713F00A31947 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76A996CE160E713F00A31947 /* CoreGraphics.framework */; };
@@ -37,6 +38,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7648C41B16223DB00064C456 /* JImage2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = JImage2.png; sourceTree = "<group>"; };
 		76A996C6160E713F00A31947 /* J.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = J.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		76A996CA160E713F00A31947 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		76A996CC160E713F00A31947 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -133,6 +135,7 @@
 			isa = PBXGroup;
 			children = (
 				76A99708160E7C7200A31947 /* JImage.png */,
+				7648C41B16223DB00064C456 /* JImage2.png */,
 				76A996D2160E713F00A31947 /* J-Info.plist */,
 				76A996D3160E713F00A31947 /* InfoPlist.strings */,
 				76A996D6160E713F00A31947 /* main.m */,
@@ -240,6 +243,7 @@
 				76A996E1160E713F00A31947 /* Default-568h@2x.png in Resources */,
 				76A996E7160E713F00A31947 /* ViewController.xib in Resources */,
 				76A99709160E7C7200A31947 /* JImage.png in Resources */,
+				7648C41C16223DB00064C456 /* JImage2.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
