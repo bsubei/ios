@@ -31,7 +31,14 @@
 
     overviewArray = [[NSMutableArray alloc] init];
     
+    
+    // populate overviewArray and sets TopScreenTV text
     [self populateArrayWithData];
+    
+    // set overviewTextView text to values from overviewArray (skips first entry since it's already in topScreenTV)
+    [self loadOverviewTextViewText];
+    
+    
     
     [self setTopScreenIsVisible:YES];
     
@@ -43,17 +50,11 @@
     //set delegate for topScreenTextView so that we can intercept textViewDidChange: calls and others
     [[self topScreenTextView]setDelegate:self];
     
-    //set default placeholder text and color for topScreenTextView
-    [self.topScreenTextView setText:TOP_SCREEN_TEXT_VIEW_PLACEHOLDER_TEXT];
-    [self.topScreenTextView setTextColor:[UIColor grayColor]];
+
     
     // set inset to normal (keyboard is not up)
     [self.topScreenTextView setContentInset:UIEdgeInsetsMake(0, 0, 0, 0)];
-    
-    
-    // load in values from overviewArray and set overviewTextView text
-    [self.overviewTextView setText: [self stringFromOverviewArray]];
-    NSLog(@"%@", [self stringFromOverviewArray]);
+
     
 }
 
@@ -78,8 +79,10 @@
 {
     //TODO CHECK if we need to do live saving. why not just save on didEndEditing? also handle all the interruptions like quit or home button
     
-    [overviewArray removeObjectAtIndex:0];
-    [overviewArray insertObject:[textView text] atIndex:0];
+//    [overviewArray removeObjectAtIndex:0];
+    
+    // this line is WRONG, we need to also add date metadata!!! this is better done in didEndEditing
+//    [overviewArray insertObject:[textView text] atIndex:0];
     
 }
 
@@ -125,10 +128,6 @@
     // BUG, user can enter more than one return if they use highlighting in some way (range.length>0)
     // or when copying and pasting a double return... negligible
     
-	
-    //	lastCursorLength = range.length;
-    //	lastCursorLocation = range.location;
-	
     // in normal cases, allow the textView to be changed...
     return YES;
 }
@@ -251,12 +250,22 @@
 			// make a new entry because today is a new day
 			[self addNewEntryForToday];
 			
+            //set default placeholder text and color for topScreenTextView
+            [self.topScreenTextView setText:TOP_SCREEN_TEXT_VIEW_PLACEHOLDER_TEXT];
+            [self.topScreenTextView setTextColor:[UIColor grayColor]];
+            
 			// save to file
 			[self saveDataToFile];
 			
 			
 		}// end if(not the same day)
-		
+		// else (if it is the same day)
+        else{
+            // set TopScreenTV text to first entry in overviewArray
+            [[self topScreenTextView] setText:[overviewArray objectAtIndex:0]];
+        }
+    
+        
 		//else if file is missing
     }else {
         // add a new entry
@@ -373,6 +382,20 @@
     return overviewText;
     
 } //end stringFromOverviewArray
+
+
+// similar to stringFromOverviewArray except it skips first entry and takes result and sets it to overviewTextView
+- (void) loadOverviewTextViewText{
+    
+    // goes through each entry and concatenates them all into one string
+    NSString *overviewText=@"";
+    for (int i=1;i<overviewArray.count;i++) {
+        overviewText = [NSString stringWithFormat:@"%@\n\n%@",overviewText,[overviewArray objectAtIndex:i]];
+    }
+
+    [[self overviewTextView] setText:overviewText];
+    
+}
 
 // adds a new entry in overviewArray with today's date
 - (void)addNewEntryForToday
