@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MessageUI/MessageUI.h>
 
-@interface ViewController : UIViewController <UITextViewDelegate>
+@interface ViewController : UIViewController <UITextViewDelegate, MFMailComposeViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UITextView *topScreenTextView;
 @property (weak, nonatomic) IBOutlet UIView *topScreenView;
@@ -19,5 +20,10 @@
 @property (strong, nonatomic) NSMutableArray *overviewArray;
 
 @property BOOL topScreenIsVisible;
+
+- (IBAction)sendMail:(id)sender;
+
+
+- (void)mailComposeController:(MFMailComposeViewController *)mailController didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error;
 
 @end

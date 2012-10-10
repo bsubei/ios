@@ -496,5 +496,36 @@
     [self.topScreenTextView resignFirstResponder];
 }
 
+#pragma mark - Mail methods
+
+- (IBAction)sendMail:(id)sender {
+    
+    // if mail is set-up, then create mailViewController and fill in details to send email
+    if([MFMailComposeViewController canSendMail])
+    {
+        MFMailComposeViewController *mailman = [[MFMailComposeViewController alloc]init];
+        mailman.mailComposeDelegate = self;
+        [mailman setSubject:@"Your work journal"];
+        NSString *messageString = [NSString stringWithFormat:@"Below is a copy of your journal.\n%@",[self stringFromOverviewArray]];
+        [mailman setMessageBody: messageString isHTML:NO];
+        [self presentViewController:mailman animated:YES completion:nil];
+        
+        // if mail is not set up on device, display an alert
+    }else {
+        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Error" message:@"Device is not configured for sending emails. Please configure your email options in the Mail app." delegate:nil cancelButtonTitle:@"OK, my bad" otherButtonTitles: nil];
+        [alert show];
+        
+    }
+
+}
+
+// MFMailComposeViewController delegate protocol method.
+// called when an MFMailComposeViewController is dismissed
+- (void)mailComposeController:(MFMailComposeViewController *)mailController didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    //TODO add alerts for results of the email sending or do stuff when user cancels or saves draft
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
 
 @end
