@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<array>
-	<string>This is the Information Page for J.</string>
-	<string>This app was created by Lock &apos;n&apos; Code.</string>
-	<string></string>
-	<string>This app is meant to be minimal.</string>
-</array>
+<dict>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Stuffs</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean pretium consectetur ante et interdum. Fusce leo dolor, viverra id lacinia eget, placerat ut dui. Vestibulum imperdiet tortor non nunc rutrum suscipit. Maecenas eget neque lectus, et ultricies tortor. Sed id facilisis nibh. Proin rhoncus placerat fermentum. Ut sit amet erat a risus eleifend vestibulum. Cras tincidunt, massa quis semper vestibulum, turpis nibh gravida mi, quis malesuada diam lacus id dui. Nam mauris est, aliquam sed scelerisque sit amet, lobortis vitae tellus. Donec tellus purus, egestas non hendrerit non, accumsan sagittis eros. In laoreet libero eu felis auctor malesuada. Nullam vulputate dictum tortor, et imperdiet eros mollis molestie. Nulla facilisi. Aliquam tristique consequat diam, fermentum eleifend magna tincidunt non.</string>
+		</dict>
+	</array>
+</dict>
 </plist>
