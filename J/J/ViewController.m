@@ -31,6 +31,11 @@
 
     overviewArray = [[NSMutableArray alloc] init];
     
+    // before reading in data from file, check if user prefs is set to wipe all and act accordingly...
+    [self checkWipeAllOption];
+
+    
+    
     
     // populate overviewArray and sets TopScreenTV text
     [self populateArrayWithData];
@@ -442,6 +447,29 @@
     else
         [[self topDzeiButton]setEnabled:YES];
 }
+
+//checks if user pref wipe_all_data is set TRUE
+- (void) checkWipeAllOption
+{
+    // if wipe all is ON
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"wipe_all_data"]) {
+        
+        // first, reset the preference wipe_all_data back to off so we don't keep rewiping every time (user must set it back to on again)
+        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"wipe_all_data"];
+        
+        // synchronizes the current userdefaults (in this scope) and the one in plist file
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        
+        
+        // now, actually wipe all data (by simply writing over file with the currently empty OverviewArray)
+		[self saveDataToFile];
+        
+        // also, set the topScreenTextView text to default (wipe that also)
+        [[self topScreenTextView] setText:TOP_SCREEN_TEXT_VIEW_PLACEHOLDER_TEXT];
+        
+    } // end if
+    
+} // end checkWipeAllOption
 
 #pragma mark - user input event methods
 

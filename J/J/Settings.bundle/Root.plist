@@ -13,6 +13,10 @@
 			<string>Wipe All Data On Next Launch</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
+			<key>TrueValue</key>
+			<true/>
+			<key>FalseValue</key>
+			<false/>
 		</dict>
 		<dict>
 			<key>Type</key>
