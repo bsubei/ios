@@ -533,14 +533,14 @@
     {
         MFMailComposeViewController *mailman = [[MFMailComposeViewController alloc]init];
         mailman.mailComposeDelegate = self;
-        [mailman setSubject:@"Your work journal"];
-        NSString *messageString = [NSString stringWithFormat:@"Below is a copy of your journal.\n%@",[self stringFromOverviewArray]];
+        [mailman setSubject:@"Your J exported data"];
+        NSString *messageString = [NSString stringWithFormat:@"Your J exported data:\n%@",[self stringFromOverviewArray]];
         [mailman setMessageBody: messageString isHTML:NO];
         [self presentViewController:mailman animated:YES completion:nil];
         
         // if mail is not set up on device, display an alert
     }else {
-        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Error" message:@"Device is not configured for sending emails. Please configure your email options in the Mail app." delegate:nil cancelButtonTitle:@"OK, my bad" otherButtonTitles: nil];
+        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Error" message:@"Device is not configured for sending emails. Please configure your email options in the Mail app." delegate:nil cancelButtonTitle:@"OK, my bad..." otherButtonTitles: nil];
         [alert show];
         
     }
