@@ -26,4 +26,5 @@
 
 - (void)mailComposeController:(MFMailComposeViewController *)mailController didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error;
 
+- (void)dismissKeyboard;
 @end
