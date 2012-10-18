@@ -235,8 +235,9 @@
 		}// end if(not the same day)
 		// else (if it is the same day)
         else{
-            // set TopScreenTV text to first entry in overviewArray
-            [[self topScreenTextView] setText:[overviewArray objectAtIndex:0]];
+            
+            // set TopScreenTV text to first entry in overviewArray (excluding date metadata)
+            [[self topScreenTextView] setText:[self entryStringWithoutDateMetadata:0]];
         }
     
         
@@ -470,6 +471,22 @@
     } // end if
     
 } // end checkWipeAllOption
+
+// returns the entry's string text and excludes the first line (date metadata)
+-(NSString *)entryStringWithoutDateMetadata: (int) index
+{
+    // the entire entry string (including date metadata)
+    NSString *entryString = [overviewArray objectAtIndex: index];
+    
+    // the range needed for the date (the first line holds the date)
+    NSRange rangeOfDate = [entryString lineRangeForRange:NSMakeRange(0,1) ];
+
+    // extracts the text from entry (and excluding date metadata)
+    NSString *textString = [entryString substringFromIndex:rangeOfDate.length];
+    
+    return textString;
+    
+}// end entryStringWithoutDateMetadata
 
 #pragma mark - user input event methods
 
