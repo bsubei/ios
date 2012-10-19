@@ -359,16 +359,6 @@
     return [[pathArray objectAtIndex:0] stringByAppendingPathComponent: fileWithExtension];
 } // end saveFilePath
 
-
-// disables and enables the dzei button
-- (void)toggleButtonEnabled
-{
-    if([[self topDzeiButton]isEnabled])
-        [[self topDzeiButton]setEnabled:NO];
-    else
-        [[self topDzeiButton]setEnabled:YES];
-}
-
 //checks if user pref wipe_all_data is set TRUE
 - (void) checkWipeAllOption
 {
@@ -425,11 +415,6 @@
         } completion:^(BOOL finished){}// completion block is empty in this case
          ];// if we put sthg there, it would be performed after animation is completed
         
-        //disable the dzei button
-        [self toggleButtonEnabled];
-        // then re-enable it after a delay
-        [self performSelector:@selector(toggleButtonEnabled) withObject:nil afterDelay:1.2];
-        
         // don't forget to set the bool value to NO so that it can fade back in on next button tap.
         [self setTopScreenIsVisible:NO];
         
@@ -444,11 +429,6 @@
 
         } completion:^(BOOL finished){} // completion block is empty in this case
          ];                             // if we put sthg there, it would be performed after animation is completed
-        
-        //disable the dzei button
-        [self toggleButtonEnabled];
-        // then re-enable it after a delay
-        [self performSelector:@selector(toggleButtonEnabled) withObject:nil afterDelay:1.2];
         
         // don't forget to set the bool value to YES so that it can fade back out on next button tap.
         [self setTopScreenIsVisible:YES];
