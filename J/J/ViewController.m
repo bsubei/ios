@@ -57,6 +57,37 @@
     // disables tint change when button is pressed (the other button has this set in xib)
     [self.topDzeiButton setAdjustsImageWhenHighlighted:NO];
     
+<<<<<<< HEAD
+=======
+    
+    //So that it gets the color of the background
+    self.topScreenTextView.backgroundColor = [UIColor clearColor];
+    self.overviewTextView.backgroundColor = [UIColor clearColor];
+    
+    //Added fading imaged programmatically
+    UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(50, 360, 300, 50)];
+    NSString *img1Filepath = [[NSBundle mainBundle] pathForResource:@"image" ofType:@"png"];
+    UIImage *img1 = [[UIImage alloc] initWithContentsOfFile:img1Filepath];
+    [imgView setImage:img1];
+    
+    [self.view addSubview:imgView];
+    
+    
+    
+    UIImageView *imgViewup = [[UIImageView alloc] initWithFrame:CGRectMake(50, 0, 350, 50)];
+    NSString *img2Filepath = [[NSBundle mainBundle] pathForResource:@"image2" ofType:@"png"];
+    UIImage *img2 = [[UIImage alloc] initWithContentsOfFile:img2Filepath];
+    [imgViewup setImage:img2];
+    
+    [self.view addSubview:imgViewup];
+    
+    
+
+    
+
+
+    
+>>>>>>> af68370... Xib. Tweaks
 }
 
 - (void)didReceiveMemoryWarning

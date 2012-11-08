@@ -7,7 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+<<<<<<< HEAD
 		7648C41C16223DB00064C456 /* JImage2.png in Resources */ = {isa = PBXBuildFile; fileRef = 7648C41B16223DB00064C456 /* JImage2.png */; };
+=======
+		4C42CA34164BF45900408377 /* J icon 114.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C42CA33164BF45900408377 /* J icon 114.png */; };
+		4C42CA36164BF46300408377 /* J icon 57.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C42CA35164BF46300408377 /* J icon 57.png */; };
+		4C42CA38164BF47700408377 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C42CA37164BF47700408377 /* Default-568h@2x.png */; };
+		4C42CA3A164BF47A00408377 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C42CA39164BF47A00408377 /* Default@2x.png */; };
+		4C42CA3C164BF47D00408377 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C42CA3B164BF47D00408377 /* Default.png */; };
+		4CD7386C164B178800833D55 /* JImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CD7386B164B178800833D55 /* JImage.png */; };
+		4CD7386E164B178E00833D55 /* JImage2.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CD7386D164B178E00833D55 /* JImage2.png */; };
+		4CD73870164B1A4400833D55 /* image.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CD7386F164B1A4400833D55 /* image.png */; };
+		4CD73872164B1A4B00833D55 /* image2.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CD73871164B1A4B00833D55 /* image2.png */; };
+>>>>>>> af68370... Xib. Tweaks
 		767F07B71624CE3300D2F4D3 /* Screen Shot 2012-10-09 at 4.26.56 PM.png in Resources */ = {isa = PBXBuildFile; fileRef = 767F07B61624CE3300D2F4D3 /* Screen Shot 2012-10-09 at 4.26.56 PM.png */; };
 		767F07BA1624E7F600D2F4D3 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 767F07B91624E7F600D2F4D3 /* MessageUI.framework */; };
 		76A996CB160E713F00A31947 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76A996CA160E713F00A31947 /* UIKit.framework */; };
@@ -41,7 +53,19 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+<<<<<<< HEAD
 		7648C41B16223DB00064C456 /* JImage2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = JImage2.png; sourceTree = "<group>"; };
+=======
+		4C42CA33164BF45900408377 /* J icon 114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "J icon 114.png"; sourceTree = "<group>"; };
+		4C42CA35164BF46300408377 /* J icon 57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "J icon 57.png"; sourceTree = "<group>"; };
+		4C42CA37164BF47700408377 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		4C42CA39164BF47A00408377 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		4C42CA3B164BF47D00408377 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		4CD7386B164B178800833D55 /* JImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = JImage.png; path = ../../../../Desktop/JImage.png; sourceTree = "<group>"; };
+		4CD7386D164B178E00833D55 /* JImage2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = JImage2.png; path = ../../../../Desktop/JImage2.png; sourceTree = "<group>"; };
+		4CD7386F164B1A4400833D55 /* image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = image.png; path = ../../../../Desktop/image.png; sourceTree = "<group>"; };
+		4CD73871164B1A4B00833D55 /* image2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = image2.png; path = ../../../../Desktop/image2.png; sourceTree = "<group>"; };
+>>>>>>> af68370... Xib. Tweaks
 		767F07B61624CE3300D2F4D3 /* Screen Shot 2012-10-09 at 4.26.56 PM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Screen Shot 2012-10-09 at 4.26.56 PM.png"; sourceTree = "<group>"; };
 		767F07B91624E7F600D2F4D3 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		76A996C6160E713F00A31947 /* J.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = J.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -98,6 +122,14 @@
 		76A996BB160E713F00A31947 = {
 			isa = PBXGroup;
 			children = (
+<<<<<<< HEAD
+=======
+				4C42CA3B164BF47D00408377 /* Default.png */,
+				4C42CA39164BF47A00408377 /* Default@2x.png */,
+				4C42CA37164BF47700408377 /* Default-568h@2x.png */,
+				4C42CA35164BF46300408377 /* J icon 57.png */,
+				4C42CA33164BF45900408377 /* J icon 114.png */,
+>>>>>>> af68370... Xib. Tweaks
 				76A996D0160E713F00A31947 /* J */,
 				76A996F4160E714000A31947 /* JTests */,
 				76A996C9160E713F00A31947 /* Frameworks */,
@@ -256,6 +288,18 @@
 				7648C41C16223DB00064C456 /* JImage2.png in Resources */,
 				767F07B71624CE3300D2F4D3 /* Screen Shot 2012-10-09 at 4.26.56 PM.png in Resources */,
 				76DAA98C1624FD2300EE0997 /* Settings.bundle in Resources */,
+<<<<<<< HEAD
+=======
+				4CD7386C164B178800833D55 /* JImage.png in Resources */,
+				4CD7386E164B178E00833D55 /* JImage2.png in Resources */,
+				4CD73870164B1A4400833D55 /* image.png in Resources */,
+				4CD73872164B1A4B00833D55 /* image2.png in Resources */,
+				4C42CA34164BF45900408377 /* J icon 114.png in Resources */,
+				4C42CA36164BF46300408377 /* J icon 57.png in Resources */,
+				4C42CA38164BF47700408377 /* Default-568h@2x.png in Resources */,
+				4C42CA3A164BF47A00408377 /* Default@2x.png in Resources */,
+				4C42CA3C164BF47D00408377 /* Default.png in Resources */,
+>>>>>>> af68370... Xib. Tweaks
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
