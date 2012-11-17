@@ -665,12 +665,14 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 {
     //TODO add alerts for results of the email sending or do stuff when user cancels or saves draft
     
-    [self dismissModalViewControllerAnimated:NO];
+    [self dismissModalViewControllerAnimated:YES];
 }
 
 // brings up option menu
 // TODO tweak string names and options
 - (IBAction)optionsButton:(id)sender {
+    
+      [(UITextView *)[[overviewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] viewWithTag:TEXT_TAG] resignFirstResponder];
     
     // create action sheet
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Options"
