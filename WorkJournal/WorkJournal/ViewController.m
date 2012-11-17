@@ -665,7 +665,7 @@ NSString *DEFAULT_TEXT = @"Enter your J here...";
 {
     //TODO add alerts for results of the email sending or do stuff when user cancels or saves draft
     
-    [self dismissModalViewControllerAnimated:YES];
+    [self dismissModalViewControllerAnimated:NO];
 }
 
 // brings up option menu
